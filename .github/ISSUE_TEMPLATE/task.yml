@@ -1,0 +1,60 @@
+name: Task
+description: Standard project task
+title: "[TASK] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What needs to be done?
+    validations:
+      required: true
+
+  - type: textarea
+    id: inputs
+    attributes:
+      label: Inputs
+      description: Files / docs / data used
+    validations:
+      required: false
+
+  - type: textarea
+    id: outputs
+    attributes:
+      label: Outputs
+      description: Files / metrics / report expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of Done
+      description: Exact completion criteria
+    validations:
+      required: true
+
+  - type: input
+    id: assignee
+    attributes:
+      label: Lead
+      placeholder: "@username"
+
+  - type: input
+    id: reviewer
+    attributes:
+      label: Reviewer
+      placeholder: "@username"
+
+  - type: input
+    id: runner
+    attributes:
+      label: Runner / QA
+      placeholder: "@username"
+
+  - type: input
+    id: doc
+    attributes:
+      label: Doc owner
+      placeholder: "@username"

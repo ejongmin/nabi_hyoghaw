@@ -1,0 +1,120 @@
+columns:
+  src:
+  - src
+  - source
+  - from
+  - supplier
+  - vendor
+  - upstream
+  - A
+  - 기업A
+  - 회사A
+  - 공급사
+  - source_company
+  - supplier_name
+  dst:
+  - dst
+  - target
+  - to
+  - customer
+  - client
+  - downstream
+  - B
+  - 기업B
+  - 회사B
+  - 수요사
+  - target_company
+  - customer_name
+  rel_type:
+  - rel_type
+  - relation
+  - relation_type
+  - type
+  - edge_type
+  - 관계
+  - 관계유형
+  confidence:
+  - confidence
+  - conf
+  - prob
+  - plink
+  - 신뢰도
+  - confidence_plink
+  strength:
+  - strength
+  - weight
+  - intensity
+  - 강도
+  - strength_score
+  evidence:
+  - evidence
+  - evidence_text
+  - 근거
+  - note
+  - notes
+  - 설명
+  - comment
+  - url
+  - source_url
+  source:
+  - source
+  - data_source
+  - 출처
+  - reference
+  - ref
+  - 문서
+  - 링크
+  valid_from:
+  - valid_from
+  - from_date
+  - start_date
+  - 시작
+  - 시작일
+  valid_to:
+  - valid_to
+  - to_date
+  - end_date
+  - 종료
+  - 종료일
+defaults:
+  rel_type: SUPPLIES
+  confidence_plink: 0.6
+  strength: 1.0
+  source: xlsx_import
+relation_normalization:
+  SUPPLIES:
+  - supplies
+  - supply
+  - supplier
+  - 공급
+  - 납품
+  BUYS_FROM:
+  - buys
+  - buy
+  - procure
+  - 구매
+  - 조달
+  PARTNERS_WITH:
+  - partner
+  - partnership
+  - jv
+  - 협력
+  - 제휴
+  - 합작
+  COMPETES_WITH:
+  - compete
+  - competitor
+  - competition
+  - 경쟁
+  SUBSIDIARY_OF:
+  - subsidiary
+  - affiliate
+  - 자회사
+  - 계열
+  OWNS:
+  - owns
+  - owner
+  - ownership
+  - 지분
+  - 소유
+notes: 엑셀/문서에서 컬럼명이 다르면 이 파일에서 alias 목록을 추가하세요.

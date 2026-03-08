@@ -1,0 +1,28 @@
+ticker_suffix_priority:
+- .HK
+- .SZ
+- .SS
+- .KS
+- .KQ
+- .T
+- .SI
+- .L
+- .DE
+- .F
+- .PA
+- .MI
+- .SW
+- .TO
+- .AX
+- .SA
+- .MX
+- .TW
+- .ST
+- .CO
+- .OL
+- .HE
+- .IC
+- .MC
+- .BR
+- .AS
+notes: company_id가 비어있고 tickers가 여러 개인 경우, 이 우선순위로 primary ticker를 선택합니다.

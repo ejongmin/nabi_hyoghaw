@@ -1,0 +1,2 @@
+src_company_id,rel_type,dst_company_id,confidence_plink,strength,evidence,source,valid_from,valid_to
+1211.HK,SUPPLIES,TSLA,0.70,1.00,"(샘플) BYD or CATL supplies to Tesla — 반드시 evidence로 교체","sample",,

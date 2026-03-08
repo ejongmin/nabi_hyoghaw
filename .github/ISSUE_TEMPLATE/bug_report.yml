@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a pipeline / environment / data bug
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: bug
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots

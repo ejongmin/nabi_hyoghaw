@@ -1,0 +1,46 @@
+geopolitical:
+  keywords:
+  - sanction
+  - embargo
+  - export ban
+  - export control
+  - tariff
+  - trade war
+  - restriction
+  - entity list
+  - blacklist
+  - national security
+  - customs seizure
+  - conflict
+  - war
+  - invasion
+  - retaliation
+  notes: 정치/제재/수출규제 등 공급망 단절 위험
+logistics:
+  keywords:
+  - port strike
+  - shipping delay
+  - container shortage
+  - logistics disruption
+  - rail strike
+  - truck strike
+  - route closure
+  - canal blockage
+  - supply disruption
+  - factory shutdown
+  - power outage
+  - blackout
+  notes: 물류/운송/인프라 차질 위험
+climate:
+  keywords:
+  - earthquake
+  - flood
+  - wildfire
+  - storm
+  - typhoon
+  - hurricane
+  - heatwave
+  - drought
+  - landslide
+  - tsunami
+  notes: 자연재해/기후 리스크

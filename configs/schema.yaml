@@ -1,0 +1,65 @@
+node_types:
+- Company
+- Country
+- Commodity
+- Facility
+company_stage_enum:
+- Upstream
+- Refining
+- Materials
+- CellPack
+- OEM
+- Recycling
+- Other
+relation_types:
+- name: SUPPLIES
+  from:
+  - Company
+  to:
+  - Company
+  description: A supplies to B
+- name: BUYS_FROM
+  from:
+  - Company
+  to:
+  - Company
+  description: A buys from B
+- name: PARTNERS_WITH
+  from:
+  - Company
+  to:
+  - Company
+  description: Partnership/JV
+- name: COMPETES_WITH
+  from:
+  - Company
+  to:
+  - Company
+  description: Competitive relation
+- name: SUBSIDIARY_OF
+  from:
+  - Company
+  to:
+  - Company
+  description: Ownership/affiliate
+- name: OWNS
+  from:
+  - Company
+  to:
+  - Company
+  - Facility
+  description: Owns company/facility
+- name: LOCATED_IN
+  from:
+  - Company
+  - Facility
+  to:
+  - Country
+  description: Location
+- name: PRODUCES
+  from:
+  - Company
+  - Facility
+  to:
+  - Commodity
+  description: Produces commodity

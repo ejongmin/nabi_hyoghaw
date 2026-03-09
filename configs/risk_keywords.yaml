@@ -1,0 +1,62 @@
+geopolitical:
+  keywords:
+    - sanction
+    - sanctions
+    - embargo
+    - export control
+    - tariff hike
+    - tariff increase
+    - military conflict
+    - invasion
+    - missile strike
+    - nuclear threat
+    - ceasefire
+    - territorial dispute
+    - retaliation
+
+logistics:
+  keywords:
+    - shipping disruption
+    - port strike
+    - route closure
+    - freight surge
+    - strait of hormuz
+    - suez canal
+    - supply chain disruption
+    - container shortage
+    - port congestion
+    - maritime security
+    - blockade
+
+natural:
+  keywords:
+    - earthquake damage
+    - flood disaster
+    - wildfire
+    - typhoon
+    - hurricane damage
+    - tsunami warning
+    - drought crisis
+    - volcanic eruption
+    - cyclone
+
+energy:
+  keywords:
+    - oil price surge
+    - crude oil price
+    - opec production
+    - energy crisis
+    - refinery shutdown
+    - pipeline disruption
+    - fuel shortage
+    - oil embargo
+    - natural gas price
+
+insurance_shipping:
+  keywords:
+    - war risk premium
+    - marine insurance
+    - cargo insurance
+    - shipping insurance
+    - risk surcharge
+    - protection and indemnity

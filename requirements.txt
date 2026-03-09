@@ -1,0 +1,7 @@
+gdeltdoc>=1.4.0
+pandas>=2.0.0
+pyarrow>=14.0.0
+rapidfuzz>=3.0.0
+pyyaml>=6.0
+transformers>=4.30.0
+torch>=2.0.0

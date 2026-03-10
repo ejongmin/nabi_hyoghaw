@@ -34,3 +34,5 @@ BAS.DE,PARTNERS_WITH,300750.SZ,1.0,0.6,"BASF and CATL partnership for battery ma
 TSLA,BUYS_FROM,"Strait of Hormuz",0.8,0.5,"Logistics route impact (Sample)","report",,
 300750.SZ,BUYS_FROM,"Strait of Hormuz",0.8,0.5,"Logistics route impact (Sample)","report",,
 373220.KS,BUYS_FROM,"Strait of Hormuz",0.8,0.5,"Logistics route impact (Sample)","report",,
+920185.BJ,SUPPLIES,300750.SZ,1.0,0.9,"BTR supplies Anode to CATL",report,2018-01-01,
+920185.BJ,SUPPLIES,373220.KS,1.0,0.8,"BTR supplies Anode to LGES",report,2018-01-01,

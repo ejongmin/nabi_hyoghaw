@@ -47,7 +47,7 @@ def build_risk_events(articles: pd.DataFrame,
     df = articles.copy()
     if "seendate" not in df.columns:
         # try alternative names
-        for alt in ["published", "datetime", "date"]:
+        for alt in ["published", "datetime", "date", "event_date"]:
             if alt in df.columns:
                 df["seendate"] = df[alt]
                 break

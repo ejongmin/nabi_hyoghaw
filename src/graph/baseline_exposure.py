@@ -71,6 +71,8 @@ def exposure_rwr(G: nx.Graph, event_nodes: List[str], severity: float, restart_p
 
     return {nodes[i]: float(severity * p[i]) for i in range(N)}
 
+from src.gnn.gat import run_gat_exposure
+
 def compute_exposure(nodes: pd.DataFrame,
                      edges: pd.DataFrame,
                      risk_events: pd.DataFrame,
@@ -78,10 +80,12 @@ def compute_exposure(nodes: pd.DataFrame,
                      lam: float,
                      restart_prob: float,
                      iters: int,
-                     weight_mode: str) -> pd.DataFrame:
+                     weight_mode: str,
+                     cfg_gnn: dict = None) -> pd.DataFrame:
     Gd = build_graph(nodes, edges, weight_mode=weight_mode)
     G = Gd.to_undirected() if use_undirected else Gd
 
+    # 1. Baseline: Shortest Path and RWR
     rows = []
     for ev in risk_events.itertuples(index=False):
         event_id = getattr(ev, "event_id")
@@ -99,4 +103,12 @@ def compute_exposure(nodes: pd.DataFrame,
                 "exposure_sp": sp.get(cid, 0.0),
                 "exposure_rwr": rw.get(cid, 0.0),
             })
-    return pd.DataFrame(rows)
+    
+    baseline_df = pd.DataFrame(rows)
+    
+    # 2. GNN: GAT (Graph Attention Network)
+    gat_df = run_gat_exposure(nodes, edges, risk_events, cfg_gnn or {})
+    
+    # Merge results
+    final_df = baseline_df.merge(gat_df, on=["event_id", "company_id"], how="left")
+    return final_df

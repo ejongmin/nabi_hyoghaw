@@ -5,12 +5,12 @@ project:
   end_date: '2026-06-01'
   root_dir: .
 paths:
-  universe_csv: data/universe/ev_battery_universe_20260222_035456_combined.csv
+  universe_csv: data/universe/univers_final.csv
   universe_yaml: data/universe/ev_battery_universe_20260222_035456.yaml
   seed_edges_csv: data/seed/seed_edges.csv
   tickers_generated_txt: data/processed/tickers_yfinance.txt
   ticker_map_parquet: data/processed/ticker_map.parquet
-  gdelt_articles_csv: data/raw/gdelt/articles.csv
+  gdelt_articles_csv: data/raw/gdelt/articles_8y.csv
   prices_parquet: data/processed/prices_daily.parquet
   risk_events_parquet: data/processed/risk_events.parquet
   kg_nodes_parquet: data/processed/kg_nodes.parquet
@@ -49,8 +49,8 @@ gdelt:
   max_records: 2000
   dedup_on:
   - url
-  retries: 3
-  retry_backoff_sec: 2.0
+  retries: 5
+  retry_backoff_sec: 5.0
 risk:
   keywords_yaml: configs/risk_keywords.yaml
   use_finbert: false
@@ -60,9 +60,9 @@ risk:
     keyword_weight: 0.4
     finbert_weight: 0.2
     max_cap: 5.0
-  filter_no_entity_events: true
+  filter_no_entity_events: false
 entity_linking:
-  min_fuzzy_score: 90
+  min_fuzzy_score: 80
   max_entities_per_article: 3
   use_company_id_as_alias: true
   use_tickers_as_aliases: true

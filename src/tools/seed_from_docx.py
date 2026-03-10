@@ -42,4 +42,6 @@ def seed_edges_from_docx_tables(docx_path: Path,
             df.to_excel(writer, sheet_name=f"table_{i+1}", index=False)
 
     # Use first sheet by default; user can rerun specifying sheet
-    return seed_edges_from_excel(temp_xlsx_path, sheet=0, *args, **kwargs)
+    if "sheet" not in kwargs:
+        kwargs["sheet"] = 0
+    return seed_edges_from_excel(temp_xlsx_path, **kwargs)

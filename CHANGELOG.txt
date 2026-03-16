@@ -1,0 +1,281 @@
+================================================================================
+  나비효과 (nabi_hyoghaw) — 프로젝트 변경 이력 정리
+  작성일: 2026-03-16
+================================================================================
+
+프로젝트: EV-Battery 공급망 리스크 분석 MVP
+파이프라인: GDELT News -> Risk Events -> Supply Chain KG -> Exposure -> CAR -> Backtest
+
+
+================================================================================
+ 1. 프로젝트 구조 개요
+================================================================================
+
+nabi_hyoghaw/
+├── src/                          # 핵심 파이프라인 모듈
+│   ├── classify.py               # 리스크 키워드 분류
+│   ├── cluster.py                # 뉴스 → 리스크 이벤트 클러스터링
+│   ├── collect.py                # GDELT DOC API 수집
+│   ├── config.py                 # 경로/설정 관리
+│   ├── dedup.py                  # 뉴스 기사 중복 제거
+│   ├── dq_gate.py                # 데이터 품질 게이트
+│   ├── entity_link.py            # 기업 엔티티 링킹 (rapidfuzz)
+│   ├── pipeline.py               # 메인 파이프라인 오케스트레이션
+│   ├── severity.py               # 심각도 계산 (v0: rule-based, v1: FinBERT)
+│   └── ingest/
+│       └── gdelt_realtime.py     # [수정됨] GDELT v2 Raw File 실시간 수집기
+├── configs/
+│   └── risk_keywords.yaml        # 리스크 키워드 분류 체계 (5 카테고리)
+├── data/
+│   ├── universe/univers_final.csv  # 유니버스 (40개 EV-배터리 기업)
+│   ├── raw/gdelt/                  # GDELT 원본 데이터
+│   └── processed/                  # 가공 데이터 (prices, KG edges 등)
+├── collect_gdelt_8y_bigquery.py  # BigQuery GDELT 수집 스크립트
+├── validate_pipeline.py          # [신규] 파이프라인 End-to-End 검증
+├── live_replay.py                # [신규] GDELT Raw File 과거 리플레이
+├── reports/
+│   └── validation_summary.md     # [신규] 검증 결과 리포트
+└── .gitignore                    # [수정됨] data/, reports/ 제외 추가
+
+
+================================================================================
+ 2. 커밋 이력 (news-gdelt 브랜치)
+================================================================================
+
+3609bca  기업 + 리스크 뉴스 둘 다 수집하게 수정
+934ff21  Update .gitignore to exclude data, reports, and temp files
+5092732  Add GDELT v2 realtime collector and improve BigQuery ingestion
+986aa6d  Initial commit: GDELT news risk pipeline
+
+
+================================================================================
+ 3. 파일별 변경 상세
+================================================================================
+
+------------------------------------------------------------------------
+ 3-1. src/ingest/gdelt_realtime.py  [대폭 리팩토링]
+------------------------------------------------------------------------
+
+목적: GDELT v2 Raw File 실시간 수집기를 실제 동작 가능하도록 리팩토링
+
+[변경 전 문제점]
+- 존재하지 않는 모듈 임포트 (src.nlp.*, src.common.*)
+- 기업 매칭만 수집 (리스크 뉴스 미수집)
+
+[변경 내용]
+1) 임포트 수정
+   - 제거: src.nlp.entity_linking, src.nlp.risk_scoring, src.common.log
+   - 추가: src.entity_link (_build_lookup, link_entities)
+   - 추가: src.classify (classify_risk)
+   - 추가: 표준 logging 모듈
+
+2) 이중 수집 로직 구현 (company OR risk)
+   - event_category 필드 추가: "company" / "risk" / "both"
+   - _filter_events() 함수 신규 작성
+     - Actor1Name/Actor2Name으로 기업 매칭 (entity linking)
+     - SOURCEURL + Actor 이름에서 리스크 키워드 매칭
+     - 둘 중 하나라도 해당되면 수집
+
+3) 오탐 방지
+   - MIN_SEARCH_TERM_LENGTH = 3 상수 추가
+   - 짧은 검색어(예: "F" = Ford 티커) 필터링
+     -> "f" in "microsoft" 같은 오탐 차단
+
+4) FetchResult 확장
+   - company_matched, risk_matched, both_matched, total_matched 필드 추가
+
+5) fetch_once() 개선
+   - 유니버스 로드 후 짧은 검색어 자동 제거
+   - 리스크 키워드 맵 로드 및 로깅
+   - 카테고리별 매칭 통계 로깅
+
+
+------------------------------------------------------------------------
+ 3-2. .gitignore  [수정]
+------------------------------------------------------------------------
+
+추가된 항목:
+  - data/raw/          # GDELT 원본 데이터
+  - data/processed/    # 가공 데이터 (파이프라인 재실행으로 재생성)
+  - reports/           # 파이프라인 생성 리포트
+  - .claude/           # Claude Code 설정
+  - tempor.py          # 임시 스크립트
+
+
+------------------------------------------------------------------------
+ 3-3. data/processed/prices_daily.parquet  [신규 생성 / 변환]
+------------------------------------------------------------------------
+
+원본: data/processed/prices_2015_2025_long.parquet (92,321 rows)
+
+변환 작업:
+  - ticker 컬럼 → company_id 컬럼 매핑
+    (univers_final.csv의 provider_ticker_yf → company_id 활용)
+  - 상하이 거래소 접미사 변환: .SS → .SH
+  - 최종 컬럼: date, company_id, provider_ticker, close, adj_close, volume
+  - 38개 기업, 2015~2025년 일별 주가
+
+누락 기업 (2/40):
+  - 920185.BJ (BTR New Material) — 가격 데이터 없음
+  - LICY (Li-Cycle) — 가격 데이터 없음
+
+
+------------------------------------------------------------------------
+ 3-4. validate_pipeline.py  [신규 생성, 470+ lines]
+------------------------------------------------------------------------
+
+목적: 파이프라인 End-to-End 검증 (2023-01-01 ~ 2025-12-31)
+
+6단계 검증:
+  Phase 0: 데이터 로드 (유니버스, GDELT, KG, 주가, 키워드)
+  Phase 1: 뉴스 탐지 — Entity linking + Risk 분류 + Severity 계산
+  Phase 2: Knowledge Graph 구축 — networkx + 3개 해상 루트 노드
+  Phase 3: 공급망 엣지 업데이트 감지
+  Phase 4: 리스크 전파 — Shortest Path + Random Walk with Restart
+  Phase 5: CAR(Cumulative Abnormal Return) 분석
+  Phase 6: 리포트 저장
+
+핵심 구현:
+  - Route 노드: SUEZ, HORMUZ, MALACCA (지역 기반 연결)
+  - 확장 리스크 키워드: geopolitical, logistics, natural, energy
+  - Severity: clip(1.0 + norm_gs*2.5 + norm_at*1.5, 1.0, 5.0)
+  - Exposure: SP = 1/(1+distance), RWR(restart=0.15, iter=50)
+  - CAR: estimation[-120,-20], event windows [1,3,5,10,21]
+
+검증 결과 (reports/validation_summary.md):
+  - 총 매칭 이벤트: 13,213건
+  - KG: 43 nodes, 137 edges
+  - 노출 레코드: 38,840건
+  - 방향성 일치율: 53.8%
+  - Natural disaster CAR: -4.13% (가장 강한 신호)
+
+
+------------------------------------------------------------------------
+ 3-5. live_replay.py  [신규 생성 → 이후 전면 재작성, 530+ lines]
+------------------------------------------------------------------------
+
+[초기 버전] — articles_8y.csv (BigQuery 사전 수집) 기반 리플레이
+  - 15,000건 뉴스를 메모리에 전부 로드 후 재생
+  - 이벤트 전처리에 수 분 소요
+
+[현재 버전] — GDELT v2 Raw File 실시간 다운로드 방식으로 전면 재작성
+
+목적: 2023~2025년 GDELT v2 Raw Export 파일을 순차 다운로드하면서
+      실시간 파이프라인 시뮬레이션 (마치 2023년에 수집기를 운영하는 것처럼)
+
+주요 기능:
+  1) GDELT v2 Raw File 실시간 다운로드
+     - URL: http://data.gdeltproject.org/gdeltv2/{timestamp}.export.CSV.zip
+     - 샘플링 간격: daily(기본) / weekly / hourly
+
+  2) 로컬 파일 캐시
+     - 경로: data/raw/gdelt/historical/
+     - 재실행 시 다운로드 생략 (즉시 로드)
+
+  3) 성능 최적화: 사전 필터
+     - 전체 행에 fuzzy matching 전에 substring 사전필터 적용
+     - 99%+ 행을 빠르게 제거 후 소수만 정밀 처리
+
+  4) GLOBALEVENTID 중복 제거
+     - 파일 간 동일 이벤트 재표시 방지
+
+  5) 동적 KG 업데이트
+     - 2+ 기업이 동시 등장 시 엣지 추가(NEW) 또는 강화(STRENGTHENED)
+     - KG 변화를 스코어보드에 실시간 반영
+
+  6) 터미널 출력 (ANSI 컬러)
+     - [*] NEWS DETECTED    — 뉴스 탐지
+     - [>>] ENTITY LINK     — 기업 매칭
+     - [>>] EDGE UPDATE     — KG 엣지 변화
+     - [>>] RISK PROPAGATION — 리스크 전파 (exposure bar)
+     - [>>] PREDICTION vs REALITY — CAR 예측 vs 실제 결과
+
+  7) 누적 스코어보드
+     - 성공/실패 카운트 + 적중률
+     - KG 통계 (static edges + new + strengthened)
+
+사용법:
+  python live_replay.py                              # 기본 (daily, 10초)
+  python live_replay.py --start 2024-01-01           # 2024년부터
+  python live_replay.py --interval weekly --delay 5  # 주간, 5초
+  python live_replay.py --max-per-file 5             # 파일당 5개 표시
+  python live_replay.py --no-cache                   # 캐시 없이
+
+
+------------------------------------------------------------------------
+ 3-6. reports/validation_summary.md  [신규 생성]
+------------------------------------------------------------------------
+
+파이프라인 검증 결과 리포트:
+  - 기업별 평균 노출도 상위 10: Honda(0.67), Ford(0.56), LG Energy(0.47)...
+  - High vs Low Exposure CAR 차이: [0,21]일 기준 +0.65%
+  - 전체 PASS: 리스크 탐지, 전파, 방향성 일치율 53.8%
+
+
+================================================================================
+ 4. 알려진 이슈 및 제한사항
+================================================================================
+
+1) Entity Linking 오탐
+   - "ALBERT" → ALB (Albemarle): substring "alb" in "albert" = True
+   - "SVALBARD" → ALB: 같은 원인
+   - "FORD FOUNDATION" → F (Ford): 재단과 자동차 미구분
+   → entity_link.py의 substring 매칭 방식의 근본적 한계
+
+2) 데이터 편향
+   - articles_8y.csv: HONDA가 7,559/15,000건 (50%+) 차지
+   - BigQuery 쿼리 개선 필요 (REGEXP_CONTAINS + word boundary)
+
+3) 누락 기업
+   - 920185.BJ (BTR New Material): 가격 데이터 없음
+   - LICY (Li-Cycle): 가격 데이터 없음
+
+4) 메인 파이프라인 미연결
+   - src/pipeline.py는 articles.csv(DOC API) 참조
+   - gdelt_realtime.py의 articles_realtime.csv와 미연결
+   - cli.py에 존재하지 않는 모듈 임포트 다수
+
+
+================================================================================
+ 5. 사용된 핵심 알고리즘 요약
+================================================================================
+
+[Severity 계산]
+  norm_gs = clip((10 - GoldsteinScale) / 20, 0, 1)
+  norm_at = clip((10 - AvgTone) / 20, 0, 1)
+  severity = clip(1.0 + norm_gs * 2.5 + norm_at * 1.5, 1.0, 5.0)
+
+[Exposure - Shortest Path]
+  exposure_SP = 1 / (1 + shortest_path_distance)
+
+[Exposure - Random Walk with Restart]
+  restart_prob = 0.15, max_iter = 50
+  scores(t+1) = (1 - alpha) * W * scores(t) + alpha * restart_vector
+
+[CAR (Cumulative Abnormal Return)]
+  estimation_window = [-120, -20] days
+  expected_return = mean(returns in estimation_window)
+  CAR[0,w] = sum(actual_return - expected_return) for days [0..w]
+  event_windows = [1, 3, 5, 10, 21] days
+
+[예측 규칙]
+  부정적 이벤트 (GoldsteinScale < 0 OR risk keyword 매칭)
+    → 주가 하락 예측 (CAR < 0)
+  긍정적 이벤트
+    → 주가 유지/상승 예측 (CAR >= 0)
+
+
+================================================================================
+ 6. 브랜치 구조
+================================================================================
+
+  dev (base)
+    └── news-gdelt (현재 작업 브랜치)
+          ├── 커밋: GDELT v2 수집기 추가, 이중 수집 로직, .gitignore
+          └── 미커밋: validate_pipeline.py, live_replay.py
+
+  master (별도 히스토리: KG 구축, GAT 모델링 등)
+    └── data (데이터 업로드용)
+
+
+================================================================================

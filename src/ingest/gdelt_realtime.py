@@ -1,7 +1,17 @@
 """GDELT v2 Raw File 실시간 수집기.
 
 15분마다 갱신되는 GDELT v2 이벤트 파일을 다운로드하여
-유니버스 기업과 관련된 이벤트만 필터링하고 저장합니다.
+두 종류의 이벤트를 수집합니다:
+
+1. company  — 유니버스 기업이 Actor로 등장하는 이벤트
+               → 동적 공급망 관계 업데이트에 사용
+2. risk     — 리스크 키워드가 포함된 이벤트 (제재, 지진, 해협 봉쇄 등)
+               → 리스크 노출도 분석에 사용
+
+event_category 필드로 각 이벤트의 매칭 유형을 구분합니다:
+  - "company" : 기업 매칭만 된 이벤트
+  - "risk"    : 리스크 키워드만 매칭된 이벤트
+  - "both"    : 기업 + 리스크 키워드 모두 매칭된 이벤트
 
 사용법:
     # 1회 수집
@@ -14,22 +24,26 @@ from __future__ import annotations
 
 import io
 import hashlib
+import logging
 import zipfile
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 import requests
+import yaml
 
-from src.common.log import get_logger
-from src.nlp.entity_linking import EntityLinker
-from src.nlp.risk_scoring import RiskKeywordModel, _event_id
+from src.entity_link import _build_lookup, link_entities
+from src.classify import classify_risk
 
-logger = get_logger("gdelt_realtime")
+# 짧은 검색어로 인한 오탐 방지 (e.g., 티커 "F"가 모든 텍스트에 매칭)
+MIN_SEARCH_TERM_LENGTH = 3
+
+logger = logging.getLogger("gdelt_realtime")
 
 # GDELT v2 Raw File 엔드포인트
 LASTUPDATE_URL = "http://data.gdeltproject.org/gdeltv2/lastupdate.txt"
@@ -66,9 +80,24 @@ class FetchResult:
     """1회 수집 결과."""
     timestamp: str = ""
     rows_downloaded: int = 0
-    rows_matched: int = 0
+    company_matched: int = 0
+    risk_matched: int = 0
+    both_matched: int = 0
+    total_matched: int = 0
     new_events: int = 0
     skipped: bool = False
+
+
+def _event_id(url: str, date: str) -> str:
+    """SOURCEURL + SQLDATE 기반 이벤트 ID 생성."""
+    raw = f"{url}_{date}"
+    return hashlib.md5(raw.encode()).hexdigest()[:16]
+
+
+def _load_keyword_map(yaml_path: Path) -> dict:
+    """risk_keywords.yaml를 로드."""
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
 def _get_latest_export_url() -> tuple[str, str]:
@@ -114,52 +143,87 @@ def _download_and_parse(url: str) -> pd.DataFrame:
     return df
 
 
-def _filter_by_universe(df: pd.DataFrame, linker: EntityLinker) -> pd.DataFrame:
-    """유니버스 기업과 관련된 이벤트만 필터링."""
+def _filter_events(
+    df: pd.DataFrame,
+    lookup: list[dict],
+    keyword_map: dict,
+    min_fuzzy_score: int = 90,
+    max_entities: int = 3,
+) -> pd.DataFrame:
+    """기업 매칭 OR 리스크 키워드 매칭으로 이벤트 필터링.
 
-    def link_actors(row):
-        hits = []
+    조건:
+      - company 매칭: Actor1Name 또는 Actor2Name이 유니버스 기업과 매칭
+      - risk 매칭: SOURCEURL + Actor 이름에 리스크 키워드 포함
+
+    하나라도 해당되면 수집 대상. event_category로 유형 구분.
+    """
+    results = []
+
+    for _, row in df.iterrows():
+        # --- Company 매칭: Actor 이름으로 기업 식별 ---
+        all_entity_ids = []
+        all_entity_mentions = []
         for col in ["Actor1Name", "Actor2Name"]:
             actor = row.get(col)
             if pd.notna(actor) and str(actor).strip():
-                res = linker.link_title(str(actor))
-                hits.extend(res)
-        best = {}
-        for cid, score, alias in hits:
-            if cid not in best or score > best[cid][0]:
-                best[cid] = (score, alias)
-        return list(best.keys())
+                ids, mentions = link_entities(
+                    str(actor), lookup, min_fuzzy_score, max_entities
+                )
+                all_entity_ids.extend(ids)
+                all_entity_mentions.extend(mentions)
 
-    df["entity_ids"] = df.apply(link_actors, axis=1)
-    matched = df[df["entity_ids"].apply(len) > 0].copy()
-    return matched
+        # 중복 제거 (순서 유지)
+        seen = set()
+        unique_ids = []
+        for eid in all_entity_ids:
+            if eid not in seen:
+                seen.add(eid)
+                unique_ids.append(eid)
+        unique_ids = unique_ids[:max_entities]
 
+        has_company = len(unique_ids) > 0
 
-def _compute_severity(df: pd.DataFrame) -> pd.DataFrame:
-    """GoldsteinScale + AvgTone 기반 심각도 계산."""
-    gs = df["GoldsteinScale"].values
-    at = df["AvgTone"].values
-
-    norm_gs = np.clip((10 - gs) / 20.0, 0, 1)
-    norm_at = np.clip((10 - at) / 20.0, 0, 1)
-
-    df["severity"] = np.clip(1.0 + (norm_gs * 2.5) + (norm_at * 1.5), 1.0, 5.0)
-    return df
-
-
-def _classify_risk(df: pd.DataFrame, risk_model: RiskKeywordModel) -> pd.DataFrame:
-    """SOURCEURL + Actor 이름으로 리스크 유형 분류."""
-    def classify_row(row):
+        # --- Risk 키워드 매칭: SOURCEURL + Actor 이름에서 키워드 검색 ---
         text_parts = []
         for col in ["SOURCEURL", "Actor1Name", "Actor2Name"]:
             val = row.get(col)
             if pd.notna(val):
                 text_parts.append(str(val))
         text = " ".join(text_parts)
-        types = risk_model.classify(text)
-        return ",".join(types)
 
-    df["risk_types"] = df.apply(classify_row, axis=1)
+        risk_types = classify_risk(text, keyword_map)
+        has_risk = risk_types != ["other"]
+
+        # --- OR 조건: 둘 중 하나라도 매칭되면 수집 ---
+        if has_company or has_risk:
+            if has_company and has_risk:
+                category = "both"
+            elif has_company:
+                category = "company"
+            else:
+                category = "risk"
+
+            result_row = row.copy()
+            result_row["entity_ids"] = unique_ids
+            result_row["risk_types"] = ",".join(risk_types) if has_risk else ""
+            result_row["event_category"] = category
+            results.append(result_row)
+
+    if results:
+        return pd.DataFrame(results)
+    return pd.DataFrame()
+
+
+def _compute_severity(df: pd.DataFrame) -> pd.DataFrame:
+    """GoldsteinScale + AvgTone 기반 심각도 계산."""
+    gs = df["GoldsteinScale"].values.astype(float)
+    at = df["AvgTone"].values.astype(float)
+
+    norm_gs = np.clip((10 - gs) / 20.0, 0, 1)
+    norm_at = np.clip((10 - at) / 20.0, 0, 1)
+
+    df["severity"] = np.clip(1.0 + (norm_gs * 2.5) + (norm_at * 1.5), 1.0, 5.0)
     return df
 
 
@@ -204,39 +268,69 @@ def fetch_once(cfg: RealtimeConfig) -> FetchResult:
     result.rows_downloaded = len(df_raw)
     logger.info(f"[fetch] {len(df_raw)} rows downloaded")
 
-    universe = pd.read_csv(cfg.universe_path)
-    linker = EntityLinker.from_universe(
-        universe, min_score=cfg.min_entity_score, max_entities=cfg.max_entities
+    # 유니버스 기업 룩업 테이블 구축 (짧은 검색어 제거)
+    universe = pd.read_csv(cfg.universe_path, encoding="utf-8-sig")
+    lookup = _build_lookup(universe)
+    for entry in lookup:
+        entry["terms"] = {t for t in entry["terms"] if len(t) >= MIN_SEARCH_TERM_LENGTH}
+    lookup = [e for e in lookup if e["terms"]]
+    logger.info(f"[filter] universe loaded: {len(lookup)} companies")
+
+    # 리스크 키워드 맵 로드
+    keyword_map = _load_keyword_map(cfg.keywords_yaml)
+    logger.info(f"[filter] risk keywords loaded: {list(keyword_map.keys())}")
+
+    # 이중 필터 적용 (company OR risk)
+    df_matched = _filter_events(
+        df_raw, lookup, keyword_map,
+        min_fuzzy_score=cfg.min_entity_score,
+        max_entities=cfg.max_entities,
     )
-    df_matched = _filter_by_universe(df_raw, linker)
-    result.rows_matched = len(df_matched)
 
     if df_matched.empty:
         logger.info(f"[fetch] no matching events in {timestamp}")
         _write_last_fetched(cfg.state_file, timestamp)
         return result
 
+    # 카테고리별 통계
+    cat_counts = df_matched["event_category"].value_counts()
+    result.company_matched = int(cat_counts.get("company", 0))
+    result.risk_matched = int(cat_counts.get("risk", 0))
+    result.both_matched = int(cat_counts.get("both", 0))
+    result.total_matched = len(df_matched)
+
+    logger.info(
+        f"[filter] matched {len(df_matched)} events "
+        f"(company={result.company_matched}, risk={result.risk_matched}, both={result.both_matched})"
+    )
+
+    # 심각도 계산
     df_matched = _compute_severity(df_matched)
 
-    risk_model = RiskKeywordModel.load(cfg.keywords_yaml)
-    df_matched = _classify_risk(df_matched, risk_model)
-
+    # 이벤트 ID 생성
     df_matched = _generate_event_ids(df_matched)
 
-    df_matched["event_date"] = pd.to_datetime(df_matched["SQLDATE"], format="%Y%m%d", errors="coerce")
+    # 날짜 변환
+    df_matched["event_date"] = pd.to_datetime(
+        df_matched["SQLDATE"], format="%Y%m%d", errors="coerce"
+    )
 
+    # 출력 컬럼 정리
     out_cols = [
-        "GLOBALEVENTID", "event_id", "event_date", "Actor1Name", "Actor2Name",
-        "EventCode", "GoldsteinScale", "AvgTone", "NumArticles",
+        "GLOBALEVENTID", "event_id", "event_date", "event_category",
+        "Actor1Name", "Actor2Name", "EventCode",
+        "GoldsteinScale", "AvgTone", "NumArticles",
         "SOURCEURL", "entity_ids", "severity", "risk_types",
     ]
     out_df = df_matched[[c for c in out_cols if c in df_matched.columns]]
 
+    # 청크 파일 저장
     cfg.output_dir.mkdir(parents=True, exist_ok=True)
     chunk_path = cfg.output_dir / f"{timestamp}.csv"
     out_df.to_csv(chunk_path, index=False, encoding="utf-8-sig")
     logger.info(f"[save] {chunk_path} ({len(out_df)} rows)")
 
+    # 통합 CSV 업데이트
     cfg.combined_csv.parent.mkdir(parents=True, exist_ok=True)
     if cfg.combined_csv.exists():
         existing = pd.read_csv(cfg.combined_csv, dtype={"GLOBALEVENTID": str})
@@ -258,6 +352,7 @@ def run_realtime_loop(cfg: RealtimeConfig, interval_minutes: int = 15):
     """주기적 수집 루프."""
     logger.info(f"[start] realtime collector (interval={interval_minutes}min)")
     logger.info(f"[config] universe={cfg.universe_path}")
+    logger.info(f"[config] keywords={cfg.keywords_yaml}")
     logger.info(f"[config] output={cfg.combined_csv}")
 
     while True:
@@ -267,7 +362,10 @@ def run_realtime_loop(cfg: RealtimeConfig, interval_minutes: int = 15):
                 logger.info(
                     f"[result] ts={result.timestamp} "
                     f"downloaded={result.rows_downloaded} "
-                    f"matched={result.rows_matched} "
+                    f"matched={result.total_matched} "
+                    f"(company={result.company_matched} "
+                    f"risk={result.risk_matched} "
+                    f"both={result.both_matched}) "
                     f"new={result.new_events}"
                 )
         except Exception as e:
@@ -289,8 +387,10 @@ if __name__ == "__main__":
     parser.add_argument("--combined", type=str, default="data/raw/gdelt/articles_realtime.csv")
     args = parser.parse_args()
 
-    from src.common.log import setup_logging
-    setup_logging("INFO")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
 
     cfg = RealtimeConfig(
         universe_path=Path(args.universe),

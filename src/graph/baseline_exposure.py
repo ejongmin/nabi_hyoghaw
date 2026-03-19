@@ -91,8 +91,11 @@ def compute_exposure(nodes: pd.DataFrame,
         event_id = getattr(ev, "event_id")
         sev = float(getattr(ev, "severity", 1.0))
         ents = getattr(ev, "entity_ids", [])
-        if not isinstance(ents, list):
-            ents = []
+        if not isinstance(ents, (list, tuple)):
+            try:
+                ents = list(ents)  # ndarray → list
+            except (TypeError, ValueError):
+                ents = []
         sp = exposure_shortest_path(G, ents, sev, lam)
         rw = exposure_rwr(G, ents, sev, restart_prob=restart_prob, iters=iters)
 

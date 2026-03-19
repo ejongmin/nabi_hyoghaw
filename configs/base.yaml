@@ -11,6 +11,8 @@ paths:
   tickers_generated_txt: data/processed/tickers_yfinance.txt
   ticker_map_parquet: data/processed/ticker_map.parquet
   gdelt_articles_csv: data/raw/gdelt/articles_8y.csv
+  gdelt_bq_parquet_dir: data/raw/gdelt
+  gdelt_bq_risk_events_parquet: data/processed/risk_events_bq.parquet
   prices_parquet: data/processed/prices_daily.parquet
   risk_events_parquet: data/processed/risk_events.parquet
   kg_nodes_parquet: data/processed/kg_nodes.parquet
@@ -43,6 +45,7 @@ ticker_provider:
     .KS: .KS
     .KQ: .KQ
 gdelt:
+  source: bigquery  # bigquery | doc_api (실시간 업데이트 시 doc_api 병용)
   language: English
   keyword_query: export ban OR sanction OR tariff OR embargo OR strike OR port disruption
     OR shipping delay OR earthquake OR flood OR wildfire

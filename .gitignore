@@ -28,6 +28,15 @@ reports/
 *.log
 *.zip
 
+# Credentials / secrets
+*.json
+!configs/*.json
+!package.json
+
+# Temp
+.tmp.driveupload/
+.claude/
+
 # Allow templates and guides
 !data/universe/
 !data/seed/

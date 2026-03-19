@@ -8,12 +8,14 @@ from src.common.log import setup_logging, get_logger
 from src.common.io import read_df, write_df
 
 from src.ingest.gdelt import ingest_gdelt
+from src.ingest.gdelt_bq import ingest_gdelt_bq
+from src.ingest.aggregate_events import aggregate_risk_events
 from src.ingest.prices import ingest_prices_from_universe
 from src.ingest.tickers import build_ticker_map
 
 from src.nlp.risk_scoring import build_risk_events
 
-from src.quality.dq_gate import build_dq_report
+from src.quality.dq_gate import build_dq_report, run_dq_gate, DQGateError
 
 from src.kg.build_static import load_universe, load_seed_edges, build_static_kg
 from src.graph.baseline_exposure import compute_exposure
@@ -132,6 +134,35 @@ def cmd_ingest_gdelt(config: str = "configs/base.yaml", force: bool = False):
     out = cfg.path("gdelt_articles_csv")
     df = ingest_gdelt(cfg.raw, out, force=force)
     get_logger().info(f"✅ GDELT articles: {out} (rows={len(df)})")
+
+@app.command("ingest-gdelt-bq")
+def cmd_ingest_gdelt_bq(config: str = "configs/base.yaml", force: bool = False):
+    """BigQuery parquet → risk_events 변환.
+
+    data/raw/gdelt/gdelt_gkg_*.parquet 파일을 읽어
+    company_ids 추출, severity 계산, risk 분류 후
+    risk_events 포맷으로 저장합니다.
+    """
+    cfg = _load_cfg(config)
+    log = get_logger()
+
+    uni = load_universe(_resolve_universe_path(cfg))
+
+    # 출력 경로
+    bq_risk_rel = cfg.get("paths", "gdelt_bq_risk_events_parquet",
+                          default="data/processed/risk_events_bq.parquet")
+    out = (cfg.root_dir / bq_risk_rel).resolve()
+
+    import shutil
+    result_path = ingest_gdelt_bq(cfg.raw, uni, out, force=force)
+    log.info(f"✅ BQ risk_events: {out}")
+
+    # risk_events_parquet에도 복사 (파이프라인 호환)
+    main_risk_path = cfg.path("risk_events_parquet")
+    if not main_risk_path.exists() or force:
+        main_risk_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(out), str(main_risk_path))
+        log.info(f"✅ Copied to pipeline path: {main_risk_path}")
 
 @app.command("ingest-prices")
 def cmd_ingest_prices(config: str = "configs/base.yaml", force: bool = False):
@@ -457,17 +488,24 @@ def cmd_backtest(config: str = "configs/base.yaml"):
     get_logger().info(f"✅ metrics saved: {rep_dir / 'backtest_summary.md'}")
 
 @app.command("data-quality")
-def cmd_data_quality(config: str = "configs/base.yaml"):
+def cmd_data_quality(config: str = "configs/base.yaml", strict: bool = True):
+    """DQ Gate: 데이터 품질 검사. strict=True이면 threshold 미달 시 파이프라인 중단."""
     cfg = _load_cfg(config)
     rep_dir = cfg.path("reports_dir")
-    # load available
+    log = get_logger()
+
+    # load available data
     articles = None
     prices = None
     risk = None
     nodes = None
     edges = None
 
-    if cfg.path("gdelt_articles_csv").exists():
+    gdelt_source = cfg.get("gdelt", "source", default="doc_api")
+    if gdelt_source == "bigquery":
+        # BQ 모드: risk_events에 이미 articles 정보 포함
+        articles = None  # BQ 모드에서는 별도 articles 불필요
+    elif cfg.path("gdelt_articles_csv").exists():
         articles = pd.read_csv(cfg.path("gdelt_articles_csv"))
     if cfg.path("prices_parquet").exists():
         prices = read_df(cfg.path("prices_parquet"))
@@ -478,9 +516,20 @@ def cmd_data_quality(config: str = "configs/base.yaml"):
     if cfg.path("kg_edges_parquet").exists():
         edges = read_df(cfg.path("kg_edges_parquet"))
 
-    content = build_dq_report(articles, prices, risk, nodes, edges, cfg.raw)
-    write_md(rep_dir / "data_quality_report.md", content)
-    get_logger().info(f"✅ wrote {rep_dir / 'data_quality_report.md'}")
+    try:
+        result = run_dq_gate(articles, prices, risk, nodes, edges, cfg.raw, strict=strict)
+        write_md(rep_dir / "data_quality_report.md", result.report_md)
+        log.info(f"✅ DQ Gate PASSED — wrote {rep_dir / 'data_quality_report.md'}")
+        if result.warnings:
+            for w in result.warnings:
+                log.warning(f"  ⚠️ {w}")
+    except DQGateError as e:
+        # 리포트는 항상 저장 (디버깅용)
+        write_md(rep_dir / "data_quality_report.md", e.report)
+        log.error(f"❌ DQ Gate FAILED — report saved to {rep_dir / 'data_quality_report.md'}")
+        for f in e.failures:
+            log.error(f"  ✗ {f}")
+        raise typer.Exit(code=2)
 
 @app.command("report-all")
 def cmd_report_all(config: str = "configs/base.yaml"):
@@ -489,23 +538,62 @@ def cmd_report_all(config: str = "configs/base.yaml"):
     get_logger().info(f"✅ report index: {cfg.path('reports_dir') / 'index.md'}")
 
 @app.command("pipeline")
-def cmd_pipeline(config: str = "configs/base.yaml"):
+def cmd_pipeline(config: str = "configs/base.yaml", skip_gate: bool = False):
+    """E2E 파이프라인 실행.
+
+    DQ Gate가 중간에 강제 삽입됩니다:
+      ingest → risk_events → build_kg → ★ DQ Gate ★ → exposure → CAR → backtest
+    threshold 미달 시 파이프라인이 중단됩니다.
+    --skip-gate 옵션으로 DQ Gate를 경고 모드로 전환 가능.
+    """
     cfg = _load_cfg(config)
-    # run in fixed order, skipping existing files
+    log = get_logger()
+
+    # Phase 1: 데이터 수집 + 가공
     cmd_init(config)
     cmd_doctor(config)
     cmd_normalize_universe(config)
     cmd_make_tickers(config)
-    cmd_ingest_gdelt(config)
+
+    # GDELT 소스 분기: bigquery parquet vs DOC API
+    gdelt_source = cfg.get("gdelt", "source", default="doc_api")
+    if gdelt_source == "bigquery":
+        log.info("📡 GDELT source: BigQuery parquets")
+        cmd_ingest_gdelt_bq(config)
+        # BQ 경로는 ingest-gdelt-bq에서 risk_events까지 한번에 처리
+        # → build-risk-events 스킵
+    else:
+        log.info("📡 GDELT source: DOC API")
+        cmd_ingest_gdelt(config)
+        cmd_build_risk_events(config)
+
     cmd_ingest_prices(config)
-    cmd_build_risk_events(config)
+
+    # ★ 이벤트 집계: 400만건 → 날짜+기업 단위 (compute-exposure 메모리 안전)
+    if gdelt_source == "bigquery":
+        raw_risk = cfg.path("risk_events_parquet")
+        agg_out = cfg.root_dir / "data/processed/risk_events_agg.parquet"
+        log.info("📊 Aggregating risk events (date × entity)...")
+        aggregate_risk_events(raw_risk, agg_out, force=True)
+        # 집계된 파일을 파이프라인에서 사용
+        import shutil
+        shutil.copy2(str(agg_out), str(raw_risk))
+        log.info(f"✅ risk_events.parquet replaced with aggregated version")
+
     cmd_build_kg(config)
+
+    # ★ DQ Gate: red flag 시 여기서 중단 ★
+    log.info("=" * 50)
+    log.info("★ DQ Gate checkpoint ★")
+    log.info("=" * 50)
+    cmd_data_quality(config, strict=(not skip_gate))
+
+    # Phase 2: 분석 (DQ Gate 통과 후에만 실행)
     cmd_compute_exposure(config)
     cmd_event_study(config)
     cmd_backtest(config)
-    cmd_data_quality(config)
     cmd_report_all(config)
-    get_logger().info("🏁 pipeline complete")
+    log.info("🏁 pipeline complete")
 
 @app.command("smoke-test")
 def cmd_smoke_test(config: str = "configs/base.yaml"):

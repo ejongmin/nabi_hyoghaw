@@ -11,7 +11,7 @@ class EntityQC:
 
 def run_entity_qc(risk_events: pd.DataFrame, topn: int = 10) -> EntityQC:
     df = risk_events.copy()
-    df["has_entity"] = df["entity_ids"].apply(lambda x: isinstance(x, list) and len(x) > 0)
+    df["has_entity"] = df["entity_ids"].apply(lambda x: x is not None and len(x) > 0)
     rows = len(df)
     linked = int(df["has_entity"].sum())
     rate = 0.0 if rows == 0 else linked / rows

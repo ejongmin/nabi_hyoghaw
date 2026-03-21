@@ -34,7 +34,7 @@ from src.kg.build_static import load_universe, load_seed_edges, build_static_kg
 from src.quality.dq_gate import run_dq_gate, DQGateError
 from src.graph.baseline_exposure import compute_exposure
 from src.finance.event_study import run_event_study
-from src.finance.backtest import backtest_exclude
+from src.finance.backtest import backtest_exclude, backtest_tilt
 from src.reporting.report_all import build_index, write_md
 from src.common.io import read_df, write_df
 
@@ -138,15 +138,46 @@ def main():
     excl_q = float(cfg.get("finance", {}).get("backtest", {}).get("exclude_quantile", 0.2))
     decay_lam = float(cfg.get("finance", {}).get("backtest", {}).get("risk_decay_lambda", 0.03))
 
+    # --- Strategy 1: Exclude ---
+    log.info("  Strategy 1: Exclude (remove high-risk stocks)")
     equity, metrics = backtest_exclude(prices, exp, risk_agg, exclude_quantile=excl_q, decay_lambda=decay_lam)
     backtest_csv.parent.mkdir(parents=True, exist_ok=True)
     equity.to_csv(backtest_csv, index=False, encoding="utf-8-sig")
 
-    md = ["# Backtest summary", ""]
+    md = ["# Backtest summary - Exclude strategy", ""]
     for k, v in metrics.items():
         md.append(f"- {k}: {v:.4f}")
     write_md(reports_dir / "backtest_summary.md", "\n".join(md) + "\n")
-    log.info(f"Backtest: {len(equity):,} rows, metrics saved")
+    log.info(f"  Exclude: {len(equity):,} rows, metrics saved")
+
+    # --- Strategy 2: Tilt (inverse-risk weighting) ---
+    log.info("  Strategy 2: Tilt (inverse-risk weighting)")
+    backtest_tilt_csv = backtest_csv.parent / "backtest_equity_tilt.csv"
+    equity_tilt, metrics_tilt = backtest_tilt(prices, exp, risk_agg, decay_lambda=decay_lam)
+    equity_tilt.to_csv(backtest_tilt_csv, index=False, encoding="utf-8-sig")
+
+    md_tilt = ["# Backtest summary - Tilt strategy", ""]
+    for k, v in metrics_tilt.items():
+        md_tilt.append(f"- {k}: {v:.4f}")
+    write_md(reports_dir / "backtest_summary_tilt.md", "\n".join(md_tilt) + "\n")
+    log.info(f"  Tilt: {len(equity_tilt):,} rows, metrics saved")
+
+    # --- Comparison ---
+    log.info("  Strategy comparison (Exclude vs Tilt):")
+    for key in ["strat_cagr", "strat_vol", "strat_sharpe", "strat_mdd", "avg_weekly_turnover", "total_tx_cost_bps"]:
+        v_exc = metrics.get(key, float("nan"))
+        v_tlt = metrics_tilt.get(key, float("nan"))
+        log.info(f"    {key:25s}  exclude={v_exc:+.4f}  tilt={v_tlt:+.4f}")
+
+    md_cmp = ["# Backtest comparison: Exclude vs Tilt", ""]
+    md_cmp.append("| Metric | Exclude | Tilt |")
+    md_cmp.append("|--------|---------|------|")
+    for key in sorted(set(list(metrics.keys()) + list(metrics_tilt.keys()))):
+        v_exc = metrics.get(key, float("nan"))
+        v_tlt = metrics_tilt.get(key, float("nan"))
+        md_cmp.append(f"| {key} | {v_exc:.4f} | {v_tlt:.4f} |")
+    write_md(reports_dir / "backtest_comparison.md", "\n".join(md_cmp) + "\n")
+    log.info(f"  Comparison report saved")
 
     # ── Step 7: Report ──
     log.info("=" * 60)
@@ -163,8 +194,13 @@ def main():
     log.info(f"   KG: {len(nodes)} nodes, {len(edges)} edges")
     log.info(f"   Exposure: {len(exp):,} rows")
     log.info(f"   CAR panel: {len(car):,} rows")
-    log.info(f"   Backtest equity: {len(equity):,} rows")
+    log.info(f"   Backtest equity (exclude): {len(equity):,} rows")
+    log.info(f"   Backtest equity (tilt):    {len(equity_tilt):,} rows")
+    log.info("   --- Exclude metrics ---")
     for k, v in metrics.items():
+        log.info(f"   {k}: {v:.4f}")
+    log.info("   --- Tilt metrics ---")
+    for k, v in metrics_tilt.items():
         log.info(f"   {k}: {v:.4f}")
     log.info("=" * 60)
 

@@ -56,6 +56,7 @@ gdelt:
   retry_backoff_sec: 5.0
 risk:
   keywords_yaml: configs/risk_keywords.yaml
+  aliases_yaml: configs/company_aliases.yaml
   use_finbert: false
   finbert_model: ProsusAI/finbert
   severity:
@@ -75,7 +76,7 @@ quality_gate:
   entity_link_success_min: 0.85
   kg_edges_need_evidence_min: 0.8
 kg:
-  use_undirected_for_exposure: true
+  use_undirected_for_exposure: false
   edge_weight:
     weight_mode: confidence_times_strength
     default_confidence: 0.5

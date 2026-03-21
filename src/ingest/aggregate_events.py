@@ -117,6 +117,27 @@ def aggregate_risk_events(
         if ids is not None and len(ids) > 0 else []
     )
 
+    # ── "other"-only 이벤트 severity 감쇠 ──
+    # 구체적 risk_type(geopolitics, logistics, natural 등)이 없는 "other" 이벤트는
+    # 노이즈일 가능성이 높으므로 severity를 50% 감쇠 + severity_threshold 미만 제거
+    SEVERITY_THRESHOLD = 2.5  # 이 미만의 other-only 이벤트 제거
+    OTHER_SEVERITY_DISCOUNT = 0.5  # other-only severity 감쇠 비율
+
+    is_other_only = agg["risk_types"].isin(["other", ""])
+    n_other = is_other_only.sum()
+
+    # other-only severity 감쇠
+    agg.loc[is_other_only, "severity"] = agg.loc[is_other_only, "severity"] * OTHER_SEVERITY_DISCOUNT
+
+    # 감쇠 후 threshold 미만 제거
+    n_before_filter = len(agg)
+    agg = agg[~(is_other_only & (agg["severity"] < SEVERITY_THRESHOLD))].copy()
+    n_removed = n_before_filter - len(agg)
+
+    log.info(f"  'other'-only events: {n_other:,} / {n_before_filter:,} "
+             f"({100*n_other/n_before_filter:.1f}%)")
+    log.info(f"  Removed low-severity 'other': {n_removed:,} events")
+
     log.info(f"✅ Aggregated: {len(df):,} → {len(agg):,} events "
              f"({100*(1-len(agg)/len(df)):.1f}% reduction)")
     log.info(f"   Articles per event: mean={agg['n_articles'].mean():.1f}, "

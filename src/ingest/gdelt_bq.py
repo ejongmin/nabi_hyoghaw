@@ -51,6 +51,13 @@ def _build_alias_patterns(
     if extra_aliases is None:
         extra_aliases = _default_extra_aliases()
 
+    # 일반 영어 단어와 겹치는 짧은 alias 차단 (오매칭 방지)
+    _COMMON_WORD_BLOCKLIST = {
+        "gem", "ace", "can", "man", "ion", "air", "arc", "art",
+        "bay", "bit", "cap", "cup", "era", "eve", "gap", "hub",
+        "joy", "key", "lab", "map", "net", "ore", "pan", "ray",
+    }
+
     company_aliases: Dict[str, List[str]] = {}
     alias_to_cid: Dict[str, str] = {}
 
@@ -64,7 +71,8 @@ def _build_alias_patterns(
             aliases.add(cname)
         for a in extra_aliases.get(cid, []):
             aliases.add(a)
-        aliases = {a for a in aliases if len(a) >= 3}
+        aliases = {a for a in aliases
+                   if len(a) >= 3 and a.lower() not in _COMMON_WORD_BLOCKLIST}
         if aliases:
             company_aliases[cid] = sorted(aliases)
             for a in aliases:
@@ -92,72 +100,25 @@ def _build_alias_patterns(
 
 
 def _default_extra_aliases() -> Dict[str, List[str]]:
-    """collect_gdelt_bigquery.py와 동일한 166개 alias 패턴."""
-    return {
-        # ── Cell/Pack ──
-        "300750.SZ": ["CATL", "Contemporary Amperex", "Contemporary Amperex Technology",
-                       "Contemporary Amperex Technology Co"],
-        "373220.KS": ["LG Energy", "LGES", "LG Energy Solution", "LG Energy Solutions"],
-        "1211.HK": ["BYD", "BYD Company", "BYD Auto", "BYD Co"],
-        "051910.KS": ["LG Chem", "LG Chemical", "LG Chem Ltd"],
-        "300014.SZ": ["EVE Energy", "EVE Energy Co"],
-        "300207.SZ": ["Sunwoda", "Sunwoda Electronic", "Sunwoda Electronic Co"],
-        "3931.HK": ["CALB", "CALB Group", "CALB Co",
-                     "China Aviation Lithium Battery", "China Aviation Lithium"],
-        "002074.SZ": ["Gotion", "Gotion High-Tech", "Guoxuan", "Guoxuan High-Tech"],
-        # ── Materials ──
-        "247540.KQ": ["EcoPro", "EcoPro BM", "EcoPro Co"],
-        "066970.KS": ["L&F", "L and F", "LnF", "LF Co"],
-        "003670.KS": ["POSCO Future", "POSCO Future M", "POSCO Chemical", "POSCO Holdings"],
-        "300919.SZ": ["CNGR", "CNGR Advanced Material", "CNGR Advanced"],
-        "603659.SH": ["Putailai", "Putailai New Energy"],
-        "300037.SZ": ["Capchem", "Shenzhen Capchem", "Capchem Technology"],
-        "600110.SH": ["Nuode", "Nuode Investment", "Nuode New Material"],
-        "688388.SH": ["Jiayuan", "Jiayuan International", "Jiayuan Technology"],
-        "002340.SZ": ["GEM Co", "GEM Co Ltd"],
-        "920185.BJ": ["BTR", "BTR New Material", "BTR New Energy"],
-        "3407.T": ["Asahi Kasei", "Asahi Kasei Corp", "Asahi Kasei Corporation"],
-        # ── Upstream/Refining ──
-        "002460.SZ": ["Ganfeng", "Ganfeng Lithium", "Ganfeng Lithium Co",
-                       "Jiangxi Ganfeng", "Jiangxi Ganfeng Lithium"],
-        "002466.SZ": ["Tianqi", "Tianqi Lithium", "Tianqi Lithium Corp",
-                       "Sichuan Tianqi", "Tianqi Lithium Industries"],
-        "603799.SH": ["Huayou", "Huayou Cobalt", "Zhejiang Huayou",
-                       "Huayou Cobalt Co", "Zhejiang Huayou Cobalt"],
-        "603993.SH": ["CMOC", "CMOC Group", "China Moly", "China Molybdenum",
-                       "CMOC Group Limited"],
-        "600362.SH": ["Jiangxi Copper", "Jiangxi Copper Company",
-                       "Jiangxi Copper Co", "Jiangxi Copper Corp"],
-        "ALB": ["Albemarle", "Albemarle Corp", "Albemarle Corporation"],
-        "SQM": ["SQM", "Sociedad Quimica y Minera", "Sociedad Quimica"],
-        "GLEN.L": ["Glencore", "Glencore PLC", "Glencore International"],
-        # ── OEM ──
-        "BMW.DE": ["BMW", "Bayerische Motoren", "BMW Group", "BMW AG"],
-        "VOW3.DE": ["Volkswagen", "VW", "Volkswagen AG", "Volkswagen Group", "VW Group"],
-        "MBG.DE": ["Mercedes-Benz", "Mercedes Benz", "Daimler", "Mercedes-Benz Group"],
-        "TSLA": ["Tesla", "Tesla Motors", "Tesla Inc"],
-        "F": ["Ford Motor", "Ford Motor Company"],
-        "GM": ["General Motors", "General Motors Company"],
-        "LCID": ["Lucid Motors", "Lucid Group", "Lucid"],
-        "RIVN": ["Rivian", "Rivian Automotive"],
-        "7267.T": ["Honda Motor", "Honda", "Honda Motor Co"],
-        "7203.T": ["Toyota Motor", "Toyota", "Toyota Motor Corp"],
-        "0175.HK": ["Geely", "Geely Automobile", "Geely Auto", "Zhejiang Geely"],
-        "600733.SH": ["BAIC", "BAIC BluePark", "BAIC Motor", "BAIC Group",
-                       "Beijing Automotive"],
-        "000625.SZ": ["Changan", "Changan Auto", "Changan Automobile",
-                       "Chongqing Changan"],
-        "600006.SH": ["Dongfeng", "Dongfeng Motor", "Dongfeng Motor Corp",
-                       "Dongfeng Motor Group", "Dongfeng Auto"],
-        "601238.SH": ["GAC", "GAC Group", "GAC Motor", "Guangzhou Automobile",
-                       "GAC Aion", "Guangzhou Auto"],
-        "601633.SH": ["Great Wall Motor", "Great Wall Motors", "GWM",
-                       "Great Wall Motor Company"],
-        "600418.SH": ["JAC Motors", "JAC", "Anhui Jianghuai", "JAC Automobile"],
-        "LICY": ["Li-Cycle", "Li Cycle", "Li-Cycle Holdings"],
-        # ── Chemical ──
-        "BAS.DE": ["BASF", "BASF SE", "BASF AG", "BASF Corporation"],
-    }
+    """configs/company_aliases.yaml에서 alias 로드. 파일 없으면 빈 dict 반환."""
+    alias_paths = [
+        Path("configs/company_aliases.yaml"),
+        Path(__file__).resolve().parents[2] / "configs" / "company_aliases.yaml",
+    ]
+    for p in alias_paths:
+        if p.exists():
+            try:
+                data = yaml.safe_load(p.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    # YAML에서 key가 숫자로 파싱될 수 있으므로 str 변환
+                    result = {str(k): [str(a) for a in v] for k, v in data.items()
+                              if isinstance(v, list)}
+                    log.info(f"Loaded {len(result)} company aliases from {p}")
+                    return result
+            except Exception as e:
+                log.warning(f"company_aliases.yaml 로드 실패: {e}")
+    log.warning("company_aliases.yaml not found, using empty aliases")
+    return {}
 
 
 # ──────────────────────── Risk Classification ────────────────────────
@@ -169,9 +130,12 @@ def _load_risk_patterns(keywords_yaml: Path) -> List[Tuple[str, re.Pattern]]:
     except Exception:
         log.warning("risk_keywords.yaml 로드 실패, fallback 사용")
         fallback = [
-            ("geopolitics", re.compile(r"sanction|embargo|tariff|trade war", re.IGNORECASE)),
-            ("logistics", re.compile(r"port disruption|shipping delay|blockade", re.IGNORECASE)),
-            ("natural", re.compile(r"earthquake|tsunami|flood|wildfire", re.IGNORECASE)),
+            ("geopolitics", re.compile(r"sanction|embargo|tariff|trade war|invasion|escalat", re.IGNORECASE)),
+            ("logistics", re.compile(r"port disruption|shipping delay|blockade|supply disruption|factory shutdown", re.IGNORECASE)),
+            ("natural", re.compile(r"earthquake|tsunami|flood|wildfire|typhoon|hurricane", re.IGNORECASE)),
+            ("regulatory", re.compile(r"regulat|recall|antitrust|subsidy|battery fire|penalty|investigat", re.IGNORECASE)),
+            ("market", re.compile(r"bankrupt|layoff|demand.*declin|overcapacity|price.*crash|default", re.IGNORECASE)),
+            ("labor", re.compile(r"strike.*worker|labor shortage|mine.*accident|protest.*factory", re.IGNORECASE)),
         ]
         return fallback
 
@@ -296,63 +260,69 @@ NEEDED_COLS = [
     "v2_organizations", "v2_themes", "v2_tone", "v2_locations",
     "collection_type",
 ]
-BATCH_ROWS = 100_000  # PyArrow batch size
+BATCH_ROWS = 50_000  # PyArrow batch size (reduced from 100K for memory safety)
 
 
-def _build_company_patterns(patterns: List[Tuple[re.Pattern, str]]) -> Tuple[re.Pattern, Dict[str, re.Pattern]]:
+def _build_aho_automaton(patterns: List[Tuple[re.Pattern, str]]):
     """
-    2단계 최적화용 패턴 빌드:
-    1) mega_pattern: 모든 alias OR (pre-filter, 1회 호출)
-    2) cid_patterns: company별 OR 패턴 (매칭 행에서만 세부 분류)
+    Aho-Corasick automaton 빌드.
+    모든 alias keyword를 한 번에 등록 → O(n) 단일 스캔으로 전체 company 매칭.
+    기존 46개 × str.contains() 반복 → 1회 스캔으로 대체 (23분 → 수 초).
+
+    주의: re.escape()가 공백/하이픈 등을 \\ 로 이스케이프하므로,
+    pattern.pattern에서 모든 backslash-escape를 원래 문자로 복원해야 AC 매칭됨.
     """
-    from collections import defaultdict
-    cid_to_aliases = defaultdict(list)
-    all_pats = []
+    import ahocorasick_rs
+
+    all_keywords = []
+    keyword_to_cid = []
+
     for pat, cid in patterns:
-        kw = re.sub(r'\\b|\\B', '', pat.pattern).strip()
-        cid_to_aliases[cid].append(kw)
-        all_pats.append(kw)
+        # re.escape()가 만든 backslash escapes 전체 제거
+        # e.g. "\\bLG\\ Chem\\b" → "LG Chem"
+        kw = pat.pattern
+        # Step 1: \b, \B word boundaries 제거
+        kw = kw.replace(r'\b', '').replace(r'\B', '')
+        # Step 2: 남은 backslash escapes 복원 (\ → 원래 문자)
+        # re.escape는 특수문자 앞에 \를 붙임: \  \- \& \. 등
+        kw = re.sub(r'\\(.)', r'\1', kw)
+        kw = kw.strip().upper()
+        if kw:
+            all_keywords.append(kw)
+            keyword_to_cid.append(cid)
 
-    mega = re.compile("|".join(all_pats), re.IGNORECASE)
-    cid_patterns = {cid: re.compile("|".join(aliases), re.IGNORECASE)
-                    for cid, aliases in cid_to_aliases.items()}
-    return mega, cid_patterns
+    log.info(f"Company AC automaton: {len(all_keywords)} keywords")
+    ac = ahocorasick_rs.AhoCorasick(all_keywords, matchkind=ahocorasick_rs.MATCHKIND_STANDARD)
+    return ac, keyword_to_cid
 
 
 def _vectorized_company_match(
     v2orgs_series: pd.Series,
-    mega_pattern: re.Pattern,
-    cid_patterns: Dict[str, re.Pattern],
+    ac_automaton,
+    keyword_to_cid: List[str],
 ) -> pd.Series:
     """
-    2단계 vectorized:
-    1) mega OR 1회 str.contains → 후보행 필터 (비매칭 60%+ 제거)
-    2) 후보행에서만 46개 company별 str.contains
+    Aho-Corasick 단일 스캔으로 company 매칭.
+    기존 46개 × str.contains() → 1회 스캔으로 대체.
+    10만행 기준 23분 → 수 초.
     """
-    text = v2orgs_series.fillna("").astype(str).str.upper()
-    n = len(text)
-
-    # 1단계: 1회 pre-filter
-    any_match = text.str.contains(mega_pattern, na=False, regex=True).values
-    match_indices = np.where(any_match)[0]
-
+    texts = v2orgs_series.fillna("").astype(str).str.upper().tolist()
+    n = len(texts)
     entity_ids = [[] for _ in range(n)]
-    if len(match_indices) == 0:
-        return pd.Series(entity_ids, index=v2orgs_series.index)
+    matched_count = 0
 
-    log.info(f"    Pre-filter: {len(match_indices):,}/{n:,} matched ({100*len(match_indices)/n:.1f}%)")
+    for i, txt in enumerate(texts):
+        if not txt:
+            continue
+        matches = ac_automaton.find_matches_as_indexes(txt)
+        if matches:
+            matched_count += 1
+            cids = set()
+            for pattern_idx, _start, _end in matches:
+                cids.add(keyword_to_cid[pattern_idx])
+            entity_ids[i] = sorted(cids)
 
-    # 2단계: 매칭 행만 세부 분류
-    matched_text = text.iloc[match_indices]
-    for cid, pat in cid_patterns.items():
-        hits = matched_text.str.contains(pat, na=False, regex=True).values
-        for local_idx, global_idx in enumerate(match_indices):
-            if hits[local_idx]:
-                entity_ids[global_idx].append(cid)
-
-    for i in match_indices:
-        entity_ids[i] = sorted(entity_ids[i])
-
+    log.info(f"    Aho-Corasick: {matched_count:,}/{n:,} matched ({100*matched_count/n:.1f}%)")
     return pd.Series(entity_ids, index=v2orgs_series.index)
 
 
@@ -365,55 +335,195 @@ def _vectorized_tone_severity(v2tone_series: pd.Series) -> Tuple[pd.Series, pd.S
     return tone, pd.Series(severity, index=v2tone_series.index)
 
 
+def _expand_regex_to_literals(pattern_str: str) -> List[str]:
+    """
+    Regex 패턴을 Aho-Corasick용 리터럴 키워드 목록으로 전개.
+
+    처리 순서:
+      1) \\b, \\B 제거
+      2) | (alternation) 기준으로 분리
+      3) 각 fragment에서 regex quantifier/metachar 정리:
+         - [s]? → 두 변형 (있는/없는) 전개
+         - [sz] → 두 변형 전개
+         - [es]? → 두 변형 전개
+         - .* / .? → 공백 1칸으로 치환 (AC가 공백 포함 매칭)
+         - 남은 [], () 등은 제거
+      4) 2글자 미만 키워드 필터
+    """
+    # Step 1: strip word boundaries
+    s = pattern_str.replace(r'\b', '').replace(r'\B', '').strip()
+
+    # Step 2: split on | (top-level alternation)
+    fragments = s.split('|')
+
+    literals = []
+    for frag in fragments:
+        frag = frag.strip()
+        if not frag:
+            continue
+        # Step 3: expand common quantifier patterns
+        expanded = _expand_fragment(frag)
+        literals.extend(expanded)
+
+    # Step 4: filter too-short, deduplicate, uppercase
+    seen = set()
+    result = []
+    for lit in literals:
+        lit = lit.strip().upper()
+        if len(lit) >= 2 and lit not in seen:
+            seen.add(lit)
+            result.append(lit)
+    return result
+
+
+def _expand_fragment(frag: str) -> List[str]:
+    """
+    단일 regex fragment → 리터럴 변형 리스트.
+    예: "sanction[s]?" → ["sanction", "sanctions"]
+        "demand.*declin" → ["demand declin"]
+        "wind.?down" → ["wind down", "winddown"]
+    """
+    results = [""]
+
+    i = 0
+    while i < len(frag):
+        # [s]? 패턴
+        m = re.match(r'\[([a-zA-Z]+)\]\??', frag[i:])
+        if m:
+            chars = m.group(1)
+            optional = '?' in m.group(0)
+            new_results = []
+            for r in results:
+                for c in chars:
+                    new_results.append(r + c)
+                if optional:
+                    new_results.append(r)  # 없는 변형
+            results = new_results
+            i += m.end()
+            continue
+
+        # .* or .+ → 공백으로 치환 (AC 리터럴 매칭용)
+        if frag[i] == '.' and i + 1 < len(frag) and frag[i + 1] in ('*', '+'):
+            results = [r + ' ' for r in results]
+            i += 2
+            continue
+
+        # .? → 공백 또는 빈문자열 두 변형
+        if frag[i] == '.' and i + 1 < len(frag) and frag[i + 1] == '?':
+            new_results = []
+            for r in results:
+                new_results.append(r + ' ')
+                new_results.append(r)
+            results = new_results
+            i += 2
+            continue
+
+        # 단독 . → 공백
+        if frag[i] == '.' and (i + 1 >= len(frag) or frag[i + 1] not in ('*', '+', '?')):
+            results = [r + ' ' for r in results]
+            i += 1
+            continue
+
+        # 남은 metachar 무시
+        if frag[i] in ('(', ')', '^', '$'):
+            i += 1
+            continue
+
+        # 일반 문자
+        results = [r + frag[i] for r in results]
+        i += 1
+
+    # 정리: 연속 공백 → 단일 공백, 앞뒤 공백 제거
+    cleaned = []
+    for r in results:
+        r = re.sub(r'\s+', ' ', r).strip()
+        if r:
+            cleaned.append(r)
+    return cleaned
+
+
+def _build_risk_automaton(risk_patterns: List[Tuple[str, re.Pattern]]):
+    """
+    Risk keyword용 Aho-Corasick automaton 빌드.
+
+    regex 패턴을 리터럴 키워드로 전개하여 AC에 등록.
+    예: ("market", re.compile("bankrupt|insolvency|chapter 11"))
+      → AC keywords: ["BANKRUPT", "INSOLVENCY", "CHAPTER 11"]
+         각각 rtype "market"에 매핑
+    """
+    import ahocorasick_rs
+    keywords = []
+    keyword_to_rtype = []
+    for rtype, pat in risk_patterns:
+        literals = _expand_regex_to_literals(pat.pattern)
+        for lit in literals:
+            keywords.append(lit)
+            keyword_to_rtype.append(rtype)
+
+    log.info(f"Risk AC automaton: {len(keywords)} literal keywords "
+             f"from {len(risk_patterns)} regex patterns")
+    ac = ahocorasick_rs.AhoCorasick(keywords, matchkind=ahocorasick_rs.MATCHKIND_STANDARD)
+    return ac, keyword_to_rtype
+
+
 def _vectorized_risk_classify(
     v2themes_series: pd.Series,
-    risk_patterns: List[Tuple[str, re.Pattern]],
+    risk_ac,
+    risk_keyword_to_rtype: List[str],
 ) -> pd.Series:
-    """Vectorized risk classification."""
-    text = v2themes_series.fillna("").astype(str)
+    """Aho-Corasick 기반 risk classification. 8개 str.contains → 1회 스캔."""
+    texts = v2themes_series.fillna("").astype(str).str.upper().tolist()
+    n = len(texts)
+    risk_types = ["other"] * n
 
-    # 각 risk_type별로 패턴 그룹핑
-    from collections import defaultdict
-    type_to_patterns = defaultdict(list)
-    for rtype, pat in risk_patterns:
-        type_to_patterns[rtype].append(pat.pattern)
-
-    n = len(text)
-    rtypes = list(type_to_patterns.keys())
-    match_arrays = {}
-    for rtype, pats in type_to_patterns.items():
-        combined = "|".join(pats)
-        try:
-            match_arrays[rtype] = text.str.contains(combined, case=False, na=False, regex=True).values
-        except re.error:
-            result = np.zeros(n, dtype=bool)
-            for p in pats:
-                try:
-                    result |= text.str.contains(p, case=False, na=False, regex=True).values
-                except re.error:
-                    pass
-            match_arrays[rtype] = result
-
-    risk_types = []
-    for i in range(n):
-        hits = sorted([rt for rt in rtypes if match_arrays[rt][i]])
-        risk_types.append(",".join(hits) if hits else "other")
+    for i, txt in enumerate(texts):
+        if not txt:
+            continue
+        matches = risk_ac.find_matches_as_indexes(txt)
+        if matches:
+            rtypes = sorted(set(risk_keyword_to_rtype[idx] for idx, _s, _e in matches))
+            risk_types[i] = ",".join(rtypes)
 
     return pd.Series(risk_types, index=v2themes_series.index)
 
 
+def _vectorized_countries(v2loc_series: pd.Series) -> pd.Series:
+    """Vectorized country extraction. row-by-row apply → batch처리."""
+    texts = v2loc_series.fillna("").astype(str).tolist()
+    results = [""] * len(texts)
+    for i, txt in enumerate(texts):
+        if not txt:
+            continue
+        hits = set()
+        for entry in txt.split(";"):
+            if "," in entry:
+                entry = entry.rsplit(",", 1)[0]
+            parts = entry.split("#")
+            if len(parts) >= 3:
+                fips = parts[2].strip()
+                if fips in FIPS_MAP:
+                    hits.add(FIPS_MAP[fips])
+        if hits:
+            results[i] = ";".join(sorted(hits))
+    return pd.Series(results, index=v2loc_series.index)
+
+
 def _vectorized_event_ids(gkg_ids: pd.Series, urls: pd.Series) -> pd.Series:
-    """Vectorized event_id generation."""
-    combined = gkg_ids.fillna("").astype(str) + "|" + urls.fillna("").astype(str)
-    return combined.apply(lambda x: hashlib.md5(x.encode("utf-8")).hexdigest())
+    """Batch MD5 generation. apply(lambda) → list comprehension."""
+    gids = gkg_ids.fillna("").astype(str).tolist()
+    us = urls.fillna("").astype(str).tolist()
+    hashes = [hashlib.md5((g + "|" + u).encode("utf-8")).hexdigest() for g, u in zip(gids, us)]
+    return pd.Series(hashes, index=gkg_ids.index)
 
 
 def _process_single_parquet(
     parquet_path: Path,
     patterns: List[Tuple[re.Pattern, str]],
     risk_patterns: List[Tuple[str, re.Pattern]],
-    mega_pattern: re.Pattern,
-    cid_patterns: Dict[str, re.Pattern],
+    ac_automaton,
+    keyword_to_cid: List[str],
+    risk_ac,
+    risk_keyword_to_rtype: List[str],
     filter_no_entity: bool = True,
 ) -> pd.DataFrame:
     """
@@ -460,8 +570,8 @@ def _process_single_parquet(
         n_pyarrow_kept += batch.num_rows
         df = batch.to_pandas()
 
-        # ── Stage 1+2: mega pre-filter → 세부 매칭 ──
-        df["entity_ids"] = _vectorized_company_match(df["v2_organizations"], mega_pattern, cid_patterns)
+        # ── Aho-Corasick 단일 스캔 매칭 ──
+        df["entity_ids"] = _vectorized_company_match(df["v2_organizations"], ac_automaton, keyword_to_cid)
 
         # Filter: entity 없는 행 제거
         if filter_no_entity:
@@ -472,10 +582,10 @@ def _process_single_parquet(
         if df.empty:
             continue
 
-        # ── 후처리 (매칭된 소수 행에만 적용) ──
+        # ── 후처리 (Aho-Corasick + batch) ──
         df["tone"], df["severity"] = _vectorized_tone_severity(df["v2_tone"])
-        df["risk_types"] = _vectorized_risk_classify(df["v2_themes"], risk_patterns)
-        df["country_ids"] = df["v2_locations"].apply(_extract_countries) if "v2_locations" in df.columns else ""
+        df["risk_types"] = _vectorized_risk_classify(df["v2_themes"], risk_ac, risk_keyword_to_rtype)
+        df["country_ids"] = _vectorized_countries(df["v2_locations"]) if "v2_locations" in df.columns else ""
         df["event_time"] = pd.to_datetime(
             df["gkg_date"].astype(str).str[:8], format="%Y%m%d", errors="coerce"
         )
@@ -544,8 +654,10 @@ def process_bq_to_risk_events(
     # 패턴은 한 번만 빌드 (재사용)
     patterns, _ = _build_alias_patterns(universe, extra_aliases)
     risk_patterns = _load_risk_patterns(keywords_yaml)
-    mega_pattern, cid_patterns = _build_company_patterns(patterns)
-    log.info(f"Mega pre-filter: {len(cid_patterns)} companies, 1 regex pass")
+    ac_automaton, keyword_to_cid = _build_aho_automaton(patterns)
+    risk_ac, risk_keyword_to_rtype = _build_risk_automaton(risk_patterns)
+    log.info(f"Aho-Corasick: {len(set(keyword_to_cid))} companies, {len(keyword_to_cid)} keywords")
+    log.info(f"Risk Aho-Corasick: {len(set(risk_keyword_to_rtype))} types, {len(risk_keyword_to_rtype)} keywords")
 
     # 연도별 중간 저장 디렉토리
     checkpoint_dir = parquet_dir / "risk_events_checkpoint"
@@ -560,7 +672,7 @@ def process_bq_to_risk_events(
             cp_paths.append(cp_path)
             continue
 
-        chunk = _process_single_parquet(f, patterns, risk_patterns, mega_pattern, cid_patterns, filter_no_entity)
+        chunk = _process_single_parquet(f, patterns, risk_patterns, ac_automaton, keyword_to_cid, risk_ac, risk_keyword_to_rtype, filter_no_entity)
         if not chunk.empty:
             chunk.to_parquet(cp_path, index=False)
             log.info(f"  Checkpoint saved: {cp_path.name} ({len(chunk):,} rows)")

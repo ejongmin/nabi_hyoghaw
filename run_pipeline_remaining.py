@@ -138,7 +138,7 @@ def main():
     excl_q = float(cfg.get("finance", {}).get("backtest", {}).get("exclude_quantile", 0.2))
     decay_lam = float(cfg.get("finance", {}).get("backtest", {}).get("risk_decay_lambda", 0.03))
 
-    equity, metrics = backtest_exclude(prices, risk_agg, exp, rebalance=rebalance, exclude_quantile=excl_q, risk_decay_lambda=decay_lam)
+    equity, metrics = backtest_exclude(prices, exp, risk_agg, exclude_quantile=excl_q, decay_lambda=decay_lam)
     backtest_csv.parent.mkdir(parents=True, exist_ok=True)
     equity.to_csv(backtest_csv, index=False, encoding="utf-8-sig")
 

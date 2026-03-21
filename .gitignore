@@ -35,6 +35,7 @@ reports/
 
 # Temp
 .tmp.driveupload/
+.tmp/
 .claude/
 
 # Allow templates and guides

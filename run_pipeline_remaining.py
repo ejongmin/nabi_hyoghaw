@@ -183,8 +183,15 @@ def main():
     log.info("=" * 60)
     log.info("Step 7: Generate Reports")
     log.info("=" * 60)
-    idx = build_index(reports_dir)
-    write_md(reports_dir / "index.md", idx)
+    try:
+        idx = build_index(reports_dir)
+        if idx:
+            write_md(reports_dir / "index.md", idx)
+        else:
+            write_md(reports_dir / "index.md", "# Pipeline Reports\n\nSee individual report files.\n")
+    except Exception as e:
+        log.warning(f"Report index generation failed: {e}")
+        write_md(reports_dir / "index.md", "# Pipeline Reports\n\nSee individual report files.\n")
     log.info(f"Report index: {reports_dir / 'index.md'}")
 
     # ── Summary ──

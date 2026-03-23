@@ -1,4 +1,4 @@
-company_id,canonical_name,country,region_group,stage_bucket,value_chain_stage,listed,provider_ticker_yf,exchanges,tickers,selection_rationale,use_in_project,notes
+﻿company_id,canonical_name,country,region_group,stage_bucket,value_chain_stage,listed,provider_ticker_yf,exchanges,tickers,selection_rationale,use_in_project,notes
 3931.HK,CALB,China,China,Cell/Pack,Battery Cell / Pack,True,3931.HK,HKEX,3931.HK,배터리 제조 핵심 노드,핵심 공급망 전파 경로 노드,
 300750.SZ,CATL,China,China,Cell/Pack,Battery Cell / Pack,True,300750.SZ,SZSE,300750.SZ,배터리 제조 핵심 노드,핵심 공급망 전파 경로 노드,
 300037.SZ,Capchem,China,China,Cell/Pack,Electrolyte / Battery chemicals,True,300037.SZ,SZSE,300037.SZ,배터리 제조 핵심 노드,핵심 공급망 전파 경로 노드,
@@ -39,3 +39,8 @@ GM,General Motors,USA,Overseas,OEM,OEM / EV Brand,True,GM,NYSE,GM,수요단 대�
 LCID,Lucid,USA,Overseas,OEM,OEM / EV Brand,True,LCID,NASDAQ,LCID,수요단 대표 기업 / 시장 반응 확인용,가격 반응(CAR) 및 수요단 전이 검증,
 ALB,Albemarle,USA,Overseas,Upstream/Refining,Lithium (upstream),True,ALB,NYSE,ALB,원자재/제련 충격의 초기 진원지,자원·정제 충격 이벤트 연결,
 GLEN.L,Glencore,UK,Overseas,Upstream/Refining,Metals / Trading / Recycling exposure,True,GLEN.L,LSE,GLEN.L,원자재/제련 충격의 초기 진원지,자원·정제 충격 이벤트 연결,
+7203.T,Toyota,Japan,Japan,OEM,OEM / Vehicle Manufacturer,True,7203.T,TSE,7203.T,"Global #1 automaker, major EV battery customer",주가 영향 분석 대상 OEM,
+TSLA,Tesla,USA,Americas,OEM,OEM / Vehicle Manufacturer,True,TSLA,NASDAQ,TSLA,"EV market leader, CATL/LGES primary customer",주가 영향 분석 대상 OEM,
+VOW3.DE,Volkswagen,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,VOW3.DE,XETRA,VOW3.DE,"Europe #1, Gotion 26% stake, CATL partnership",주가 영향 분석 대상 OEM,
+MBG.DE,Mercedes-Benz,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,MBG.DE,XETRA,MBG.DE,"Premium EV segment, CATL/LGES/EVE customer",주가 영향 분석 대상 OEM,
+RIVN,Rivian,USA,Americas,OEM,OEM / Vehicle Manufacturer,True,RIVN,NASDAQ,RIVN,"EV startup, LGES customer",주가 영향 분석 대상 OEM,

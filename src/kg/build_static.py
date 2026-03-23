@@ -26,10 +26,13 @@ def load_seed_edges(seed_csv: Path) -> pd.DataFrame:
         df = df.rename(columns=rename)
     # ensure required
     req = ["src_company_id","rel_type","dst_company_id","confidence_plink","strength","evidence","source","valid_from","valid_to"]
+    optional = ["risk_rationale"]
     for c in req:
         if c not in df.columns:
             df[c] = pd.NA
-    return df[req]
+    # keep optional columns if present
+    keep = req + [c for c in optional if c in df.columns]
+    return df[keep]
 
 def build_static_kg(universe: pd.DataFrame, seed_edges: pd.DataFrame, allowed_relations: list[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     nodes = universe.copy()

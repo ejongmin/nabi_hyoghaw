@@ -36,6 +36,8 @@ schema:
   - OWNS
   - LOCATED_IN
   - PRODUCES
+  - SOURCES_FROM
+  - DEPENDS_ON_ROUTE
 ticker_provider:
   provider: yfinance
   normalize_rules:

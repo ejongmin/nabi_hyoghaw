@@ -1,23 +1,19 @@
 #!/usr/bin/env python3
 """
-SEC EDGAR 10-K Filing Collector
-================================
-미국 상장 기업의 10-K/10-F 공시에서 공급망 관계를 자동 추출.
+SEC EDGAR 10-K Filing Collector v2
+====================================
+미국 상장 기업의 10-K 공시에서 공급망 관계를 자동 추출.
 
-대상 기업 (universe 중 미국 상장):
-  - GM, F (Ford), TSLA, RIVN, LCID, ALB, LICY
-
-수집 대상:
-  - 10-K Item 1 (Business), Item 1A (Risk Factors), Item 7 (MD&A)
-  - "Major Customers", "Supply Agreements", "Raw Material" 섹션
-
-출력:
-  data/raw/filings/sec_edges.parquet — 공시 기반 공급망 엣지
+v2 개선:
+  - BeautifulSoup HTML 파싱 (iXBRL/XBRL 지원)
+  - Filing index에서 실제 본문 문서 자동 탐지
+  - EDGAR Full-Text Search API fallback
+  - 더 넓은 키워드 매칭
 
 사용:
   python scripts/collect_sec_edgar.py
-  python scripts/collect_sec_edgar.py --dry-run    # 수집만, 파싱 안 함
-  python scripts/collect_sec_edgar.py --years 2022 2023 2024
+  python scripts/collect_sec_edgar.py --dry-run
+  python scripts/collect_sec_edgar.py --years 2024 2025
 """
 import argparse
 import json
@@ -29,74 +25,55 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
+import warnings
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 log = logging.getLogger("sec_edgar")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 
-# ── SEC EDGAR API config ──
-EDGAR_BASE = "https://efts.sec.gov/LATEST"
-EDGAR_SUBMISSIONS = "https://data.sec.gov/submissions"
-EDGAR_FULL_TEXT = "https://efts.sec.gov/LATEST/search-index"
-HEADERS = {
-    "User-Agent": "NabiHyoghaw Research Project nabi@research.edu",
-    "Accept": "application/json",
-}
+HEADERS = {"User-Agent": "NabiHyoghaw Research nabi@research.edu", "Accept": "*/*"}
 
-# ── 우리 Universe 중 미국 상장 기업 ──
+# ── Universe 중 미국 상장 기업 ──
 US_COMPANIES = {
-    "GM":   {"cik": "0001467858", "name": "General Motors", "company_id": "GM"},
-    "F":    {"cik": "0000037996", "name": "Ford Motor", "company_id": "F"},
-    "TSLA": {"cik": "0001318605", "name": "Tesla Inc", "company_id": "TSLA"},
-    "RIVN": {"cik": "0001874178", "name": "Rivian Automotive", "company_id": "RIVN"},
-    "LCID": {"cik": "0001811210", "name": "Lucid Group", "company_id": "LCID"},
-    "ALB":  {"cik": "0000915913", "name": "Albemarle Corp", "company_id": "ALB"},
-    "LICY": {"cik": "0001828522", "name": "Li-Cycle Holdings", "company_id": "LICY"},
+    "GM":   {"cik": "1467858", "name": "General Motors", "company_id": "GM"},
+    "F":    {"cik": "37996",   "name": "Ford Motor", "company_id": "F"},
+    "TSLA": {"cik": "1318605", "name": "Tesla Inc", "company_id": "TSLA"},
+    "RIVN": {"cik": "1874178", "name": "Rivian Automotive", "company_id": "RIVN"},
+    "LCID": {"cik": "1811210", "name": "Lucid Group", "company_id": "LCID"},
+    "ALB":  {"cik": "915913",  "name": "Albemarle Corp", "company_id": "ALB"},
+    "LICY": {"cik": "1828522", "name": "Li-Cycle Holdings", "company_id": "LICY"},
 }
 
-# ── 공급망 키워드 ──
-SUPPLY_KEYWORDS = [
-    r"(?:major|significant|principal|key|largest)\s+(?:customer|client|buyer)s?",
-    r"(?:supply|supplier|supplies|supplying)\s+(?:agreement|contract|arrangement)s?",
-    r"(?:raw\s+material|lithium|cobalt|nickel|graphite|copper|cathode|anode|electrolyte|separator)",
-    r"(?:battery\s+(?:cell|pack|module|supplier|supply|material))",
-    r"accounted?\s+for\s+(?:approximately\s+)?\d+%",
-    r"(?:purchase|procurement|sourcing)\s+(?:agreement|contract|obligation)s?",
-    r"(?:joint\s+venture|partnership|strategic\s+alliance|collaboration)",
-    r"(?:CATL|LG\s+Energy|BYD|Panasonic|Samsung\s+SDI|SK\s+Innovation|SK\s+On)",
-    r"(?:Ganfeng|Tianqi|Albemarle|SQM|Glencore|BASF|Umicore)",
-]
-SUPPLY_PATTERN = re.compile("|".join(SUPPLY_KEYWORDS), re.IGNORECASE)
-
-# ── 관계 추출 패턴 ──
-RELATION_PATTERNS = [
-    # "X supplies batteries to Y" / "X is a supplier to Y"
-    (r"(?P<supplier>[\w\s&.]+?)\s+(?:supplies|supply|supplier\s+to|provides?\s+(?:batteries|materials|lithium|cobalt|cathode|anode|electrolyte))\s+(?:to\s+)?(?P<customer>[\w\s&.]+)",
-     "SUPPLIES"),
-    # "X sources from Y" / "X procures from Y"
-    (r"(?P<customer>[\w\s&.]+?)\s+(?:sources?|procures?|purchases?|obtains?)\s+(?:from|through)\s+(?P<supplier>[\w\s&.]+)",
-     "BUYS_FROM"),
-    # "X accounted for N% of revenue"
-    (r"(?P<customer>[\w\s&.]+?)\s+accounted?\s+for\s+(?:approximately\s+)?(?P<pct>\d+)%",
-     "MAJOR_CUSTOMER"),
-    # "joint venture with X" / "partnership with X"
-    (r"(?:joint\s+venture|partnership|strategic\s+alliance|collaboration)\s+(?:with|between)\s+(?P<partner>[\w\s&.]+)",
-     "PARTNERS_WITH"),
-]
+# ── 알려진 기업명 → company_id 매핑 ──
+KNOWN_ENTITIES = {
+    "catl": "300750.SZ", "contemporary amperex": "300750.SZ",
+    "lg energy": "373220.KS", "lg chem": "051910.KS",
+    "byd": "1211.HK", "panasonic": "6752.T",
+    "samsung sdi": "006400.KS", "sk on": "096770.KS", "sk innovation": "096770.KS",
+    "ganfeng": "002460.SZ", "tianqi": "002466.SZ",
+    "albemarle": "ALB", "sqm": "SQM", "glencore": "GLEN.L",
+    "basf": "BAS.DE", "umicore": "UMI.BR",
+    "general motors": "GM", "ford": "F", "tesla": "TSLA",
+    "bmw": "BMW.DE", "volkswagen": "VOW3.DE",
+    "toyota": "7203.T", "honda": "7267.T",
+    "mercedes": "MBG.DE", "rivian": "RIVN", "lucid": "LCID",
+    "posco": "003670.KS", "ecopro": "247540.KQ",
+    "ultium": "373220.KS",  # Ultium Cells = LG-GM JV
+    "huayou": "603799.SH", "cmoc": "603993.SH",
+    "eve energy": "300014.SZ", "gotion": "002074.SZ",
+    "li-cycle": "LICY", "redwood materials": "REDWOOD",
+}
 
 
-def _sec_sleep():
-    """SEC EDGAR rate limit: 10 requests/second max."""
-    time.sleep(0.15)
+def _sleep(sec=0.15):
+    time.sleep(sec)
 
 
-def get_filing_urls(cik: str, filing_type: str = "10-K", years: List[int] = None) -> List[Dict]:
-    """
-    SEC EDGAR API로 특정 기업의 10-K 파일 URL 목록 조회.
-    """
-    cik_padded = cik.lstrip("0").zfill(10)
-    url = f"{EDGAR_SUBMISSIONS}/CIK{cik_padded}.json"
-
-    _sec_sleep()
+def get_10k_filings(cik: str, years: List[int]) -> List[Dict]:
+    """SEC submissions API로 10-K 파일 목록 조회."""
+    url = f"https://data.sec.gov/submissions/CIK{cik.zfill(10)}.json"
+    _sleep()
     resp = requests.get(url, headers=HEADERS, timeout=30)
     resp.raise_for_status()
     data = resp.json()
@@ -106,186 +83,219 @@ def get_filing_urls(cik: str, filing_type: str = "10-K", years: List[int] = None
     forms = recent.get("form", [])
     dates = recent.get("filingDate", [])
     accessions = recent.get("accessionNumber", [])
-    primary_docs = recent.get("primaryDocument", [])
 
     for i, form in enumerate(forms):
-        if form not in (filing_type, f"{filing_type}/A"):
+        if form != "10-K":  # Skip 10-K/A amendments
             continue
-
-        filing_date = dates[i]
-        year = int(filing_date[:4])
-
-        if years and year not in years:
+        year = int(dates[i][:4])
+        if year not in years:
             continue
-
-        accession = accessions[i].replace("-", "")
-        doc = primary_docs[i]
-        doc_url = f"https://www.sec.gov/Archives/edgar/data/{cik.lstrip('0')}/{accession}/{doc}"
 
         filings.append({
             "form": form,
-            "filing_date": filing_date,
-            "fiscal_year": year - 1,  # 10-K filed in 2024 is for FY2023
+            "filing_date": dates[i],
+            "fiscal_year": year - 1,
             "accession": accessions[i],
-            "url": doc_url,
+            "cik": cik,
         })
 
     return filings
 
 
-def download_filing_text(url: str) -> str:
-    """10-K HTML/text 다운로드."""
-    _sec_sleep()
-    resp = requests.get(url, headers=HEADERS, timeout=60)
+def find_10k_document_url(cik: str, accession: str) -> Optional[str]:
+    """Filing index에서 가장 큰 HTM/HTML 파일(=10-K 본문) URL 찾기."""
+    acc_clean = accession.replace("-", "")
+    idx_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_clean}/index.json"
+    _sleep()
+
+    try:
+        resp = requests.get(idx_url, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception:
+        return None
+
+    best_doc = None
+    best_size = 0
+
+    for item in data.get("directory", {}).get("item", []):
+        name = item.get("name", "")
+        try:
+            size = int(item.get("size", "0"))
+        except (ValueError, TypeError):
+            continue
+
+        if name.lower().endswith((".htm", ".html")) and size > best_size:
+            best_size = size
+            best_doc = name
+
+    if best_doc and best_size > 50000:
+        return f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_clean}/{best_doc}"
+    return None
+
+
+def download_and_parse(url: str) -> str:
+    """10-K HTML 다운로드 → BeautifulSoup으로 깨끗한 텍스트 추출."""
+    _sleep(0.3)
+    resp = requests.get(url, headers=HEADERS, timeout=120)
     resp.raise_for_status()
 
-    text = resp.text
-    # HTML 태그 제거 (간단한 처리)
-    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL | re.IGNORECASE)
-    text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.DOTALL | re.IGNORECASE)
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"&nbsp;", " ", text)
-    text = re.sub(r"&amp;", "&", text)
-    text = re.sub(r"&lt;", "<", text)
-    text = re.sub(r"&gt;", ">", text)
-    text = re.sub(r"\s+", " ", text).strip()
+    soup = BeautifulSoup(resp.content, "lxml")
+
+    # script, style 제거
+    for tag in soup(["script", "style", "meta", "link"]):
+        tag.decompose()
+
+    # 공백 구분으로 텍스트 추출 (iXBRL 줄바꿈 문제 방지)
+    text = soup.get_text(separator=" ")
+    text = re.sub(r"\s+", " ", text)
     return text
 
 
-def extract_relevant_sections(full_text: str) -> Dict[str, str]:
-    """
-    10-K에서 Item 1, Item 1A, Item 7 섹션 추출.
-    """
+def extract_sections(text: str) -> Dict[str, str]:
+    """10-K에서 Item 1, 1A, 7 섹션 추출."""
     sections = {}
 
-    # Item 1 - Business
-    m1 = re.search(r"(?:ITEM\s+1[\.\s]*[-—]?\s*BUSINESS)", full_text, re.IGNORECASE)
-    m1a = re.search(r"(?:ITEM\s+1A[\.\s]*[-—]?\s*RISK\s+FACTORS)", full_text, re.IGNORECASE)
-    m2 = re.search(r"(?:ITEM\s+2[\.\s]*[-—]?\s*PROPERTIES)", full_text, re.IGNORECASE)
-    m7 = re.search(r"(?:ITEM\s+7[\.\s]*[-—]?\s*MANAGEMENT)", full_text, re.IGNORECASE)
-    m7a = re.search(r"(?:ITEM\s+7A[\.\s]*[-—]?\s*QUANTITATIVE)", full_text, re.IGNORECASE)
-    m8 = re.search(r"(?:ITEM\s+8[\.\s]*[-—]?\s*FINANCIAL\s+STATEMENTS)", full_text, re.IGNORECASE)
+    patterns = [
+        ("item_1_business", r"(?:ITEM|Item)\s+1[\.\s]*[-—:]?\s*(?:BUSINESS|Business)\b"),
+        ("item_1a_risk", r"(?:ITEM|Item)\s+1A[\.\s]*[-—:]?\s*(?:RISK|Risk)\s"),
+        ("item_2_properties", r"(?:ITEM|Item)\s+2[\.\s]*[-—:]?\s*(?:PROPERTIES|Properties)\b"),
+        ("item_7_mda", r"(?:ITEM|Item)\s+7[\.\s]*[-—:]?\s*(?:MANAGEMENT|Management)\b"),
+        ("item_7a", r"(?:ITEM|Item)\s+7A[\.\s]*[-—:]?\s*(?:QUANTITATIVE|Quantitative)\b"),
+        ("item_8_financial", r"(?:ITEM|Item)\s+8[\.\s]*[-—:]?\s*(?:FINANCIAL|Financial)\b"),
+    ]
 
-    if m1:
-        end = m1a.start() if m1a else (m2.start() if m2 else m1.start() + 50000)
-        sections["item_1_business"] = full_text[m1.start():end][:50000]
+    # 모든 매칭을 찾고 마지막 것 사용 (목차가 아닌 본문)
+    positions = {}
+    for name, pat in patterns:
+        matches = list(re.finditer(pat, text))
+        if matches:
+            # 마지막 매칭 = 본문 (앞쪽은 목차)
+            positions[name] = matches[-1].start()
 
-    if m1a:
-        end = m2.start() if m2 else m1a.start() + 50000
-        sections["item_1a_risk_factors"] = full_text[m1a.start():end][:50000]
+    # Item 1: Business
+    if "item_1_business" in positions:
+        start = positions["item_1_business"]
+        end = positions.get("item_1a_risk", positions.get("item_2_properties", start + 80000))
+        sections["item_1_business"] = text[start:end][:80000]
 
-    if m7:
-        end = m7a.start() if m7a else (m8.start() if m8 else m7.start() + 50000)
-        sections["item_7_mda"] = full_text[m7.start():end][:50000]
+    # Item 1A: Risk Factors
+    if "item_1a_risk" in positions:
+        start = positions["item_1a_risk"]
+        end = positions.get("item_2_properties", start + 80000)
+        sections["item_1a_risk_factors"] = text[start:end][:80000]
+
+    # Item 7: MD&A
+    if "item_7_mda" in positions:
+        start = positions["item_7_mda"]
+        end = positions.get("item_7a", positions.get("item_8_financial", start + 80000))
+        sections["item_7_mda"] = text[start:end][:80000]
 
     return sections
 
 
-def extract_supply_sentences(sections: Dict[str, str]) -> List[Dict]:
-    """
-    관련 섹션에서 공급망 키워드가 포함된 문장 추출.
-    """
+def find_supply_sentences(sections: Dict[str, str]) -> List[Dict]:
+    """섹션에서 공급망 관련 문장 추출."""
+    keywords = re.compile(
+        r"(?:battery|lithium|cobalt|nickel|cathode|anode|electrolyte|separator|"
+        r"cell\s+(?:supplier|supply|manufactur)|raw\s+material|"
+        r"supply\s+(?:chain|agreement|contract)|"
+        r"(?:major|significant|principal|key)\s+(?:customer|supplier|vendor)|"
+        r"accounted?\s+for\s+(?:approximately\s+)?\d+\s*%|"
+        r"purchase\s+(?:agreement|obligation|commitment)|"
+        r"joint\s+venture|strategic\s+(?:partner|alliance)|"
+        r"CATL|LG\s+Energy|Panasonic|Samsung\s+SDI|SK\s+(?:On|Innovation)|"
+        r"Ganfeng|Tianqi|Albemarle|Glencore|BASF|Ultium|"
+        r"EV\s+battery|electric\s+vehicle\s+battery)",
+        re.IGNORECASE
+    )
+
     results = []
-
     for section_name, text in sections.items():
-        # 문장 분리
-        sentences = re.split(r"(?<=[.!?])\s+", text)
-
+        # 문장 분리: 마침표/느낌표/물음표 + 공백 + 대문자 시작
+        sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", text)
         for sent in sentences:
-            if SUPPLY_PATTERN.search(sent):
-                # 문장이 너무 길면 자르기
-                clean = sent.strip()[:500]
-                if len(clean) > 30:  # 너무 짧은 건 스킵
-                    results.append({
-                        "section": section_name,
-                        "sentence": clean,
-                    })
-
+            sent = sent.strip()
+            if len(sent) < 40 or len(sent) > 1500:
+                continue
+            if keywords.search(sent):
+                results.append({
+                    "section": section_name,
+                    "sentence": sent[:600],
+                })
     return results
 
 
-def parse_relations(company_id: str, company_name: str,
-                    sentences: List[Dict], filing_info: Dict) -> List[Dict]:
-    """
-    추출된 문장에서 관계(엣지) 파싱.
-    간단한 패턴 매칭 + 키워드 기반.
-    """
+def extract_edges(company_id: str, sentences: List[Dict], filing: Dict) -> List[Dict]:
+    """문장에서 공급망 엣지 추출."""
     edges = []
+    seen = set()
 
     for item in sentences:
         sent = item["sentence"]
-        section = item["section"]
+        sent_lower = sent.lower()
 
-        # Major customer pattern: "X accounted for N% of revenue"
-        pct_match = re.search(r"(\w[\w\s&.]*?)\s+accounted?\s+for\s+(?:approximately\s+)?(\d+)%", sent, re.IGNORECASE)
-        if pct_match:
-            customer_name = pct_match.group(1).strip()
-            pct = int(pct_match.group(2))
-            if pct >= 10:
-                edges.append({
-                    "src_company_id": company_id,
-                    "rel_type": "SUPPLIES",
-                    "dst_raw_name": customer_name,
-                    "confidence": 1.0,
-                    "strength": min(pct / 100, 1.0),
-                    "evidence_text": sent[:300],
-                    "section": section,
-                    "filing_type": filing_info["form"],
-                    "filing_date": filing_info["filing_date"],
-                    "fiscal_year": filing_info["fiscal_year"],
-                    "filing_url": filing_info["url"],
-                })
-
-        # Known battery/material company mentions
-        known_companies = {
-            "CATL": "300750.SZ", "Contemporary Amperex": "300750.SZ",
-            "LG Energy": "373220.KS", "LG Chem": "051910.KS",
-            "BYD": "1211.HK", "Panasonic": "6752.T",
-            "Samsung SDI": "006400.KS", "SK Innovation": "096770.KS", "SK On": "096770.KS",
-            "Ganfeng": "002460.SZ", "Tianqi": "002466.SZ",
-            "Albemarle": "ALB", "SQM": "SQM", "Glencore": "GLEN.L",
-            "BASF": "BAS.DE", "Umicore": "UMI.BR",
-            "General Motors": "GM", "Ford": "F", "Tesla": "TSLA",
-            "BMW": "BMW.DE", "Volkswagen": "VOW3.DE", "VW": "VOW3.DE",
-            "Toyota": "7203.T", "Honda": "7267.T",
-            "Mercedes": "MBG.DE", "Rivian": "RIVN", "Lucid": "LCID",
-            "POSCO": "003670.KS", "EcoPro": "247540.KQ",
-            "Huayou": "603799.SH", "CMOC": "603993.SH",
-        }
-
-        for name, cid in known_companies.items():
-            if cid == company_id:
+        for entity_name, entity_id in KNOWN_ENTITIES.items():
+            if entity_id == company_id:
                 continue
-            if name.lower() in sent.lower():
-                # 방향 결정: 이 기업이 supplier인지 customer인지
-                rel = "SUPPLIES" if re.search(r"(?:suppli|provid|sell)", sent, re.IGNORECASE) else "BUYS_FROM"
-                if re.search(r"(?:sourc|purchas|procur|buy|obtain)", sent, re.IGNORECASE):
-                    rel = "BUYS_FROM"
-                if re.search(r"(?:joint venture|partner|collaborat|alliance)", sent, re.IGNORECASE):
-                    rel = "PARTNERS_WITH"
+            if entity_name not in sent_lower:
+                continue
 
-                edges.append({
-                    "src_company_id": company_id if rel == "SUPPLIES" else cid,
-                    "rel_type": rel,
-                    "dst_company_id": cid if rel == "SUPPLIES" else company_id,
-                    "dst_raw_name": name,
-                    "confidence": 1.0,
-                    "strength": 0.8,
-                    "evidence_text": sent[:300],
-                    "section": section,
-                    "filing_type": filing_info["form"],
-                    "filing_date": filing_info["filing_date"],
-                    "fiscal_year": filing_info["fiscal_year"],
-                    "filing_url": filing_info["url"],
-                })
+            # 관계 방향 결정
+            rel = "MENTIONS"  # 기본
+            if re.search(r"(?:suppli|provid|sell|deliver)", sent_lower):
+                if re.search(r"(?:we|our|the\s+company)\s+(?:suppli|provid|sell|deliver)", sent_lower):
+                    rel = "SUPPLIES"  # 우리(filing company)가 공급
+                else:
+                    rel = "BUYS_FROM"  # 상대가 공급 = 우리가 구매
+            if re.search(r"(?:sourc|purchas|procur|buy|obtain|rely\s+on|depend)", sent_lower):
+                rel = "BUYS_FROM"
+            if re.search(r"(?:joint\s+venture|partner|collaborat|alliance|JV)", sent_lower):
+                rel = "PARTNERS_WITH"
+
+            # 방향 설정
+            if rel == "SUPPLIES":
+                src, dst = company_id, entity_id
+            elif rel == "BUYS_FROM":
+                src, dst = entity_id, company_id
+            elif rel == "PARTNERS_WITH":
+                src, dst = company_id, entity_id
+            else:
+                src, dst = company_id, entity_id
+
+            # 중복 방지 (같은 filing, 같은 관계)
+            edge_key = (src, rel, dst, filing["fiscal_year"])
+            if edge_key in seen:
+                continue
+            seen.add(edge_key)
+
+            # strength: % 매출 비중이 있으면 사용
+            strength = 0.8
+            pct_match = re.search(r"(\d+)\s*%", sent)
+            if pct_match:
+                pct = int(pct_match.group(1))
+                if 5 <= pct <= 100:
+                    strength = min(pct / 100, 1.0)
+
+            edges.append({
+                "src_company_id": src,
+                "rel_type": rel if rel != "MENTIONS" else "SUPPLIES",
+                "dst_company_id": dst,
+                "confidence": 1.0,
+                "strength": round(strength, 2),
+                "evidence_text": sent[:400],
+                "section": item["section"],
+                "filing_type": filing["form"],
+                "filing_date": filing["filing_date"],
+                "fiscal_year": filing["fiscal_year"],
+                "filing_url": filing.get("doc_url", ""),
+            })
 
     return edges
 
 
 def collect_all(years: List[int], dry_run: bool = False, out_dir: Path = None) -> pd.DataFrame:
-    """
-    모든 미국 기업의 10-K를 수집하고 공급망 엣지를 추출.
-    """
+    """전체 수집 + 엣지 추출."""
     if out_dir is None:
         out_dir = Path("data/raw/filings")
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -294,97 +304,106 @@ def collect_all(years: List[int], dry_run: bool = False, out_dir: Path = None) -
     all_sentences = []
 
     for ticker, info in US_COMPANIES.items():
-        log.info(f"=== {ticker} ({info['name']}) ===")
-        cik = info["cik"]
-        company_id = info["company_id"]
+        log.info(f"{'='*50}")
+        log.info(f"{ticker} ({info['name']})")
+        log.info(f"{'='*50}")
 
         try:
-            filings = get_filing_urls(cik, "10-K", years)
-            log.info(f"  Found {len(filings)} 10-K filings")
+            filings = get_10k_filings(info["cik"], years)
+            log.info(f"  10-K filings found: {len(filings)}")
 
             if dry_run:
                 for f in filings:
-                    log.info(f"  [DRY-RUN] {f['form']} FY{f['fiscal_year']} ({f['filing_date']})")
+                    log.info(f"  [DRY-RUN] FY{f['fiscal_year']} ({f['filing_date']})")
                 continue
 
             for filing in filings:
-                log.info(f"  Processing {filing['form']} FY{filing['fiscal_year']} ({filing['filing_date']})")
+                log.info(f"  FY{filing['fiscal_year']} ({filing['filing_date']})")
+
+                # 실제 문서 URL 탐색
+                doc_url = find_10k_document_url(info["cik"], filing["accession"])
+                if not doc_url:
+                    log.warning(f"    Could not find 10-K document URL")
+                    continue
+
+                filing["doc_url"] = doc_url
+                log.info(f"    Document: {doc_url.split('/')[-1]}")
 
                 try:
-                    text = download_filing_text(filing["url"])
-                    log.info(f"    Downloaded: {len(text):,} chars")
+                    # 다운로드 + 파싱
+                    text = download_and_parse(doc_url)
+                    log.info(f"    Text: {len(text):,} chars")
 
-                    sections = extract_relevant_sections(text)
-                    log.info(f"    Sections found: {list(sections.keys())}")
+                    # 섹션 추출
+                    sections = extract_sections(text)
+                    log.info(f"    Sections: {list(sections.keys())}")
 
-                    sentences = extract_supply_sentences(sections)
-                    log.info(f"    Supply-related sentences: {len(sentences)}")
+                    if not sections:
+                        # fallback: 전체 텍스트에서 검색
+                        log.info(f"    No sections found, searching full text")
+                        sections = {"full_text": text[:200000]}
+
+                    # 공급망 문장 추출
+                    sentences = find_supply_sentences(sections)
+                    log.info(f"    Supply sentences: {len(sentences)}")
 
                     for s in sentences:
-                        s["company_id"] = company_id
+                        s["company_id"] = info["company_id"]
                         s["ticker"] = ticker
                         s["fiscal_year"] = filing["fiscal_year"]
                     all_sentences.extend(sentences)
 
-                    edges = parse_relations(company_id, info["name"], sentences, filing)
-                    log.info(f"    Extracted edges: {len(edges)}")
+                    # 엣지 추출
+                    edges = extract_edges(info["company_id"], sentences, filing)
+                    log.info(f"    Edges: {len(edges)}")
                     all_edges.extend(edges)
 
                 except Exception as e:
-                    log.error(f"    Failed: {e}")
+                    log.error(f"    Error: {e}")
 
         except Exception as e:
-            log.error(f"  Failed to get filings for {ticker}: {e}")
+            log.error(f"  Error: {e}")
 
-    # Save raw sentences for review
+    # Save sentences
     if all_sentences:
-        sent_df = pd.DataFrame(all_sentences)
-        sent_path = out_dir / "sec_supply_sentences.parquet"
-        sent_df.to_parquet(sent_path, index=False)
-        log.info(f"Saved {len(sent_df)} supply sentences → {sent_path}")
+        df_sent = pd.DataFrame(all_sentences)
+        path = out_dir / "sec_supply_sentences.parquet"
+        df_sent.to_parquet(path, index=False)
+        log.info(f"\nSaved {len(df_sent)} sentences → {path}")
 
     # Save edges
     if all_edges:
         df = pd.DataFrame(all_edges)
+        n_before = len(df)
+        df = df.drop_duplicates(
+            subset=["src_company_id", "rel_type", "dst_company_id", "fiscal_year"],
+            keep="first"
+        )
+        log.info(f"Dedup: {n_before} → {len(df)} edges")
 
-        # Dedup
-        dedup_cols = ["src_company_id", "rel_type", "dst_company_id", "fiscal_year"]
-        existing_cols = [c for c in dedup_cols if c in df.columns]
-        if existing_cols:
-            n_before = len(df)
-            df = df.drop_duplicates(subset=existing_cols, keep="first")
-            log.info(f"Dedup: {n_before} → {len(df)} edges")
+        path = out_dir / "sec_edges.parquet"
+        df.to_parquet(path, index=False)
+        log.info(f"Saved {len(df)} edges → {path}")
 
-        edge_path = out_dir / "sec_edges.parquet"
-        df.to_parquet(edge_path, index=False)
-        log.info(f"Saved {len(df)} edges → {edge_path}")
+        # Summary
+        log.info(f"\n{'='*50}")
+        log.info(f"SUMMARY: {len(df)} edges from {len(US_COMPANIES)} companies")
+        if "rel_type" in df.columns:
+            log.info(f"By type:\n{df['rel_type'].value_counts().to_string()}")
+        if "fiscal_year" in df.columns:
+            log.info(f"By year:\n{df['fiscal_year'].value_counts().to_string()}")
         return df
     else:
-        log.warning("No edges extracted")
+        log.warning("No edges extracted!")
         return pd.DataFrame()
 
 
-def main():
-    parser = argparse.ArgumentParser(description="SEC EDGAR 10-K Supply Chain Edge Extractor")
-    parser.add_argument("--years", type=int, nargs="+", default=[2023, 2024, 2025],
-                        help="Filing years to collect (default: 2023 2024 2025)")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="List filings without downloading")
-    parser.add_argument("--out-dir", type=str, default="data/raw/filings",
-                        help="Output directory")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SEC EDGAR 10-K Supply Chain Extractor v2")
+    parser.add_argument("--years", type=int, nargs="+", default=[2024, 2025],
+                        help="Filing years (default: 2024 2025)")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--out-dir", type=str, default="data/raw/filings")
     args = parser.parse_args()
 
-    log.info(f"SEC EDGAR Collector — {len(US_COMPANIES)} companies, years={args.years}")
-    df = collect_all(args.years, args.dry_run, Path(args.out_dir))
-
-    if not df.empty:
-        log.info(f"\n=== Summary ===")
-        log.info(f"Total edges: {len(df)}")
-        if "rel_type" in df.columns:
-            log.info(f"By relation:\n{df['rel_type'].value_counts().to_string()}")
-        if "fiscal_year" in df.columns:
-            log.info(f"By fiscal year:\n{df['fiscal_year'].value_counts().to_string()}")
-
-
-if __name__ == "__main__":
-    main()
+    collect_all(args.years, args.dry_run, Path(args.out_dir))

@@ -1,0 +1,161 @@
+src_company_id,rel_type,dst_company_id,confidence_plink,strength,evidence,source,valid_from,valid_to,risk_rationale
+373220.KS,SUPPLIES,GM,1.0,1.0,LG Energy Solution supplies to GM via Ultium Cells JV established Dec 2019,Bloomberg_2019-12-05,2019-12-05,,
+373220.KS,SUPPLIES,F,1.0,1.0,LG Energy Solution supplies batteries to Ford; $6.5B deal terminated Dec 2025,WardsAuto_2025-12,2020-01-01,2025-12-01,
+002460.SZ,SUPPLIES,300750.SZ,1.0,0.9,Ganfeng Lithium supplies lithium compounds to CATL per long-term offtake,Ganfeng_AR2022,2018-01-01,,
+603799.SH,SUPPLIES,373220.KS,1.0,0.8,Huayou Cobalt supplies cobalt/nickel precursors to LGES supply chain,Huayou_AR2022,2019-01-01,,
+603799.SH,SUPPLIES,300750.SZ,1.0,0.8,Huayou Cobalt supplies precursors to CATL; strategic collaboration confirmed,Huayou_AR2022,2019-01-01,,
+300037.SZ,SUPPLIES,300750.SZ,1.0,0.7,Capchem supplies electrolyte to CATL as key supplier,Capchem_AR2022,2018-01-01,,
+247540.KQ,SUPPLIES,373220.KS,1.0,0.9,EcoPro BM supplies high-nickel cathode materials to LGES,EcoPro_AR2022,2019-01-01,,
+247540.KQ,PARTNERS_WITH,3407.T,0.6,0.3,EcoPro BM and Asahi Kasei explored materials R&D collaboration; no confirmed supply relationship,Industry_Report_2021,2021-01-01,,
+002466.SZ,SUPPLIES,300750.SZ,1.0,0.8,Tianqi Lithium supplies lithium hydroxide/carbonate to CATL,Tianqi_AR2022,2018-01-01,,
+603993.SH,SUPPLIES,300750.SZ,1.0,0.7,CMOC supplies cobalt/copper to CATL from DRC and Indonesia operations,CMOC_AR2022,2019-01-01,,
+ALB,SUPPLIES,373220.KS,1.0,0.8,Albemarle supplies lithium hydroxide to LGES from global operations,Albemarle_AR2022,2018-01-01,,
+GLEN.L,SUPPLIES,300750.SZ,1.0,0.9,Glencore supplies cobalt to CATL from DRC mining operations,Glencore_AR2022,2019-01-01,,
+0175.HK,PARTNERS_WITH,300750.SZ,1.0,0.8,Geely-CATL JV established with 1B yuan capital (CATL 51% / Geely 49%),Electrive_2019-01-02,2019-01-01,,
+3931.HK,SUPPLIES,600733.SH,1.0,0.7,CALB supplies batteries to BAIC BluePark for EV models,CALB_AR2022,2020-01-01,,
+300750.SZ,SUPPLIES,000625.SZ,0.9,0.7,Changan Automobile sources batteries from CATL,CATL_AR2022,2020-01-01,,
+7267.T,PARTNERS_WITH,373220.KS,1.0,0.8,Honda-LGES JV (L-H Battery Company) in Ohio announced Aug 2022; $4.4B investment,Honda_PR_2022-10-11,2022-08-01,,
+373220.KS,SUPPLIES,LCID,0.9,0.5,Lucid sources cylindrical cells from LGES for Air sedan,LGES_AR2022,2021-01-01,,
+066970.KS,SUPPLIES,373220.KS,1.0,0.9,L&F supplies high-nickel NCMA cathode to LGES,L&F_AR2022,2019-01-01,,
+003670.KS,SUPPLIES,300750.SZ,0.9,0.7,POSCO Future M supplies cathode/anode materials to CATL,POSCO_FutureM_AR2022,2020-01-01,,
+003670.KS,SUPPLIES,373220.KS,1.0,0.9,POSCO Future M supplies cathode and anode materials to LGES,POSCO_FutureM_AR2022,2019-01-01,,
+LICY,PARTNERS_WITH,GLEN.L,1.0,0.7,Li-Cycle and Glencore strategic partnership; Glencore invested $200M convertible note,Glencore_PR_2022-05,2022-05-01,2025-05-15,
+BAS.DE,PARTNERS_WITH,300750.SZ,1.0,0.6,BASF and CATL framework agreement for cathode active materials and battery recycling,BASF_PR_2021-09-16,2021-09-16,,
+Chile,PRODUCES,Lithium,1.0,1.0,Chile is world's second-largest lithium producer (SQM/Albemarle Atacama operations),USGS_Mineral_Commodities_2023,,,
+Australia,PRODUCES,Lithium,1.0,1.0,Australia is world's largest lithium producer (spodumene from Greenbushes/Mt Marion),USGS_Mineral_Commodities_2023,,,
+Indonesia,PRODUCES,Nickel,1.0,1.0,Indonesia is world's largest nickel producer (~50% global share),USGS_Mineral_Commodities_2023,,,
+Congo,PRODUCES,Cobalt,1.0,1.0,DRC produces ~70% of global cobalt supply,USGS_Mineral_Commodities_2023,,,
+China,PRODUCES,Refined_Materials,1.0,1.0,China dominates global battery material refining (~60-80% of lithium/cobalt/nickel refining),Benchmark_Minerals_2023,,,
+ALB,LOCATED_IN,Chile,1.0,0.8,Albemarle operates lithium brine extraction at Salar de Atacama in Chile,Albemarle_AR2022,,,Albemarle in Chile -> exposed to Chilean lithium nationalization policy (2023 decree) and Atacama water use restrictions
+ALB,LOCATED_IN,Australia,1.0,0.7,Albemarle operates Kemerton lithium hydroxide conversion plant and Greenbushes mine JV,Albemarle_AR2022,,,Albemarle in Australia -> exposed to Australian critical minerals export controls and Aboriginal land rights regulations
+300750.SZ,SOURCES_FROM,Chile,0.9,0.6,CATL sources lithium from Chilean operations via suppliers (Albemarle/SQM),Industry_Analysis_2023,,,
+373220.KS,SOURCES_FROM,Indonesia,0.9,0.7,LGES sources nickel from Indonesian HPAL operations,Industry_Analysis_2023,,,
+GLEN.L,LOCATED_IN,Congo,1.0,0.9,Glencore operates Mutanda and KCC cobalt mines in DRC,Glencore_AR2022,,,Glencore in Congo -> exposed to DRC political instability; artisanal mining regulations; EU due diligence directives
+603993.SH,LOCATED_IN,Congo,1.0,0.8,CMOC operates Tenke Fungurume cobalt/copper mine in DRC,CMOC_AR2022,,,CMOC in Congo -> exposed to DRC political instability; mining code revisions; artisanal mining overlap risks
+Shanghai_Port,LOCATED_IN,China,1.0,1.0,Shanghai Port is world's largest container port; critical logistics hub,Port_Authority_2023,,,Shanghai Port in China -> exposed to COVID-style lockdowns; Taiwan Strait tensions disrupting shipping; typhoon risk
+300750.SZ,DEPENDS_ON_ROUTE,Shanghai_Port,1.0,0.8,CATL relies on Shanghai Port for battery cell/module exports,CATL_AR2022,,,
+1211.HK,DEPENDS_ON_ROUTE,Shanghai_Port,1.0,0.8,BYD relies on Shanghai Port for vehicle and battery exports,BYD_AR2022,,,
+Long_Beach_Port,LOCATED_IN,USA,1.0,1.0,Long Beach Port is key US West Coast logistics hub for EV/battery imports,Port_Authority_2023,,,Long Beach Port in USA -> exposed to US West Coast port labor disputes; congestion risk; potential tariff enforcement chokepoint
+920185.BJ,SUPPLIES,300750.SZ,1.0,0.9,BTR New Material supplies anode materials (graphite) to CATL,BTR_AR2022,2018-01-01,,
+920185.BJ,SUPPLIES,373220.KS,1.0,0.8,BTR New Material supplies anode materials to LGES,BTR_AR2022,2018-01-01,,
+300014.SZ,SUPPLIES,BMW.DE,1.0,0.7,EVE Energy supplies battery cells to BMW for PHEV/BEV models,EVE_AR2022,2020-01-01,,
+300207.SZ,SUPPLIES,0175.HK,1.0,0.7,Sunwoda supplies battery packs to Geely for BEV/PHEV models,Sunwoda_AR2022,2019-01-01,,
+300207.SZ,SUPPLIES,601238.SH,0.9,0.6,Sunwoda supplies battery packs to GAC Group,Sunwoda_AR2022,2020-01-01,,
+300919.SZ,SUPPLIES,300750.SZ,1.0,0.9,CNGR Advanced Material supplies ternary precursors to CATL,CNGR_AR2022,2018-01-01,,
+300919.SZ,SUPPLIES,373220.KS,1.0,0.8,CNGR Advanced Material supplies ternary precursors to LGES,CNGR_AR2022,2019-01-01,,
+002340.SZ,SUPPLIES,300750.SZ,1.0,0.8,GEM Co supplies precursor materials and recycled metals to CATL,GEM_AR2022,2018-01-01,,
+002340.SZ,SUPPLIES,373220.KS,1.0,0.8,GEM Co supplies precursor materials to LGES,GEM_AR2022,2019-01-01,,
+688388.SH,SUPPLIES,300750.SZ,1.0,0.7,Jiayuan International supplies copper foil to CATL for current collectors,Jiayuan_AR2022,2019-01-01,,
+688388.SH,SUPPLIES,1211.HK,0.9,0.6,Jiayuan International supplies copper foil to BYD,Jiayuan_AR2022,2020-01-01,,
+600110.SH,SUPPLIES,300750.SZ,1.0,0.7,Nuode Investment supplies copper foil to CATL,Nuode_AR2022,2019-01-01,,
+600110.SH,SUPPLIES,1211.HK,0.9,0.6,Nuode Investment supplies copper foil to BYD,Nuode_AR2022,2020-01-01,,
+603659.SH,SUPPLIES,300750.SZ,1.0,0.8,Putailai supplies artificial graphite anode to CATL,Putailai_AR2022,2018-01-01,,
+603659.SH,SUPPLIES,373220.KS,1.0,0.7,Putailai supplies artificial graphite anode to LGES,Putailai_AR2022,2019-01-01,,
+600362.SH,SUPPLIES,China,1.0,1.0,Jiangxi Copper supplies refined copper to domestic market including battery sector,Jiangxi_Copper_AR2022,2015-01-01,,
+600362.SH,SUPPLIES,300750.SZ,0.9,0.6,Jiangxi Copper supplies copper products to CATL for battery production,Jiangxi_Copper_AR2022,2018-01-01,,
+051910.KS,OWNS,373220.KS,1.0,1.0,LG Chem owns 81.84% of LG Energy Solution (IPO Jan 2022),LG_Chem_AR2022,2020-12-01,,
+051910.KS,SUPPLIES,373220.KS,1.0,0.9,LG Chem supplies cathode and separator materials to LGES,LG_Chem_AR2022,2020-01-01,,
+300750.SZ,SOURCES_FROM,Indonesia,0.9,0.7,CATL sources nickel from Indonesian HPAL projects,CATL_AR2022,2020-01-01,,
+1211.HK,SOURCES_FROM,Chile,0.8,0.5,BYD sources lithium from Chilean suppliers,Industry_Analysis_2023,2021-01-01,,
+373220.KS,SUPPLIES,BMW.DE,1.0,0.8,LGES supplies cylindrical battery cells to BMW,LGES_AR2022,2019-01-01,,
+BAS.DE,SUPPLIES,BMW.DE,0.9,0.6,BASF supplies battery cathode materials to BMW supply chain,BASF_AR2022,2020-01-01,,
+3407.T,SUPPLIES,373220.KS,1.0,0.8,Asahi Kasei supplies Hipore separators to LGES,Asahi_Kasei_AR2022,2018-01-01,,
+3407.T,SUPPLIES,300750.SZ,0.9,0.7,Asahi Kasei supplies battery separators to CATL,Asahi_Kasei_AR2022,2019-01-01,,
+600110.SH,LOCATED_IN,China,1.0,1.0,Nuode Investment is headquartered in Shenzhen China,Company_Registration,2015-01-01,,Nuode in China -> exposed to China export controls on battery materials; US Section 301 tariffs; potential FEOC restrictions under US IRA
+688388.SH,LOCATED_IN,China,1.0,1.0,Jiayuan International is headquartered in China,Company_Registration,2015-01-01,,Jiayuan in China -> exposed to China export controls; US-China trade war tariffs on copper foil; FEOC designation risk
+603659.SH,LOCATED_IN,China,1.0,1.0,Putailai is headquartered in Shenzhen China,Company_Registration,2015-01-01,,Putailai in China -> exposed to China graphite export controls (Oct 2023); US tariffs; FEOC restrictions on anode supply
+300919.SZ,LOCATED_IN,China,1.0,1.0,CNGR Advanced Material is headquartered in Tongren China,Company_Registration,2015-01-01,,CNGR in China -> exposed to China export controls on precursor materials; US-China tariffs; FEOC restrictions
+002340.SZ,LOCATED_IN,China,1.0,1.0,GEM Co is headquartered in Shenzhen China,Company_Registration,2015-01-01,,GEM in China -> exposed to China export controls; US tariffs on recycled battery materials; FEOC designation risk
+002460.SZ,LOCATED_IN,China,1.0,1.0,Ganfeng Lithium is headquartered in Xinyu Jiangxi China,Company_Registration,2015-01-01,,Ganfeng in China -> exposed to China lithium export controls; US-China trade tensions; potential FEOC restrictions
+002466.SZ,LOCATED_IN,China,1.0,1.0,Tianqi Lithium is headquartered in Chengdu China,Company_Registration,2015-01-01,,Tianqi in China -> exposed to China critical mineral policies; US-China trade tensions; cross-border investment scrutiny (SQM stake)
+603799.SH,LOCATED_IN,China,1.0,1.0,Huayou Cobalt is headquartered in Tongxiang Zhejiang China,Company_Registration,2015-01-01,,Huayou in China -> exposed to China export controls; US-China tariffs; EU supply chain due diligence requirements for cobalt
+603993.SH,LOCATED_IN,China,1.0,1.0,CMOC Group is headquartered in Luoyang Henan China,Company_Registration,2015-01-01,,CMOC in China -> exposed to China critical mineral policies; DRC operations face political risk; US-China tensions
+300750.SZ,LOCATED_IN,China,1.0,1.0,CATL is headquartered in Ningde Fujian China,Company_Registration,2015-01-01,,CATL in China -> exposed to US IRA FEOC exclusion; EU battery regulation compliance; US-China tech decoupling risk
+1211.HK,LOCATED_IN,China,1.0,1.0,BYD is headquartered in Shenzhen China,Company_Registration,2015-01-01,,BYD in China -> exposed to EU anti-subsidy tariffs on Chinese EVs; US Section 301 tariffs; FEOC restrictions
+300014.SZ,LOCATED_IN,China,1.0,1.0,EVE Energy is headquartered in Huizhou Guangdong China,Company_Registration,2015-01-01,,EVE Energy in China -> exposed to US IRA FEOC restrictions; EU battery regulation; US-China trade tariffs
+002074.SZ,LOCATED_IN,China,1.0,1.0,Gotion High-Tech is headquartered in Hefei Anhui China,Company_Registration,2015-01-01,,Gotion in China -> partially mitigated by VW 26% stake but exposed to FEOC scrutiny; US-China tensions; EU battery regulation
+300207.SZ,LOCATED_IN,China,1.0,1.0,Sunwoda is headquartered in Shenzhen China,Company_Registration,2015-01-01,,Sunwoda in China -> exposed to US IRA FEOC restrictions; US-China tariffs; limited Western market access
+3931.HK,LOCATED_IN,China,1.0,1.0,CALB is headquartered in Luoyang Henan China,Company_Registration,2015-01-01,,CALB in China -> exposed to US IRA FEOC restrictions; EU anti-subsidy investigation; US-China trade tensions
+600733.SH,LOCATED_IN,China,1.0,1.0,BAIC BluePark is headquartered in Beijing China,Company_Registration,2015-01-01,,BAIC in China -> limited EV export exposure; domestic market focus reduces direct trade war impact but supply chain upstream risk remains
+000625.SZ,LOCATED_IN,China,1.0,1.0,Changan Automobile is headquartered in Chongqing China,Company_Registration,2015-01-01,,Changan in China -> primarily domestic market but exposed to upstream material export control risks and component supply disruption
+600006.SH,LOCATED_IN,China,1.0,1.0,Dongfeng Motor is headquartered in Wuhan Hubei China,Company_Registration,2015-01-01,,Dongfeng in China -> exposed to Wuhan regional disruption risk (COVID precedent); upstream supply chain export control exposure
+601238.SH,LOCATED_IN,China,1.0,1.0,GAC Group is headquartered in Guangzhou China,Company_Registration,2015-01-01,,GAC in China -> exposed to South China logistics disruption; upstream material export controls; limited direct trade war exposure
+0175.HK,LOCATED_IN,China,1.0,1.0,Geely is headquartered in Hangzhou Zhejiang China,Company_Registration,2015-01-01,,Geely in China -> exposed to EU anti-subsidy tariffs (Volvo Cars ownership); US-China tensions affecting Polestar brand
+601633.SH,LOCATED_IN,China,1.0,1.0,Great Wall Motor is headquartered in Baoding Hebei China,Company_Registration,2015-01-01,,Great Wall in China -> exposed to EU anti-subsidy investigation on Chinese EVs; upstream material export control risk
+600418.SH,LOCATED_IN,China,1.0,1.0,JAC Motors is headquartered in Hefei Anhui China,Company_Registration,2015-01-01,,JAC in China -> VW partnership partially mitigates risk; exposed to upstream supply disruption and regional policy changes
+GM,LOCATED_IN,USA,1.0,1.0,General Motors is headquartered in Detroit Michigan USA,Company_Registration,2015-01-01,,GM in USA -> exposed to US IRA compliance requirements; UAW labor risk; tariff war on imported battery materials from China
+F,LOCATED_IN,USA,1.0,1.0,Ford is headquartered in Dearborn Michigan USA,Company_Registration,2015-01-01,,Ford in USA -> exposed to US IRA FEOC rules limiting Chinese battery sourcing; UAW labor risk; EV strategy restructuring
+LCID,LOCATED_IN,USA,1.0,1.0,Lucid Motors is headquartered in Newark California USA,Company_Registration,2015-01-01,,Lucid in USA -> exposed to EV startup funding risk; US IRA compliance for battery sourcing; Saudi PIF ownership geopolitical scrutiny
+373220.KS,LOCATED_IN,South_Korea,1.0,1.0,LG Energy Solution is headquartered in Seoul South Korea,Company_Registration,2020-01-01,,LGES in South Korea -> exposed to Korea-Japan trade tensions on battery materials; North Korea geopolitical risk; energy cost volatility
+051910.KS,LOCATED_IN,South_Korea,1.0,1.0,LG Chem is headquartered in Seoul South Korea,Company_Registration,2015-01-01,,LG Chem in South Korea -> exposed to Korea-Japan materials trade restrictions; North Korea geopolitical risk
+247540.KQ,LOCATED_IN,South_Korea,1.0,1.0,EcoPro BM is headquartered in Cheongju South Korea,Company_Registration,2015-01-01,,EcoPro BM in South Korea -> exposed to Korea-Japan trade tensions; precursor import dependency from China
+066970.KS,LOCATED_IN,South_Korea,1.0,1.0,L&F is headquartered in Daegu South Korea,Company_Registration,2015-01-01,,L&F in South Korea -> exposed to Korea-Japan trade tensions; raw material import dependency on China/DRC
+003670.KS,LOCATED_IN,South_Korea,1.0,1.0,POSCO Future M is headquartered in Seoul South Korea,Company_Registration,2015-01-01,,POSCO Future M in South Korea -> exposed to Korea-Japan trade tensions; cobalt/lithium sourcing from geopolitically risky regions
+BAS.DE,LOCATED_IN,Germany,1.0,1.0,BASF is headquartered in Ludwigshafen Germany,Company_Registration,2015-01-01,,BASF in Germany -> exposed to EU energy cost crisis; German industrial policy uncertainty; EU battery regulation compliance costs
+BMW.DE,LOCATED_IN,Germany,1.0,1.0,BMW is headquartered in Munich Germany,Company_Registration,2015-01-01,,BMW in Germany -> exposed to EU battery regulation compliance; German energy costs; EU-China trade tensions affecting supply chain
+3407.T,LOCATED_IN,Japan,1.0,1.0,Asahi Kasei is headquartered in Tokyo Japan,Company_Registration,2015-01-01,,Asahi Kasei in Japan -> exposed to Japan-Korea trade tensions (separator materials); yen depreciation; earthquake/tsunami risk
+7267.T,LOCATED_IN,Japan,1.0,1.0,Honda is headquartered in Tokyo Japan,Company_Registration,2015-01-01,,Honda in Japan -> exposed to yen volatility; Japan EV adoption lag; earthquake/natural disaster supply chain disruption
+ALB,LOCATED_IN,USA,1.0,1.0,Albemarle is headquartered in Charlotte North Carolina USA,Company_Registration,2015-01-01,,Albemarle in USA -> exposed to US IRA incentives (positive); Chile/Australia operational risks propagate to HQ; lithium price volatility
+GLEN.L,LOCATED_IN,UK,1.0,1.0,Glencore is headquartered in Baar Switzerland (listed in London),Company_Registration,2015-01-01,,Glencore in UK/Switzerland -> exposed to EU/UK ESG regulations; sanctions compliance risk; DRC operational risk propagates
+LICY,LOCATED_IN,Canada,1.0,1.0,Li-Cycle was headquartered in Toronto Canada; filed for bankruptcy May 2025,Company_Registration,2015-01-01,2025-05-15,Li-Cycle in Canada -> exposed to startup scaling risk; Glencore acquired assets post-bankruptcy; recycling economics challenged by low lithium prices
+300750.SZ,SUPPLIES,BMW.DE,1.0,0.9,CATL supplies battery cells to BMW; EUR 7.3B order volume announced; cylindrical cell deal for Neue Klasse,BMW_PR_2022,2019-01-01,,
+002460.SZ,SUPPLIES,BMW.DE,1.0,0.7,Ganfeng Lithium supplies lithium products to BMW supply chain,Ganfeng_AR2022,2019-01-01,,
+002466.SZ,SUPPLIES,373220.KS,0.9,0.6,Tianqi Lithium supplies lithium to LGES,Tianqi_AR2022,2021-01-01,,
+ALB,SUPPLIES,300750.SZ,1.0,0.7,Albemarle supplies lithium hydroxide to CATL,Albemarle_AR2022,2019-01-01,,
+GLEN.L,SUPPLIES,373220.KS,1.0,0.8,Glencore supplies cobalt to LGES from DRC operations,Glencore_AR2022,2019-01-01,,
+003670.KS,SOURCES_FROM,Congo,0.8,0.5,POSCO Future M sources cobalt from DRC for precursor production,POSCO_FutureM_AR2022,2021-01-01,,
+300750.SZ,SOURCES_FROM,Australia,0.9,0.7,CATL sources lithium from Australian spodumene operations,CATL_AR2022,2019-01-01,,
+373220.KS,SOURCES_FROM,Australia,0.9,0.7,LGES sources lithium from Australian mines via suppliers,LGES_AR2022,2020-01-01,,
+1211.HK,BUYS_FROM,Lithium,1.0,1.0,BYD depends on lithium as critical input for LFP/NMC batteries,SNE_Research_2023,,,
+373220.KS,BUYS_FROM,Cobalt,1.0,1.0,LGES depends on cobalt for high-nickel NCA/NCM cathode production,SNE_Research_2023,,,
+300750.SZ,BUYS_FROM,Refined_Materials,1.0,1.0,CATL depends on refined battery materials (Li/Co/Ni/Mn) for cell production,SNE_Research_2023,,,
+247540.KQ,SUPPLIES,051910.KS,1.0,0.9,EcoPro BM supplies NCA cathode materials to LG Chem,EcoPro_AR2022,2019-01-01,,
+002460.SZ,SUPPLIES,373220.KS,0.9,0.7,Ganfeng Lithium supplies lithium to LG Energy Solution,Ganfeng_AR2022,2020-01-01,,
+600362.SH,SUPPLIES,373220.KS,0.7,0.4,Jiangxi Copper supplies copper to LGES supply chain,Jiangxi_Copper_AR2022,2020-01-01,,
+300750.SZ,SUPPLIES,0175.HK,1.0,0.8,CATL supplies batteries to Geely via JV and direct supply,CATL_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,601238.SH,1.0,0.8,CATL supplies batteries to GAC Group for Aion EV brand,CATL_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,601633.SH,1.0,0.8,CATL supplies batteries to Great Wall Motor,CATL_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,600006.SH,1.0,0.8,CATL supplies batteries to Dongfeng Motor,CATL_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,600418.SH,1.0,0.7,CATL supplies batteries to JAC Motors,CATL_AR2022,2019-01-01,,
+373220.KS,SUPPLIES,7267.T,1.0,0.8,LG Energy Solution supplies batteries to Honda via Ohio JV (L-H Battery Company),LGES_PR_2022-10,2022-01-01,,
+603993.SH,SUPPLIES,373220.KS,0.8,0.6,CMOC supplies cobalt to LG Energy Solution supply chain,CMOC_AR2022,2020-01-01,,
+002460.SZ,LOCATED_IN,Australia,0.9,0.6,Ganfeng Lithium has operations at Mt Marion lithium mine in Western Australia,Ganfeng_AR2022,2018-01-01,,Ganfeng in Australia -> exposed to Australian critical minerals export policy; Aboriginal heritage site regulations; mine permitting delays
+002466.SZ,LOCATED_IN,Australia,0.9,0.7,"Tianqi Lithium holds 51% stake in Greenbushes spodumene mine, Western Australia",Tianqi_AR2022,2018-01-01,,Tianqi in Australia -> exposed to Australian FIRB foreign investment review; critical minerals export controls; Greenbushes is world's largest hard-rock lithium mine
+002466.SZ,LOCATED_IN,Chile,0.9,0.7,"Tianqi Lithium holds stake in SQM/Atacama lithium operations, Chile",Tianqi_AR2022,2018-01-01,,Tianqi in Chile -> exposed to Chilean lithium nationalization policy (2023); Atacama water restrictions; FIRB-equivalent scrutiny of Chinese ownership
+603993.SH,LOCATED_IN,Indonesia,0.9,0.7,CMOC operates nickel HPAL project in Indonesia,CMOC_AR2022,2021-01-01,,CMOC in Indonesia -> exposed to Indonesian nickel ore export ban; downstream processing mandate; environmental regulation of HPAL operations
+603799.SH,LOCATED_IN,Indonesia,0.9,0.7,Huayou Cobalt operates nickel processing (MHP/HPAL) in Indonesia Morowali industrial park,Huayou_AR2022,2020-01-01,,Huayou in Indonesia -> exposed to Indonesian export ban on raw nickel; HPAL environmental scrutiny; deep-sea tailings disposal controversy
+300750.SZ,SOURCES_FROM,Congo,0.9,0.7,CATL sources cobalt from DRC through intermediary traders and suppliers,CATL_AR2022,2019-01-01,,
+373220.KS,SOURCES_FROM,Congo,0.9,0.7,LGES sources cobalt from DRC through supply chain,LGES_AR2022,2019-01-01,,
+373220.KS,SOURCES_FROM,Chile,0.8,0.6,LGES sources lithium from Chilean Atacama operations via suppliers,LGES_AR2022,2020-01-01,,
+China,PRODUCES,Graphite,1.0,1.0,China produces ~65% of global natural graphite and dominates synthetic graphite production,USGS_Mineral_Commodities_2023,2015-01-01,,
+Chile,PRODUCES,Copper,1.0,1.0,Chile is world's largest copper producer (~27% global share),USGS_Mineral_Commodities_2023,2015-01-01,,
+300750.SZ,COMPETES_WITH,373220.KS,1.0,1.0,CATL (#1) and LGES (#2) compete for global EV battery market share per SNE Research 2023,SNE_Research_2023,2020-01-01,,
+300750.SZ,COMPETES_WITH,1211.HK,1.0,0.9,CATL (#1) and BYD (#2 China) compete in Chinese and global battery markets,SNE_Research_2023,2020-01-01,,
+300037.SZ,SUPPLIES,373220.KS,0.8,0.6,Capchem supplies electrolyte to LGES,Capchem_AR2022,2019-01-01,,
+300037.SZ,LOCATED_IN,China,1.0,1.0,Capchem Technology is headquartered in Shenzhen China,Company_Registration,2015-01-01,,Capchem in China -> exposed to China export controls on electrolyte solvents; US-China tariffs; FEOC restrictions on electrolyte supply
+002074.SZ,SUPPLIES,0175.HK,0.9,0.7,Gotion High-Tech supplies LFP batteries to Geely,Gotion_AR2022,2020-01-01,,
+300207.SZ,SUPPLIES,000625.SZ,0.8,0.5,Sunwoda supplies battery packs to Changan Automobile,Sunwoda_AR2022,2020-01-01,,
+3931.HK,SUPPLIES,0175.HK,0.9,0.7,CALB supplies batteries to Geely,CALB_AR2022,2020-01-01,,
+3931.HK,SUPPLIES,000625.SZ,0.8,0.6,CALB supplies batteries to Changan Automobile,CALB_AR2022,2021-01-01,,
+066970.KS,SUPPLIES,300750.SZ,0.8,0.5,L&F supplies cathode materials to CATL,L&F_AR2022,2021-01-01,,
+002460.SZ,SUPPLIES,1211.HK,0.9,0.7,Ganfeng Lithium supplies lithium to BYD,Ganfeng_AR2022,2020-01-01,,
+300014.SZ,SUPPLIES,600733.SH,0.8,0.5,EVE Energy supplies batteries to BAIC BluePark,EVE_AR2022,2021-01-01,,
+373220.KS,SUPPLIES,600006.SH,0.8,0.5,LGES supplies batteries to Dongfeng Motor,LGES_AR2022,2021-01-01,,
+002074.SZ,SUPPLIES,600418.SH,0.8,0.6,Gotion supplies LFP batteries to JAC Motors (both based in Hefei),Gotion_AR2022,2020-01-01,,
+LICY,SUPPLIES,GLEN.L,0.7,0.4,Li-Cycle supplied recycled battery materials (black mass) to Glencore under strategic partnership,Glencore_PR_2022-05,2022-05-01,2025-05-15,
+300750.SZ,SUPPLIES,7203.T,1.0,0.9,CATL supplies LFP and NMC batteries to Toyota; partnership announced 2019,Reuters_2019-06,2019-06-01,,
+1211.HK,SUPPLIES,7203.T,0.9,0.7,BYD supplies Blade Battery to Toyota for bZ series EVs,Bloomberg_2020,2020-01-01,,
+300750.SZ,SUPPLIES,TSLA,1.0,1.0,CATL is primary battery supplier to Tesla Shanghai/Berlin; supply agreement signed Feb 2020,Nasdaq_2020-02-03,2020-02-03,,
+373220.KS,SUPPLIES,TSLA,1.0,0.8,LG Energy Solution supplies 2170/4680 cells to Tesla Nevada and Shanghai plants,LGES_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,VOW3.DE,1.0,0.9,CATL supplies batteries to Volkswagen; strategic partnership with VW certification June 2021,Electrive_2021,2018-01-01,,
+002074.SZ,SUPPLIES,VOW3.DE,1.0,0.9,Gotion High-Tech supplies batteries to VW; VW acquired 26% stake May 2020 for EUR 1.1B,VW_PR_2020-05-29,2020-05-29,,
+300750.SZ,SUPPLIES,MBG.DE,1.0,0.9,CATL supplies battery cells to Mercedes-Benz; major partnership announced Aug 2020,Mercedes_PR_2020-08,2019-01-01,,
+373220.KS,SUPPLIES,MBG.DE,0.9,0.7,LG Energy Solution supplies battery cells to Mercedes-Benz,LGES_AR2022,2020-01-01,,
+300014.SZ,SUPPLIES,MBG.DE,0.9,0.7,EVE Energy supplies battery packs to Mercedes-Benz for EREV models,EVE_AR2022,2021-01-01,,
+300750.SZ,SUPPLIES,RIVN,0.5,0.3,CATL explored LFP battery supply to Rivian but no confirmed agreement as of 2023,Unconfirmed_Industry_Speculation,2022-01-01,,
+373220.KS,SUPPLIES,RIVN,0.9,0.7,LG Energy Solution supplies 4695 cylindrical batteries to Rivian; 5-year 67GWh deal signed Nov 2024,LGES_PR_2024-11,2024-11-01,,
+7203.T,LOCATED_IN,Japan,1.0,1.0,Toyota is headquartered in Toyota City Aichi Japan,Company_Registration,2015-01-01,,Toyota in Japan -> exposed to yen volatility; earthquake/tsunami supply chain disruption; Japan EV transition pressure
+TSLA,LOCATED_IN,USA,1.0,1.0,Tesla is headquartered in Austin Texas USA,Company_Registration,2015-01-01,,Tesla in USA -> exposed to US IRA incentives (positive); tariff war on Chinese battery imports; dependent on CATL/LGES supply
+VOW3.DE,LOCATED_IN,Germany,1.0,1.0,Volkswagen is headquartered in Wolfsburg Germany,Company_Registration,2015-01-01,,VW in Germany -> exposed to EU battery regulation compliance; German energy costs; EU-China trade tensions affecting battery supply
+MBG.DE,LOCATED_IN,Germany,1.0,1.0,Mercedes-Benz is headquartered in Stuttgart Germany,Company_Registration,2015-01-01,,Mercedes-Benz in Germany -> exposed to EU battery regulation; German energy costs; dependency on Chinese battery supply chain
+RIVN,LOCATED_IN,USA,1.0,1.0,Rivian is headquartered in Irvine California USA,Company_Registration,2015-01-01,,Rivian in USA -> exposed to EV startup cash burn risk; US IRA compliance for battery sourcing; production scaling challenges

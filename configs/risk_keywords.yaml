@@ -1,0 +1,685 @@
+# risk_keywords.yaml  (v2 – 가이드 스키마 준수)
+# 스키마: risk_type / term / pattern / weight(1~5) / is_phrase / route_node / negatives
+# severity_raw = Σ(weight_i × hit_count_i)
+# severity     = clip( log(1+severity_raw) / log(1+S_max), 0, 1 )
+
+# ────────────────────────────────────────────────
+# A. GEOPOLITICS  (전쟁 / 제재 / 수출통제)
+# ────────────────────────────────────────────────
+geopolitics:
+  notes: 지정학 리스크 - 전쟁, 제재, 수출통제, 자원무기화
+  keywords:
+
+    # 강도 5 – 군사 충돌 (직접 충격)
+    - term: airstrike
+      pattern: "airstrike|air strike"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: missile strike
+      pattern: "missile strike"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: military strike
+      pattern: "military strike"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: bombing
+      pattern: "bombing"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: ["carpet bombing" ]  # 역사적 표현은 severity 낮춤
+
+    - term: invasion
+      pattern: "invasion"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: armed conflict
+      pattern: "armed conflict"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: war
+      pattern: "\\bwar\\b"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: ["trade war", "price war", "war of words", "cold war", "star wars"]
+
+    - term: retaliation
+      pattern: "retaliation|retaliatory"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: escalation
+      pattern: "escalation|escalate"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: state of emergency
+      pattern: "state of emergency"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    # 강도 4 – 제재 / 수출통제 (정책 충격)
+    - term: sanction
+      pattern: "sanction[s]?"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: secondary sanction
+      pattern: "secondary sanction[s]?"
+      weight: 4
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: embargo
+      pattern: "embargo[es]?"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: export control
+      pattern: "export control[s]?|export ban|export restriction"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: import ban
+      pattern: "import ban"
+      weight: 4
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: entity list
+      pattern: "entity list|blacklist|blocked list"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: asset freeze
+      pattern: "asset freeze|asset seizure"
+      weight: 4
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: tariff
+      pattern: "tariff[s]?"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: ["tariff history", "tariff schedule"]
+
+    - term: trade war
+      pattern: "trade war"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    # 강도 3 – 외교 / 정치 압력
+    - term: diplomatic crisis
+      pattern: "diplomatic crisis|diplomatic tension"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: ceasefire
+      pattern: "ceasefire|cease-fire"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: UN resolution
+      pattern: "UN resolution|security council resolution"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: national security
+      pattern: "national security"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: ["national security adviser", "national security meeting"]  # 일반 정책 언급 제외
+
+    - term: terror attack
+      pattern: "terror attack|terrorist attack"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: militant attack
+      pattern: "militant attack"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: martial law
+      pattern: "martial law"
+      weight: 4
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    # 강도 2 – 자원 무기화 / 광물 제한
+    - term: resource weaponization
+      pattern: "resource weaponi[sz]ation|mineral weapon|critical mineral ban"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: lithium export ban
+      pattern: "lithium.*ban|ban.*lithium"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: cobalt export ban
+      pattern: "cobalt.*ban|ban.*cobalt"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: graphite restriction
+      pattern: "graphite.*restriction|graphite.*ban|graphite.*export"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+
+# ────────────────────────────────────────────────
+# B. LOGISTICS  (해협 / 항만 / 운송 / 보험 / 운임)
+# ────────────────────────────────────────────────
+logistics:
+  notes: 물류/운송/인프라 리스크 - 해협 봉쇄, 항만 파업, 운임 급등
+  keywords:
+
+    # 강도 5 – 경로 차단 / 직접 타격
+    - term: blockade
+      pattern: "blockade"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: strait closed
+      pattern: "strait closed|strait closure|strait blocked"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: shipping halted
+      pattern: "shipping halted|shipping suspended|shipping stopped"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: tanker attack
+      pattern: "tanker attack|tanker struck|tanker seized|oil tanker attack"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: vessel attack
+      pattern: "vessel attack|vessel seized|ship attacked|ship detained"
+      weight: 5
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: drone attack on ship
+      pattern: "drone attack.*ship|drone strike.*vessel"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    # 강도 4 – 병목 / 리스크 급등 (route node 포함)
+    - term: Strait of Hormuz
+      pattern: "Strait of Hormuz|Hormuz Strait|Hormuz"
+      weight: 4
+      is_phrase: true
+      route_node: HORMUZ
+      negatives: []
+
+    - term: Suez Canal
+      pattern: "Suez Canal|Suez"
+      weight: 4
+      is_phrase: true
+      route_node: SUEZ
+      negatives: ["Suez crisis history"]  # 역사적 언급 예외
+
+    - term: Red Sea
+      pattern: "Red Sea"
+      weight: 4
+      is_phrase: true
+      route_node: REDSEA
+      negatives: []
+
+    - term: Bab el-Mandeb
+      pattern: "Bab el-Mandeb|Bab-el-Mandeb"
+      weight: 4
+      is_phrase: true
+      route_node: REDSEA
+      negatives: []
+
+    - term: Malacca Strait
+      pattern: "Malacca Strait|Strait of Malacca"
+      weight: 4
+      is_phrase: true
+      route_node: MALACCA
+      negatives: []
+
+    - term: port strike
+      pattern: "port strike|dock strike|longshoremen strike"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: port congestion
+      pattern: "port congestion|port backlog|port closure"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: freight rate surge
+      pattern: "freight rate.*surge|freight rate.*spike|shipping cost.*surge|shipping cost.*rise"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: insurance premium surge
+      pattern: "insurance premium.*surge|war risk insurance|shipping insurance.*spike"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: reroute
+      pattern: "reroute|re-route|diversion|alternative route"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    # 강도 3 – 운영 차질
+    - term: supply disruption
+      pattern: "supply disruption|supply chain disruption"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: delayed shipment
+      pattern: "delayed shipment[s]?|shipment delay"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: container shortage
+      pattern: "container shortage|container crunch"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: logistics bottleneck
+      pattern: "logistics bottleneck|logistics disruption"
+      weight: 3
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    - term: customs delay
+      pattern: "customs delay|customs seizure|border closure"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: rail strike
+      pattern: "rail strike|railway strike|train strike"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: truck strike
+      pattern: "truck strike|trucker strike|truckers strike"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: factory shutdown
+      pattern: "factory shutdown|factory closure|plant shutdown|production halt"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: power outage
+      pattern: "power outage|blackout|power cut"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: ["planned power outage"]
+
+  # 오탐 방지 negatives (파서에서 전역 체크용, keywords 밖에 위치)
+  global_negatives:
+    - "portfolio"   # "port" + "portfolio" 문맥 → logistics 무시
+    - "report"      # "shipping report" 단독 → 낮은 신뢰
+
+
+# ────────────────────────────────────────────────
+# C. NATURAL DISASTER  (자연재해 / 기후)
+# ────────────────────────────────────────────────
+natural:
+  notes: 자연재해 리스크 - 공장/항만/광산 인근 재해만 채택 권장
+  context_filter:
+    # 재해 키워드 + 아래 단어가 80토큰 이내에 함께 등장해야 high confidence
+    proximity_terms: [factory, plant, mine, port, facility, refinery, warehouse, production]
+    proximity_window_tokens: 150
+  keywords:
+
+    # 강도 5
+    - term: earthquake
+      pattern: "earthquake|seismic"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: tsunami
+      pattern: "tsunami|tidal wave"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: typhoon
+      pattern: "typhoon"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: hurricane
+      pattern: "hurricane"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    # 강도 4
+    - term: flood
+      pattern: "flood|flooding"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: ["flood of orders", "flood of investment"]  # 비유적 표현
+
+    - term: wildfire
+      pattern: "wildfire|forest fire"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: landslide
+      pattern: "landslide"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: ["landslide victory", "landslide win"]  # 선거 비유
+
+    - term: heatwave
+      pattern: "heatwave|heat wave|extreme heat"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: extreme weather
+      pattern: "extreme weather"
+      weight: 4
+      is_phrase: true
+      route_node: null
+      negatives: []
+
+    # 강도 3
+    - term: drought
+      pattern: "drought|water shortage|water stress"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: storm
+      pattern: "\\bstorm\\b"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: ["perfect storm", "brainstorm", "storm of controversy"]  # 비유적 표현
+
+
+# ────────────────────────────────────────────────
+# D. REGULATORY / POLICY  (규제, 정책, 보조금, 환경법)
+# ────────────────────────────────────────────────
+regulatory:
+  notes: 규제·정책 리스크 - EV 보조금 변동, 환경 규제, 반독점, IRA 등
+  keywords:
+
+    - term: regulation
+      pattern: "regulation[s]?|regulatory"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: subsidy cut
+      pattern: "subsidy cut|subsidy.*reduc|subsid.*phase.out|incentive.*cut"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: IRA
+      pattern: "Inflation Reduction Act|IRA.*battery|IRA.*EV|IRA.*clean energy"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: antitrust
+      pattern: "antitrust|anti-trust|monopoly.*investigat|cartel"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: emissions standard
+      pattern: "emission[s]? standard|carbon.*regulation|EU.*battery.*regulation"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: safety recall
+      pattern: "recall|safety defect|NHTSA.*recall|fire risk|battery fire"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: ["recall election"]
+
+    - term: investigation
+      pattern: "investigat.*fraud|investigat.*bribery|SEC.*investigat|probe"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: penalty fine
+      pattern: "penalty|\\bfine[ds]?\\b.*regulat|compliance.*violation"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: ["fine print", "fine tuning"]
+
+
+# ────────────────────────────────────────────────
+# E. MARKET / FINANCIAL  (시장, 재무, 수요, 가격)
+# ────────────────────────────────────────────────
+market:
+  notes: 시장·재무 리스크 - 파산, 수요 감소, 가격 폭락, 구조조정 등
+  keywords:
+
+    - term: bankruptcy
+      pattern: "bankrupt|insolvency|chapter 11|liquidation|wind.?down"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: layoff
+      pattern: "layoff[s]?|lay off|mass firing|job cut[s]?|workforce reduction"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: demand decline
+      pattern: "demand.*declin|demand.*drop|demand.*slump|sales.*plunge|sales.*drop"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: overcapacity
+      pattern: "overcapacity|excess capacity|oversupply|glut"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: price crash
+      pattern: "price.*crash|price.*plunge|price.*collapse|lithium.*price.*drop|cobalt.*price.*drop|nickel.*price.*drop"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: credit downgrade
+      pattern: "credit.*downgrade|rating.*downgrade|debt.*downgrade|default"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: profit warning
+      pattern: "profit warning|earnings.*miss|revenue.*miss|guidance.*cut|guidance.*lower"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+
+# ────────────────────────────────────────────────
+# F. LABOR / SOCIAL  (노동, 파업, 사회 이슈)
+# ────────────────────────────────────────────────
+labor:
+  notes: 노동·사회 리스크 - 파업, 인력 부족, 광산 사고 등
+  keywords:
+
+    - term: strike
+      pattern: "\\bstrike[s]?\\b.*worker|worker.*\\bstrike|labor.*\\bstrike|union.*\\bstrike"
+      weight: 4
+      is_phrase: false
+      route_node: null
+      negatives: ["strike price", "air strike", "missile strike"]
+
+    - term: labor shortage
+      pattern: "labor shortage|worker shortage|skills shortage|talent shortage"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: mine accident
+      pattern: "mine.*accident|mine.*collapse|mining.*disaster|mine.*explosion"
+      weight: 5
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+    - term: protest
+      pattern: "protest.*factory|protest.*mine|protest.*plant|worker.*protest"
+      weight: 3
+      is_phrase: false
+      route_node: null
+      negatives: []
+
+
+# ────────────────────────────────────────────────
+# severity 계산 설정
+# ────────────────────────────────────────────────
+severity_config:
+  formula: "clip( log(1 + severity_raw) / log(1 + S_max), 0, 1 )"
+  S_max: 25                  # 분모 정규화 기준 (최고 강도 5 × 5회 hit)
+  headline_multiplier: 1.5   # 제목에 키워드 포함 시 가중
+  volume_multiplier: 0.1     # 동일 이슈 기사 수 보정 (당일 기사 수 × 0.1 추가)
+  finbert_weight: 0.2        # FinBERT negative sentiment 결합 (선택)
+
+# ────────────────────────────────────────────────
+# 멀티라벨 처리 규칙
+# 동일 기사가 복수 risk_type에 해당할 경우
+# ────────────────────────────────────────────────
+multilabel_rules:
+  priority_order: [geopolitics, logistics, natural, regulatory, market, labor]   # 충돌 시 우선순위
+  allow_multilabel: true                              # 복수 타입 허용
+  min_weight_threshold: 3                             # weight ≥ 3인 hit만 secondary 라벨로 인정

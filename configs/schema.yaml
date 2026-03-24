@@ -1,0 +1,102 @@
+# schema.yaml — 나비효과 EV배터리 공급망 온톨로지 v2
+# 논문 참고: Kosasih et al. (IJPR 2024), AlMahri et al. (IJPR 2025), Zheng et al. (ISWC 2025)
+# 확장일: 2026-03-17
+
+# ─────────────────────────────────────
+# Node Types
+# ─────────────────────────────────────
+node_types:
+- Company        # 기업 (40개 universe)
+- Country        # 국가 (소싱/소재지)
+- Commodity      # 원자재 (Lithium, Cobalt, Nickel, Graphite, Copper 등)
+- Facility       # 물류시설 (항만, 해협 등 route_node)
+- Product        # 제품 (배터리 셀, EV 모델 등) — 논문 C,E 참고 추가
+- Mine           # 광산 (Tier-3 가시성) — 논문 C 참고 추가
+
+# ─────────────────────────────────────
+# Company Stage Enum (value_chain_stage 분류)
+# ─────────────────────────────────────
+company_stage_enum:
+- Upstream         # 광산/채굴
+- Refining         # 정련/제련
+- Materials        # 양극재/음극재/전해질/분리막/동박
+- Cell/Pack        # 배터리 셀/팩 제조
+- OEM              # 완성차 OEM
+- Recycling        # 재활용
+- Other
+
+# ─────────────────────────────────────
+# Relation Types
+# ─────────────────────────────────────
+relation_types:
+
+# === Company ↔ Company ===
+- name: SUPPLIES
+  from: [Company]
+  to: [Company]
+  description: A supplies materials/components to B (방향 = 공급자→수요자)
+
+- name: BUYS_FROM
+  from: [Company]
+  to: [Company]
+  description: A buys/sources from B (방향 = 수요자→공급자). SUPPLIES의 역방향. 하나만 사용 권장.
+
+- name: PARTNERS_WITH
+  from: [Company]
+  to: [Company]
+  description: Partnership / Joint Venture (양방향 대칭)
+
+- name: COMPETES_WITH
+  from: [Company]
+  to: [Company]
+  description: Competitive relation (양방향 대칭)
+
+- name: SUBSIDIARY_OF
+  from: [Company]
+  to: [Company]
+  description: A is a subsidiary/affiliate of B (자회사→모회사)
+
+- name: OWNS
+  from: [Company]
+  to: [Company, Facility, Mine]
+  description: A owns B (기업/시설/광산 소유)
+
+# === Location Relations ===
+- name: LOCATED_IN
+  from: [Company, Facility, Mine]
+  to: [Country]
+  description: A is located/headquartered in B
+
+# === Production Relations ===
+- name: PRODUCES
+  from: [Company, Facility, Mine]
+  to: [Commodity, Product]
+  description: A produces/manufactures B
+
+# === Sourcing Relations (Country-level) ===
+- name: SOURCES_FROM
+  from: [Company]
+  to: [Country]
+  description: A sources raw materials from country B (국가 수준 소싱 의존도)
+
+# === Logistics Relations ===
+- name: DEPENDS_ON_ROUTE
+  from: [Company]
+  to: [Facility]
+  description: A's supply chain depends on logistics route B (항만/해협 의존)
+
+# ─────────────────────────────────────
+# Edge Conventions (정제 규칙)
+# ─────────────────────────────────────
+edge_conventions:
+  # SUPPLIES vs BUYS_FROM: 동일 관계의 양방향 표현.
+  # Seed KG에서는 SUPPLIES만 사용하여 일관성 유지.
+  # BUYS_FROM은 뉴스에서 자동 추출 시에만 허용하며, 추후 SUPPLIES로 정규화.
+  preferred_direction: SUPPLIES
+
+  # 대칭 관계는 (A,B) 한 쌍만 저장 (알파벳 순 src)
+  symmetric_relations: [PARTNERS_WITH, COMPETES_WITH]
+
+  # Company ID는 반드시 universe의 company_id 사용 (약칭 금지)
+  # 예: TSLA(X) → universe에 없으면 제외, 1211.HK(O) for BYD
+  company_id_source: data/universe/univers_final.csv

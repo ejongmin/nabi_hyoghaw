@@ -1,0 +1,130 @@
+project:
+  name: '나비효과: EV-배터리 공급망 리스크 MVP'
+  timezone: Asia/Seoul
+  start_date: '2026-03-06'
+  end_date: '2026-06-01'
+  root_dir: .
+paths:
+  universe_csv: data/universe/univers_final.csv
+  universe_yaml: data/universe/ev_battery_universe_20260222_035456.yaml
+  seed_edges_csv: data/seed/seed_edges.csv
+  tickers_generated_txt: data/processed/tickers_yfinance.txt
+  ticker_map_parquet: data/processed/ticker_map.parquet
+  gdelt_articles_csv: data/raw/gdelt/articles_8y.csv
+  gdelt_bq_parquet_dir: data/raw/gdelt
+  gdelt_bq_risk_events_parquet: data/processed/risk_events_bq.parquet
+  prices_parquet: data/processed/prices_daily.parquet
+  risk_events_parquet: data/processed/risk_events.parquet
+  kg_nodes_parquet: data/processed/kg_nodes.parquet
+  kg_edges_parquet: data/processed/kg_edges.parquet
+  exposure_parquet: data/processed/exposure_baseline.parquet
+  car_panel_parquet: data/processed/car_panel.parquet
+  backtest_equity_csv: reports/backtest_equity.csv
+  reports_dir: reports
+  universe_normalized_csv: data/processed/universe_normalized.csv
+  universe_validation_report_md: reports/universe_validation_report.md
+  seed_mapping_yaml: configs/seed_mapping.yaml
+  seed_import_report_md: reports/seed_import_report.md
+schema:
+  schema_yaml: configs/schema.yaml
+  allowed_relations:
+  - SUPPLIES
+  - BUYS_FROM
+  - PARTNERS_WITH
+  - COMPETES_WITH
+  - SUBSIDIARY_OF
+  - OWNS
+  - LOCATED_IN
+  - PRODUCES
+  - SOURCES_FROM
+  - DEPENDS_ON_ROUTE
+ticker_provider:
+  provider: yfinance
+  normalize_rules:
+    .SH: .SS
+    .SZ: .SZ
+    .HK: .HK
+    .KS: .KS
+    .KQ: .KQ
+gdelt:
+  source: bigquery  # bigquery | doc_api (실시간 업데이트 시 doc_api 병용)
+  language: English
+  keyword_query: export ban OR sanction OR tariff OR embargo OR strike OR port disruption
+    OR shipping delay OR earthquake OR flood OR wildfire
+  max_records: 2000
+  dedup_on:
+  - url
+  retries: 5
+  retry_backoff_sec: 5.0
+risk:
+  keywords_yaml: configs/risk_keywords.yaml
+  aliases_yaml: configs/company_aliases.yaml
+  use_finbert: false
+  finbert_model: ProsusAI/finbert
+  severity:
+    base: 1.0
+    keyword_weight: 0.4
+    finbert_weight: 0.2
+    max_cap: 5.0
+  filter_no_entity_events: false
+entity_linking:
+  min_fuzzy_score: 80
+  max_entities_per_article: 3
+  use_company_id_as_alias: true
+  use_tickers_as_aliases: true
+quality_gate:
+  prices_missing_rate_max: 0.03
+  news_dedup_ratio_warn: 0.35
+  entity_link_success_min: 0.85
+  kg_edges_need_evidence_min: 0.8
+kg:
+  use_undirected_for_exposure: false
+  edge_weight:
+    weight_mode: confidence_times_strength
+    default_confidence: 0.5
+    default_strength: 1.0
+  dynamic:
+    enabled: false
+    node_risk_decay_lambda: 0.02
+    edge_decay_lambda: 0.01
+exposure:
+  baseline:
+    lambda_dist: 0.7
+    rwr_restart_prob: 0.15
+    rwr_iters: 50
+finance:
+  car:
+    estimation_window:
+    - -120
+    - -20
+    event_windows_trading_days:
+    - 21
+    - 63
+    - 126
+    - 252
+    topk_companies_per_event: 15
+  backtest:
+    rebalance: W-FRI
+    exclude_quantile: 0.2
+    risk_decay_lambda: 0.03
+gnn:
+  enabled: false
+  model:
+    hidden_dim: 32
+    heads: 4
+    dropout: 0.1
+  train:
+    epochs: 30
+    lr: 0.001
+    weight_decay: 0.0001
+    seed: 42
+prices:
+  lookback_days: 300
+  batch_size: 30
+universe_normalization:
+  enabled: true
+  write_normalized: true
+  priority_yaml: configs/universe_priority.yaml
+seed_import:
+  min_fuzzy_score: 88
+  mode_default: append

@@ -1,0 +1,328 @@
+# company_aliases.yaml
+# 기업별 GDELT 뉴스 매칭용 alias 목록
+# company_id → [alias1, alias2, ...]
+# 주의: 일반 영단어와 겹치는 짧은 alias 사용 금지 (gem, ace, eve 등)
+
+# ────────────────────────────────────────
+# Cell / Pack (배터리 셀·팩 제조사)
+# ────────────────────────────────────────
+"300750.SZ":   # CATL
+  - CATL
+  - Contemporary Amperex
+  - Contemporary Amperex Technology
+  - Contemporary Amperex Technology Co
+  - Ningde Times
+  - CATL battery
+  - CATL batteries
+  - 宁德时代
+
+"373220.KS":   # LG Energy Solution
+  - LG Energy
+  - LGES
+  - LG Energy Solution
+  - LG Energy Solutions
+
+"1211.HK":     # BYD
+  - BYD
+  - BYD Company
+  - BYD Auto
+  - BYD Co
+  - 比亚迪
+
+"051910.KS":   # LG Chem
+  - LG Chem
+  - LG Chemical
+  - LG Chem Ltd
+  - Lg Chem
+
+"300014.SZ":   # EVE Energy
+  - EVE Energy
+  - EVE Energy Co
+  - Eve Energy Co Ltd
+  - 亿纬锂能
+
+"300207.SZ":   # Sunwoda
+  - Sunwoda
+  - Sunwoda Electronic
+  - Sunwoda Electronic Co
+  - 欣旺达
+
+"3931.HK":     # CALB
+  - CALB
+  - CALB Group
+  - CALB Co
+  - China Aviation Lithium Battery
+  - China Aviation Lithium
+  - CALB Group Co
+  - CALB Technology
+  - 中创新航
+  - 中航锂电
+
+"002074.SZ":   # Gotion High-Tech
+  - Gotion
+  - Gotion High-Tech
+  - Guoxuan
+  - Guoxuan High-Tech
+  - 国轩高科
+
+
+# ────────────────────────────────────────
+# Materials (소재·부품)
+# ────────────────────────────────────────
+"247540.KQ":   # EcoPro BM
+  - EcoPro
+  - EcoPro BM
+  - EcoPro Co
+
+"066970.KS":   # L&F
+  - "L&F"
+  - L and F
+  - LnF
+  - LF Co
+
+"003670.KS":   # POSCO Future M
+  - POSCO Future
+  - POSCO Future M
+  - POSCO Chemical
+  - POSCO Holdings
+  - Posco
+  - Posco Future M
+  - POSCO Holdings Inc
+
+"300919.SZ":   # CNGR
+  - CNGR
+  - CNGR Advanced Material
+  - CNGR Advanced
+  - CNGR Advanced Material Co
+  - CNGR New Material
+  - CNGR Advanced Materials
+  - 中伟新材
+  - 中伟新材料
+  - 中伟股份
+
+"603659.SH":   # Putailai
+  - Putailai
+  - Putailai New Energy
+  - Putailai New Energy Technology
+  - Shanghai Putailai
+  - 璞泰来
+  - 璞泰来新能源
+
+"300037.SZ":   # Capchem
+  - Capchem
+  - Shenzhen Capchem
+  - Capchem Technology
+  - Capchem Tech
+  - Shenzhen Capchem Technology
+  - 新宙邦
+  - 深圳新宙邦
+
+"600110.SH":   # Nuode
+  - Nuode
+  - Nuode Investment
+  - Nuode New Material
+  - Nuode Co Ltd
+  - Nuode New Materials
+  - Shenzhen Nuode
+  - 诺德股份
+  - 诺德投资
+  - 深圳诺德
+
+"688388.SH":   # Jiayuan
+  - Jiayuan
+  - Jiayuan International
+  - Jiayuan Technology
+  - Jiayuan Copper
+  - Jiayuan Tech
+  - Anhui Jiayuan
+  - 嘉元科技
+  - 嘉元铜箔
+
+"002340.SZ":   # GEM Co (주의: bare "GEM" 사용 금지 - 일반 영단어 오매칭)
+  - GEM Co
+  - GEM Co Ltd
+
+"920185.BJ":   # BTR
+  - BTR
+  - BTR New Material
+  - BTR New Energy
+
+"3407.T":      # Asahi Kasei
+  - Asahi Kasei
+  - Asahi Kasei Corp
+  - Asahi Kasei Corporation
+
+
+# ────────────────────────────────────────
+# Upstream / Refining (원자재·정련)
+# ────────────────────────────────────────
+"002460.SZ":   # Ganfeng Lithium
+  - Ganfeng
+  - Ganfeng Lithium
+  - Ganfeng Lithium Co
+  - Jiangxi Ganfeng
+  - Jiangxi Ganfeng Lithium
+
+"002466.SZ":   # Tianqi Lithium
+  - Tianqi
+  - Tianqi Lithium
+  - Tianqi Lithium Corp
+  - Sichuan Tianqi
+  - Tianqi Lithium Industries
+
+"603799.SH":   # Huayou Cobalt
+  - Huayou
+  - Huayou Cobalt
+  - Zhejiang Huayou
+  - Huayou Cobalt Co
+  - Zhejiang Huayou Cobalt
+
+"603993.SH":   # CMOC
+  - CMOC
+  - CMOC Group
+  - China Moly
+  - China Molybdenum
+  - CMOC Group Limited
+
+"600362.SH":   # Jiangxi Copper
+  - Jiangxi Copper
+  - Jiangxi Copper Company
+  - Jiangxi Copper Co
+  - Jiangxi Copper Corp
+  - Jiangxi Copper Group
+
+"ALB":         # Albemarle
+  - Albemarle
+  - Albemarle Corp
+  - Albemarle Corporation
+
+"SQM":         # SQM
+  - SQM
+  - Sociedad Quimica y Minera
+  - Sociedad Quimica
+
+"GLEN.L":      # Glencore
+  - Glencore
+  - Glencore PLC
+  - Glencore International
+
+
+# ────────────────────────────────────────
+# OEM (완성차)
+# ────────────────────────────────────────
+"BMW.DE":      # BMW
+  - BMW
+  - Bayerische Motoren
+  - BMW Group
+  - BMW AG
+
+"VOW3.DE":     # Volkswagen
+  - Volkswagen
+  - VW
+  - Volkswagen AG
+  - Volkswagen Group
+  - VW Group
+
+"MBG.DE":      # Mercedes-Benz
+  - Mercedes-Benz
+  - Mercedes Benz
+  - Daimler
+  - Mercedes-Benz Group
+
+"TSLA":        # Tesla
+  - Tesla
+  - Tesla Motors
+  - Tesla Inc
+  - Tesla Energy
+
+"F":           # Ford
+  - Ford Motor
+  - Ford Motor Company
+  - Ford Motor Co
+
+"GM":          # General Motors
+  - General Motors
+  - General Motors Company
+  - General Motors Co
+
+"LCID":        # Lucid
+  - Lucid Motors
+  - Lucid Group
+  - Lucid
+
+"RIVN":        # Rivian
+  - Rivian
+  - Rivian Automotive
+
+"7267.T":      # Honda
+  - Honda Motor
+  - Honda
+  - Honda Motor Co
+
+"7203.T":      # Toyota
+  - Toyota Motor
+  - Toyota
+  - Toyota Motor Corp
+
+"0175.HK":    # Geely
+  - Geely
+  - Geely Automobile
+  - Geely Auto
+  - Zhejiang Geely
+
+"600733.SH":   # BAIC
+  - BAIC
+  - BAIC BluePark
+  - BAIC Motor
+  - BAIC Group
+  - Beijing Automotive
+
+"000625.SZ":   # Changan
+  - Changan
+  - Changan Auto
+  - Changan Automobile
+  - Chongqing Changan
+
+"600006.SH":   # Dongfeng
+  - Dongfeng
+  - Dongfeng Motor
+  - Dongfeng Motor Corp
+  - Dongfeng Motor Group
+  - Dongfeng Auto
+
+"601238.SH":   # GAC
+  - GAC
+  - GAC Group
+  - GAC Motor
+  - Guangzhou Automobile
+  - GAC Aion
+  - Guangzhou Auto
+
+"601633.SH":   # Great Wall Motor
+  - Great Wall Motor
+  - Great Wall Motors
+  - GWM
+  - Great Wall Motor Company
+
+"600418.SH":   # JAC
+  - JAC Motors
+  - JAC
+  - Anhui Jianghuai
+  - JAC Automobile
+
+"LICY":        # Li-Cycle
+  - Li-Cycle
+  - Li Cycle
+  - Li-Cycle Holdings
+  - Li-Cycle Corp
+  - Li-Cycle Holdings Corp
+
+
+# ────────────────────────────────────────
+# Chemical (화학)
+# ────────────────────────────────────────
+"BAS.DE":      # BASF
+  - BASF
+  - BASF SE
+  - BASF AG
+  - BASF Corporation

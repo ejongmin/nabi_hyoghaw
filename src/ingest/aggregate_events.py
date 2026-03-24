@@ -36,6 +36,93 @@ def _normalize_entity_key(entity_ids) -> str:
         return ""
 
 
+def _normalize_company_bias(agg: pd.DataFrame) -> pd.DataFrame:
+    """
+    기업 편향 보정:
+
+    문제: BMW 79만건 vs Nuode 8건 → 절대 severity가 대기업에 편중
+
+    해결 1 — Z-score 정규화 (기업별 "평소 대비 이상치")
+      BMW 평소 하루 severity 3.5 → 오늘 4.5 = z=1.5 (약간 이상)
+      Nuode 평소 하루 severity 2.0 → 오늘 4.5 = z=3.0 (매우 이상)
+      → 같은 severity 4.5여도 Nuode가 더 강한 시그널
+
+    해결 2 — Inverse Frequency Weighting (희소 기업 시그널 증폭)
+      BMW 이벤트 1건 가중치: 1/log(총이벤트수) → 낮음
+      Nuode 이벤트 1건 가중치: 1/log(총이벤트수) → 높음
+      → TF-IDF 원리: 희소할수록 정보 가치 높음
+
+    출력: severity_zscore, severity_ifw 컬럼 추가 (원본 severity 보존)
+    """
+    log.info("  Normalizing company bias (z-score + inverse frequency)...")
+
+    # entity_key에서 첫 번째 기업 ID 추출 (primary entity)
+    def _get_primary(x):
+        try:
+            if x is not None and hasattr(x, '__len__') and len(x) > 0:
+                return str(x[0])
+        except (TypeError, IndexError, KeyError):
+            pass
+        return ""
+    agg["_primary_entity"] = agg["entity_ids"].apply(_get_primary)
+
+    # ── Z-score 정규화 ──
+    # 기업별 severity 통계 (평소 baseline)
+    company_stats = agg.groupby("_primary_entity")["severity"].agg(["mean", "std", "count"])
+    company_stats["std"] = company_stats["std"].replace(0, 1.0)  # std=0 방지
+    company_stats.columns = ["sev_mean", "sev_std", "event_count"]
+
+    agg = agg.merge(
+        company_stats[["sev_mean", "sev_std", "event_count"]],
+        left_on="_primary_entity",
+        right_index=True,
+        how="left",
+    )
+
+    # z-score: (severity - company_mean) / company_std
+    agg["severity_zscore"] = (agg["severity"] - agg["sev_mean"]) / agg["sev_std"]
+    # clip to reasonable range
+    agg["severity_zscore"] = agg["severity_zscore"].clip(-3.0, 5.0)
+
+    # ── Inverse Frequency Weighting ──
+    # log(total_events / company_events) → 희소 기업일수록 높은 가중치
+    total_events = len(agg)
+    agg["ifw"] = np.log1p(total_events / agg["event_count"].clip(lower=1))
+    # normalize to [0, 1] range
+    ifw_max = agg["ifw"].max()
+    if ifw_max > 0:
+        agg["ifw"] = agg["ifw"] / ifw_max
+
+    # severity_ifw = severity * ifw (희소 기업의 severity 증폭)
+    agg["severity_ifw"] = agg["severity"] * agg["ifw"]
+    # re-scale to 1.0~5.0
+    sev_min, sev_max = agg["severity_ifw"].min(), agg["severity_ifw"].max()
+    if sev_max > sev_min:
+        agg["severity_ifw"] = 1.0 + 4.0 * (agg["severity_ifw"] - sev_min) / (sev_max - sev_min)
+    agg["severity_ifw"] = agg["severity_ifw"].round(3)
+
+    # ── Combined score (z-score와 ifw를 blend) ──
+    # severity_adjusted = 0.5 * severity_zscore_rescaled + 0.5 * severity_ifw
+    zscore_rescaled = 1.0 + 4.0 * (agg["severity_zscore"] - agg["severity_zscore"].min()) / \
+                      max(agg["severity_zscore"].max() - agg["severity_zscore"].min(), 1e-6)
+    agg["severity_adjusted"] = (0.5 * zscore_rescaled + 0.5 * agg["severity_ifw"]).round(3)
+    agg["severity_adjusted"] = agg["severity_adjusted"].clip(1.0, 5.0)
+
+    # 로깅
+    top5 = company_stats.nlargest(5, "event_count")
+    bot5 = company_stats[company_stats["event_count"] > 0].nsmallest(5, "event_count")
+    log.info(f"    Top-5 by events: {dict(zip(top5.index, top5['event_count']))}")
+    log.info(f"    Bottom-5 by events: {dict(zip(bot5.index, bot5['event_count']))}")
+    log.info(f"    IFW range: [{agg['ifw'].min():.3f}, {agg['ifw'].max():.3f}]")
+    log.info(f"    severity_adjusted range: [{agg['severity_adjusted'].min():.3f}, {agg['severity_adjusted'].max():.3f}]")
+
+    # 임시 컬럼 정리
+    agg.drop(columns=["_primary_entity", "sev_mean", "sev_std", "event_count", "ifw"], inplace=True)
+
+    log.info("  ✅ Bias normalization complete (added: severity_zscore, severity_ifw, severity_adjusted)")
+    return agg
+
+
 def aggregate_risk_events(
     risk_path: Path,
     out_path: Path,
@@ -142,6 +229,9 @@ def aggregate_risk_events(
              f"({100*(1-len(agg)/len(df)):.1f}% reduction)")
     log.info(f"   Articles per event: mean={agg['n_articles'].mean():.1f}, "
              f"max={agg['n_articles'].max()}")
+
+    # ── 기업 편향 보정: z-score 정규화 + inverse frequency weighting ──
+    agg = _normalize_company_bias(agg)
 
     # 저장
     out_path.parent.mkdir(parents=True, exist_ok=True)

@@ -21,6 +21,9 @@
   - LGES
   - LG Energy Solution
   - LG Energy Solutions
+  - LG에너지솔루션
+  - LG엔솔
+  - LG新能源
 
 "1211.HK":     # BYD
   - BYD
@@ -34,6 +37,8 @@
   - LG Chemical
   - LG Chem Ltd
   - Lg Chem
+  - LG화학
+  - LG化学
 
 "300014.SZ":   # EVE Energy
   - EVE Energy
@@ -73,12 +78,17 @@
   - EcoPro
   - EcoPro BM
   - EcoPro Co
+  - 에코프로비엠
+  - 에코프로
+  - エコプロ
 
 "066970.KS":   # L&F
   - "L&F"
   - L and F
   - LnF
   - LF Co
+  - 엘앤에프
+  - 엘엔에프
 
 "003670.KS":   # POSCO Future M
   - POSCO Future
@@ -88,6 +98,9 @@
   - Posco
   - Posco Future M
   - POSCO Holdings Inc
+  - 포스코퓨처엠
+  - 포스코케미칼
+  - 포스코홀딩스
 
 "300919.SZ":   # CNGR
   - CNGR
@@ -146,11 +159,15 @@
   - BTR
   - BTR New Material
   - BTR New Energy
+  - 贝特瑞
+  - 贝特瑞新材料
+  - 贝特瑞新能源
 
 "3407.T":      # Asahi Kasei
   - Asahi Kasei
   - Asahi Kasei Corp
   - Asahi Kasei Corporation
+  - 旭化成
 
 
 # ────────────────────────────────────────
@@ -258,17 +275,23 @@
   - Honda Motor
   - Honda
   - Honda Motor Co
+  - ホンダ
+  - 本田技研工業
 
 "7203.T":      # Toyota
   - Toyota Motor
   - Toyota
   - Toyota Motor Corp
+  - トヨタ
+  - トヨタ自動車
 
 "0175.HK":    # Geely
   - Geely
   - Geely Automobile
   - Geely Auto
   - Zhejiang Geely
+  - 吉利汽车
+  - 吉利控股
 
 "600733.SH":   # BAIC
   - BAIC
@@ -276,12 +299,16 @@
   - BAIC Motor
   - BAIC Group
   - Beijing Automotive
+  - 北汽蓝谷
+  - 北京汽车
 
 "000625.SZ":   # Changan
   - Changan
   - Changan Auto
   - Changan Automobile
   - Chongqing Changan
+  - 长安汽车
+  - 重庆长安
 
 "600006.SH":   # Dongfeng
   - Dongfeng
@@ -303,12 +330,15 @@
   - Great Wall Motors
   - GWM
   - Great Wall Motor Company
+  - 长城汽车
 
 "600418.SH":   # JAC
   - JAC Motors
   - JAC
   - Anhui Jianghuai
   - JAC Automobile
+  - 江淮汽车
+  - 安徽江淮
 
 "LICY":        # Li-Cycle
   - Li-Cycle

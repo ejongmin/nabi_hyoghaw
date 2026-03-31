@@ -141,7 +141,7 @@ def aggregate_risk_events(
 
     # 필요 컬럼만 로드
     needed = ["event_id", "event_time", "url", "risk_types",
-              "severity", "entity_ids", "tone", "country_ids"]
+              "severity", "entity_ids", "finbert", "country_ids"]
     pf = pq.ParquetFile(risk_path)
     available = set(pf.schema_arrow.names)
     use_cols = [c for c in needed if c in available]
@@ -186,7 +186,7 @@ def aggregate_risk_events(
             "url": row["url"],
             "severity": g["severity"].max(),
             "severity_mean": g["severity"].mean(),
-            "tone": g["tone"].mean(),
+            "tone": g["finbert"].mean() if "finbert" in g.columns else 0.0,
             "risk_types": ",".join(sorted(all_types)) if all_types else "other",
             "entity_ids": row["entity_ids"],
             "country_ids": row.get("country_ids", ""),

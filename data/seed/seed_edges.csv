@@ -1,4 +1,4 @@
-﻿src_company_id,rel_type,dst_company_id,confidence_plink,strength,evidence,source,valid_from,valid_to,risk_rationale
+src_company_id,rel_type,dst_company_id,confidence_plink,strength,evidence,source,valid_from,valid_to,risk_rationale
 373220.KS,SUPPLIES,GM,1.0,1.0,LG Energy Solution supplies to GM via Ultium Cells JV established Dec 2019,Bloomberg_2019-12-05,2019-12-05,,
 373220.KS,SUPPLIES,F,1.0,1.0,LG Energy Solution supplies batteries to Ford; $6.5B deal terminated Dec 2025,WardsAuto_2025-12,2020-01-01,2025-12-01,
 002460.SZ,SUPPLIES,300750.SZ,1.0,0.9,Ganfeng Lithium supplies lithium compounds to CATL per long-term offtake,Ganfeng_AR2022,2018-01-01,,
@@ -38,7 +38,7 @@ Shanghai_Port,LOCATED_IN,China,1.0,1.0,Shanghai Port is world's largest containe
 Long_Beach_Port,LOCATED_IN,USA,1.0,1.0,Long Beach Port is key US West Coast logistics hub for EV/battery imports,Port_Authority_2023,,,Long Beach Port in USA -> exposed to US West Coast port labor disputes; congestion risk; potential tariff enforcement chokepoint
 920185.BJ,SUPPLIES,300750.SZ,1.0,0.9,BTR New Material supplies anode materials (graphite) to CATL,BTR_AR2022,2018-01-01,,
 920185.BJ,SUPPLIES,373220.KS,1.0,0.8,BTR New Material supplies anode materials to LGES,BTR_AR2022,2018-01-01,,
-300014.SZ,SUPPLIES,BMW.DE,1.0,0.7,EVE Energy supplies battery cells to BMW for PHEV/BEV models,EVE_AR2022,2020-01-01,,
+300014.SZ,SUPPLIES,BMW.DE,1.0,0.7,EVE Energy supplies battery cells to BMW for PHEV/BEV models [Note: Not named in BMW AR; confirmed via BMW Press Release only],EVE_AR2022,2020-01-01,,
 300207.SZ,SUPPLIES,0175.HK,1.0,0.7,Sunwoda supplies battery packs to Geely for BEV/PHEV models,Sunwoda_AR2022,2019-01-01,,
 300207.SZ,SUPPLIES,601238.SH,0.9,0.6,Sunwoda supplies battery packs to GAC Group,Sunwoda_AR2022,2020-01-01,,
 300919.SZ,SUPPLIES,300750.SZ,1.0,0.9,CNGR Advanced Material supplies ternary precursors to CATL,CNGR_AR2022,2018-01-01,,
@@ -98,7 +98,7 @@ BMW.DE,LOCATED_IN,Germany,1.0,1.0,BMW is headquartered in Munich Germany,Company
 ALB,LOCATED_IN,USA,1.0,1.0,Albemarle is headquartered in Charlotte North Carolina USA,Company_Registration,2015-01-01,,Albemarle in USA -> exposed to US IRA incentives (positive); Chile/Australia operational risks propagate to HQ; lithium price volatility
 GLEN.L,LOCATED_IN,UK,1.0,1.0,Glencore is headquartered in Baar Switzerland (listed in London),Company_Registration,2015-01-01,,Glencore in UK/Switzerland -> exposed to EU/UK ESG regulations; sanctions compliance risk; DRC operational risk propagates
 LICY,LOCATED_IN,Canada,1.0,1.0,Li-Cycle was headquartered in Toronto Canada; filed for bankruptcy May 2025,Company_Registration,2015-01-01,2025-05-15,Li-Cycle in Canada -> exposed to startup scaling risk; Glencore acquired assets post-bankruptcy; recycling economics challenged by low lithium prices
-300750.SZ,SUPPLIES,BMW.DE,1.0,0.9,CATL supplies battery cells to BMW; EUR 7.3B order volume announced; cylindrical cell deal for Neue Klasse,BMW_PR_2022,2019-01-01,,
+300750.SZ,SUPPLIES,BMW.DE,1.0,0.9,CATL supplies battery cells to BMW; EUR 7.3B order volume announced; cylindrical cell deal for Neue Klasse [Note: Not named in BMW AR; confirmed via BMW Press Release only],BMW_PR_2022,2019-01-01,,
 002460.SZ,SUPPLIES,BMW.DE,1.0,0.7,Ganfeng Lithium supplies lithium products to BMW supply chain,Ganfeng_AR2022,2019-01-01,,
 002466.SZ,SUPPLIES,373220.KS,0.9,0.6,Tianqi Lithium supplies lithium to LGES,Tianqi_AR2022,2021-01-01,,
 ALB,SUPPLIES,300750.SZ,1.0,0.7,Albemarle supplies lithium hydroxide to CATL,Albemarle_AR2022,2019-01-01,,
@@ -117,7 +117,7 @@ GLEN.L,SUPPLIES,373220.KS,1.0,0.8,Glencore supplies cobalt to LGES from DRC oper
 300750.SZ,SUPPLIES,601633.SH,1.0,0.8,CATL supplies batteries to Great Wall Motor,CATL_AR2022,2019-01-01,,
 300750.SZ,SUPPLIES,600006.SH,1.0,0.8,CATL supplies batteries to Dongfeng Motor,CATL_AR2022,2019-01-01,,
 300750.SZ,SUPPLIES,600418.SH,1.0,0.7,CATL supplies batteries to JAC Motors,CATL_AR2022,2019-01-01,,
-373220.KS,SUPPLIES,7267.T,1.0,0.8,LG Energy Solution supplies batteries to Honda via Ohio JV (L-H Battery Company),LGES_PR_2022-10,2022-01-01,,
+373220.KS,SUPPLIES,7267.T,1.0,0.8,"Honda 20-F FY2024: LG Energy Solution JV confirmed (L-H Battery Company, US$1.73B). Also supplies battery modules for Honda Prologue.",Honda_20F_FY2024,2022-01-01,,
 603993.SH,SUPPLIES,373220.KS,0.8,0.6,CMOC supplies cobalt to LG Energy Solution supply chain,CMOC_AR2022,2020-01-01,,
 002460.SZ,LOCATED_IN,Australia,0.9,0.6,Ganfeng Lithium has operations at Mt Marion lithium mine in Western Australia,Ganfeng_AR2022,2018-01-01,,Ganfeng in Australia -> exposed to Australian critical minerals export policy; Aboriginal heritage site regulations; mine permitting delays
 002466.SZ,LOCATED_IN,Australia,0.9,0.7,"Tianqi Lithium holds 51% stake in Greenbushes spodumene mine, Western Australia",Tianqi_AR2022,2018-01-01,,Tianqi in Australia -> exposed to Australian FIRB foreign investment review; critical minerals export controls; Greenbushes is world's largest hard-rock lithium mine
@@ -147,9 +147,9 @@ LICY,SUPPLIES,GLEN.L,0.7,0.4,Li-Cycle supplied recycled battery materials (black
 1211.HK,SUPPLIES,7203.T,0.9,0.7,BYD supplies Blade Battery to Toyota for bZ series EVs,Bloomberg_2020,2020-01-01,,
 300750.SZ,SUPPLIES,TSLA,1.0,1.0,CATL is primary battery supplier to Tesla Shanghai/Berlin; supply agreement signed Feb 2020,Nasdaq_2020-02-03,2020-02-03,,
 373220.KS,SUPPLIES,TSLA,1.0,0.8,LG Energy Solution supplies 2170/4680 cells to Tesla Nevada and Shanghai plants,LGES_AR2022,2019-01-01,,
-300750.SZ,SUPPLIES,VOW3.DE,1.0,0.9,CATL supplies batteries to Volkswagen; strategic partnership with VW certification June 2021,Electrive_2021,2018-01-01,,
-002074.SZ,SUPPLIES,VOW3.DE,1.0,0.9,Gotion High-Tech supplies batteries to VW; VW acquired 26% stake May 2020 for EUR 1.1B,VW_PR_2020-05-29,2020-05-29,,
-300750.SZ,SUPPLIES,MBG.DE,1.0,0.9,CATL supplies battery cells to Mercedes-Benz; major partnership announced Aug 2020,Mercedes_PR_2020-08,2019-01-01,,
+300750.SZ,SUPPLIES,VOW3.DE,1.0,0.9,CATL supplies batteries to Volkswagen; strategic partnership with VW certification June 2021 [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],Electrive_2021,2018-01-01,,
+002074.SZ,SUPPLIES,VOW3.DE,1.0,0.9,"VW AR 2022 p.304: 'strategic framework for cooperation in development, manufacture and distribution of battery cells'. Electrive 2025: Gotion mass-producing VW standard cells.",VW_PR_2020-05-29,2020-05-29,,
+300750.SZ,SUPPLIES,MBG.DE,1.0,0.9,"Mercedes AR 2022 p.44: 'expanding battery cell partnership with CATL, new production site in Hungary. CATL Debrecen to supply European production sites.'",Mercedes_PR_2020-08,2019-01-01,,
 373220.KS,SUPPLIES,MBG.DE,0.9,0.7,LG Energy Solution supplies battery cells to Mercedes-Benz,LGES_AR2022,2020-01-01,,
 300014.SZ,SUPPLIES,MBG.DE,0.9,0.7,EVE Energy supplies battery packs to Mercedes-Benz for EREV models,EVE_AR2022,2021-01-01,,
 300750.SZ,SUPPLIES,RIVN,0.5,0.3,CATL explored LFP battery supply to Rivian but no confirmed agreement as of 2023,Unconfirmed_Industry_Speculation,2022-01-01,,
@@ -209,7 +209,7 @@ ALB,SUPPLIES,096770.KS,1.0,0.8,"10-K FY2023: Sample swaps could potentially offs
 300750.SZ,SUPPLIES,F,1.0,0.8,CATL supplies batteries to Ford (Benchmark Minerals 2024),Benchmark_Minerals_2024,2022-01-01,,
 300750.SZ,SUPPLIES,7267.T,1.0,0.8,CATL supplies batteries to Honda in China (Honda Global 2023),Honda_Global_2023,2020-01-01,,
 BAS.DE,SUPPLIES,373220.KS,0.9,0.7,BASF and LG piloted single-crystal NMC-90 cathode,Industry_News_chargedevs,2022-01-01,,
-BAS.DE,SUPPLIES,300750.SZ,1.0,0.8,BASF-CATL framework agreement for CAM (basf.com 2025-07),BASF_PR_2025-07,2021-01-01,,
+BAS.DE,SUPPLIES,300750.SZ,1.0,0.8,BASF AR 2021 p.30: cooperative agreement with CATL. BASF Press 2025-07-28: framework agreement for cathode active materials (CAM) supply confirmed.,BASF_PR_2025-07,2021-01-01,,
 300750.SZ,SUPPLIES,600733.SH,1.0,0.8,BAIC-CATL-Xiaomi JV for battery mfg (stcn.com 2024),Industry_News_stcn_2024,2023-01-01,,
 603993.SH,SUPPLIES,GLEN.L,0.8,0.6,"CMOC and Glencore top 2 global cobalt producers, trade via IXM",Industry_Analysis_2023,2020-01-01,,
 603993.SH,SUPPLIES,1211.HK,0.8,0.6,CMOC supplies cobalt/copper to BYD supply chain,Industry_Analysis_2023,2021-01-01,,
@@ -228,3 +228,32 @@ GLEN.L,OWNS,LICY,1.0,1.0,"Glencore acquired Li-Cycle for 40M USD, Aug 2025 (wast
 002340.SZ,SUPPLIES,096770.KS,0.7,0.5,GEM European recycling circular supply chain targeting SK On (Rho Motion),RhoMotion_2024,2023-01-01,,
 688388.SH,SUPPLIES,3931.HK,0.9,0.7,CALB is Jiayuan #3 customer for copper foil per 2023 AR top 5 (TF Finance),Jiayuan_AR2023_前五大客户,2023-01-01,,
 688388.SH,SUPPLIES,373220.KS,0.8,0.6,Jiayuan has stable cooperation with LG Energy Solution for copper foil (gdjygf.com official site),Jiayuan_Official_2024,2023-01-01,,
+300750.SZ,SUPPLIES,BMW.DE,1.0,0.95,CATL supplies battery cells to BMW; EUR 7.3B order volume announced; cylindrical cell deal for Neue Klasse [Note: Not named in BMW AR; confirmed via BMW Press Release only],BMW_Press_2019,2020-01-01,2031-12-31,CATL is BMW largest battery cell supplier with EUR7.3B contract
+006400.KS,SUPPLIES,BMW.DE,1.0,0.9,BMW Press 2019-11-14: Samsung SDI long-term supply contract EUR2.9B (2021-2031) for 5th-gen electric drivetrains. bmwgroup.com/T0302864EN [Note: Not named in BMW AR; confirmed via BMW Press Release only],BMW_Press_2019,2021-01-01,2031-12-31,Samsung SDI is BMW 2nd battery cell supplier
+300014.SZ,SUPPLIES,BMW.DE,0.95,0.85,EVE Energy supplies battery cells to BMW for PHEV/BEV models [Note: Not named in BMW AR; confirmed via BMW Press Release only],BMW_EVE_Press_2022,2025-01-01,2030-12-31,EVE Energy is BMW Neue Klasse battery supplier
+BAS.DE,SUPPLIES,BMW.DE,0.8,0.7,BMW Press 2019: BMW sources cobalt/lithium directly from mines for CATL/Samsung SDI. BASF TODA in CAM value chain.,BMW_Press_2019,2019-01-01,2025-12-31,BASF in BMW battery materials supply chain via CAM
+300750.SZ,SUPPLIES,VOW3.DE,1.0,0.9,CATL supplies batteries to Volkswagen; strategic partnership with VW certification June 2021 [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],VW_AR_2023,2020-01-01,2030-12-31,CATL is major external battery cell supplier to VW Group
+373220.KS,SUPPLIES,VOW3.DE,0.95,0.85,VW AR 2023: External cell suppliers include LG Energy Solution. LG supplies pouch cells for VW ID. series in Europe. [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],VW_AR_2023,2020-01-01,2025-12-31,LG Energy Solution supplies VW ID. series battery cells
+006400.KS,SUPPLIES,VOW3.DE,0.95,0.8,VW AR 2023: External cell suppliers include Samsung SDI. Samsung SDI supplies prismatic cells for Audi e-tron GT. [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],VW_AR_2023,2021-01-01,2028-12-31,Samsung SDI supplies Audi premium EV battery cells
+002074.SZ,SUPPLIES,VOW3.DE,1.0,0.85,"VW AR 2022 p.304: 'strategic framework for cooperation in development, manufacture and distribution of battery cells'. Electrive 2025: Gotion mass-producing VW standard cells.",VW_Gotion_Press,2021-01-01,2032-12-31,Gotion is VW strategic partner; VW holds 26pct stake
+BAS.DE,SUPPLIES,VOW3.DE,0.8,0.7,BASF Schwarzheide CAM plant 20GWh capacity. VW AR 2023: PowerCo+Umicore JV IONWAY for cathode materials from 2025.,VW_AR_2023,2023-01-01,2028-12-31,BASF Schwarzheide CAM production serves European EV cell makers
+300750.SZ,SUPPLIES,MBG.DE,1.0,0.9,"Mercedes AR 2022 p.44: 'expanding battery cell partnership with CATL, new production site in Hungary. CATL Debrecen to supply European production sites.'",Mercedes_CATL_Press,2020-01-01,2030-12-31,CATL is Mercedes primary battery cell supplier (Europe+China)
+373220.KS,SUPPLIES,MBG.DE,1.0,0.85,Electrive 2025-09-03: LGES 107GWh supply contract with Mercedes. 75GWh US (2029-2037) + 32GWh EU (2028-2035). ~USD11B.,Mercedes_LGES_Press,2025-01-01,2037-12-31,LG Energy Solution is Mercedes 2nd largest battery cell supplier
+1211.HK,SUPPLIES,MBG.DE,0.85,0.65,Mercedes AR: Farasis and CATL are main cell suppliers in China. BYD Blade Battery (LFP) used in smart brand (MB-Geely JV) vehicles.,Mercedes_AR_2023,2022-01-01,2025-12-31,BYD supplies LFP cells for MB-Geely smart brand
+MBG.DE,PARTNERS_WITH,0175.HK,1.0,0.7,"Mercedes AR 2022 p.318: 'smart Automobile Co., Ltd., a joint venture of Mercedes-Benz AG and Zhejiang Geely Holding Group Co., Ltd.' Smart included in CO2 pool since 2023.",Mercedes_Geely_JV,2020-01-01,2030-12-31,Mercedes-Geely JV for smart brand EVs
+300750.SZ,SUPPLIES,7203.T,0.9,0.8,Press reports: CATL supplies battery cells for Toyota bZ series EVs. Toyota 20-F mentions CATL as battery partner.,Toyota_20F_Press,2022-01-01,2028-12-31,CATL supplies cells for Toyota bZ series BEVs
+7203.T,PARTNERS_WITH,1211.HK,1.0,0.7,"Toyota 20-F FY2024 (2025-06-18): 'BYD Toyota EV Technology Co., Ltd.' listed in R&D subsidiaries for 'Design and evaluation of BEVs'. FY2023 20-F also confirms.",Toyota_20F_FY2024,2020-01-01,2025-12-31,BYD-Toyota JV for BEV development in China
+373220.KS,SUPPLIES,7267.T,1.0,0.85,"Honda 20-F FY2024: LG Energy Solution JV confirmed (L-H Battery Company, US$1.73B). Also supplies battery modules for Honda Prologue.",Honda_20F_FY2024,2023-01-01,2028-12-31,LG Energy Solution supplies cells for Honda Prologue
+7267.T,PARTNERS_WITH,GM,1.0,0.75,Honda 20-F FY2022 (filed 2023-06-23): Honda will introduce two mid-to-large EVs developed jointly with GM in 2024. Ultium platform.,Honda_20F_FY2022,2021-01-01,2025-12-31,Honda-GM EV/Ultium platform partnership
+3407.T,SUPPLIES,300750.SZ,0.85,0.8,Asahi Kasei IR: Hipore wet-process separator is global No.1 share. Major LIB manufacturers are primary customers. Capacity 1.2B m2/yr.,AsahiKasei_IR_2023,2018-01-01,2028-12-31,Asahi Kasei is leading separator supplier to major cell makers
+3407.T,SUPPLIES,373220.KS,0.85,0.8,Asahi Kasei News 2023-10-31: Expanding Hipore coating at Pyeongtaek South Korea. Co-located near Korean cell makers. 1.2B m2/yr by FY2026.,AsahiKasei_News_2023,2018-01-01,2028-12-31,Korea coating plant near major Korean cell makers
+3407.T,PARTNERS_WITH,7267.T,1.0,0.85,Asahi Kasei News 2024-11-01: AK-Honda JV in Canada. Honda invests CAD417M for 25pct stake. 700M m2/yr Hipore separator capacity.,AsahiKasei_Honda_JV_2024,2024-01-01,2030-12-31,Asahi Kasei-Honda separator JV in Canada for Honda EV batteries
+3407.T,SUPPLIES,1211.HK,0.8,0.7,Asahi Kasei BSC: Hipore separator supplied to major global LIB manufacturers. BYD is top-5 global cell maker.,AsahiKasei_IR_2023,2020-01-01,2028-12-31,BYD is major separator customer as top-5 global cell maker
+BAS.DE,SUPPLIES,300750.SZ,1.0,0.8,BASF AR 2021 p.30: cooperative agreement with CATL. BASF Press 2025-07-28: framework agreement for cathode active materials (CAM) supply confirmed.,BASF_CATL_Press_2025,2022-01-01,2030-12-31,BASF is CATL CAM supplier under global framework agreement
+603799.SH,SUPPLIES,BAS.DE,0.85,0.75,BASF AR: BASF TODA Battery Materials JV in Japan uses precursor materials (pCAM). Huayou Cobalt is major pCAM supplier.,BASF_AR_2023,2020-01-01,2028-12-31,Huayou supplies precursors to BASF battery materials operations
+GLEN.L,SUPPLIES,BAS.DE,0.9,0.8,BASF Press 2023-06: Schwarzheide battery materials+recycling center opened. Long-term Co/Ni offtake. Glencore is major mining partner.,BASF_Press_2023,2022-01-01,2028-12-31,Glencore supplies cobalt/nickel raw materials to BASF
+BAS.DE,SUPPLIES,7203.T,0.85,0.7,BASF TODA Battery Materials JV with Toda Kogyo in Japan. Supplies NCA/NCM cathode materials to Japanese automakers via Panasonic PPES.,BASF_TODA_JV,2018-01-01,2025-12-31,BASF TODA JV in Japanese battery materials supply chain
+002074.SZ,PARTNERS_WITH,VOW3.DE,1.0,0.9,"VW AR 2021 p.96: 'Volkswagen acquired an interest in Gotion High-Tech Co., Ltd., Hefei (China)'. AR 2022 p.304: 'strategic framework for cooperation in development, manufacture and distribution of battery cells'",VW_AR_2021_p96,2020-01-01,2032-12-31,VW holds ~25% stake in Gotion; strategic battery cell partnership
+MBG.DE,PARTNERS_WITH,1211.HK,1.0,0.5,"Mercedes AR 2022 p.261: 'shareholders Daimler Greater China Ltd. and BYD Automotive Industry Co., Ltd (BYD) signed a contract on structural realignment of DENZA. Group transferred 40% shares to BYD. Mercedes holds 10%, BYD holds 90%.'",Mercedes_AR_2022_p261,2021-01-01,2025-12-31,Mercedes-BYD DENZA JV (Mercedes reduced to 10%)
+373220.KS,PARTNERS_WITH,7267.T,1.0,0.9,"Honda 20-F FY2024 (2025-06-18): 'joint venture agreement with LG Energy Solution, Ltd. on August 29, 2022, committed to invest US$1,730 million in L-H Battery Company, Inc.' Battery production in North America.",Honda_20F_FY2024_JV,2022-01-01,2030-12-31,Honda-LGES JV (L-H Battery Company) $1.73B for North American EV battery production
+003670.KS,SUPPLIES,7267.T,0.95,0.7,"Honda 20-F FY2024: 'For procurement of essential minerals, we have formed partnerships with HANWA Co., Ltd. and POSCO Holdings Inc.' Critical mineral supply for EV batteries.",Honda_20F_FY2024_minerals,2023-01-01,2028-12-31,POSCO Holdings supplies critical minerals (cathode materials) to Honda

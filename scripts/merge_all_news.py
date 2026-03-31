@@ -34,6 +34,7 @@ SOURCES = [
     ("BigKinds (KR)", "data/raw/bigkinds/bigkinds_news.parquet"),
     ("Chinese News", "data/raw/chinese_news/chinese_news.parquet"),
     ("Chinese News v2", "data/raw/chinese_news/chinese_news_v2.parquet"),
+    ("GDELT CN Domain", "data/raw/chinese_news/gdelt_cn_converted.parquet"),
     ("Industry RSS", "data/raw/industry_rss/industry_news.parquet"),
 ]
 

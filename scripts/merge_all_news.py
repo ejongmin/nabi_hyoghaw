@@ -28,6 +28,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname
 
 # ── 입력 소스 정의 ──
 SOURCES = [
+    ("Team GDELT", "data/processed/risk_events_team.parquet"),
     ("GDELT BigQuery", "data/processed/risk_events_bq.parquet"),
     ("Supplement RSS", "data/raw/supplement/supplement_news.parquet"),
     ("BigKinds (KR)", "data/raw/bigkinds/bigkinds_news.parquet"),
@@ -140,7 +141,35 @@ def main():
         log.info("\n[DRY-RUN] No files written.")
         return
 
-    # 저장
+    # 저장 전 타입 정규화 (PyArrow struct/non-struct 혼합 방지)
+    # 1) event_time: tz-naive로 통일
+    if "event_time" in merged.columns:
+        merged["event_time"] = pd.to_datetime(merged["event_time"], errors="coerce", utc=True)
+        merged["event_time"] = merged["event_time"].dt.tz_localize(None)
+
+    # 2) entity_scores: dict/struct 혼합 → 모두 list[float]로 강제 변환
+    import numpy as np
+    def _force_float_list(x):
+        """entity_scores를 반드시 list[float]로 변환."""
+        if isinstance(x, (list, tuple, np.ndarray)):
+            result = []
+            for v in x:
+                if isinstance(v, dict):
+                    result.append(float(v.get("score", v.get("entity_score", 0.0))))
+                elif isinstance(v, (int, float)):
+                    result.append(float(v))
+                else:
+                    try:
+                        result.append(float(v))
+                    except (TypeError, ValueError):
+                        result.append(0.0)
+            return result
+        if x is None or (isinstance(x, float) and np.isnan(x)):
+            return []
+        return [float(x)] if isinstance(x, (int, float)) else []
+
+    merged["entity_scores"] = merged["entity_scores"].apply(_force_float_list)
+
     output_path = root / args.output
     output_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_parquet(output_path, index=False)

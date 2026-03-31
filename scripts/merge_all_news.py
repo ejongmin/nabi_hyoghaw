@@ -33,6 +33,7 @@ SOURCES = [
     ("Supplement RSS", "data/raw/supplement/supplement_news.parquet"),
     ("BigKinds (KR)", "data/raw/bigkinds/bigkinds_news.parquet"),
     ("Chinese News", "data/raw/chinese_news/chinese_news.parquet"),
+    ("Chinese News v2", "data/raw/chinese_news/chinese_news_v2.parquet"),
     ("Industry RSS", "data/raw/industry_rss/industry_news.parquet"),
 ]
 

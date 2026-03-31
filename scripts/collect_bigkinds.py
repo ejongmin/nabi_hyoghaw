@@ -21,6 +21,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import urllib.parse
+
 import pandas as pd
 import requests
 import yaml
@@ -163,7 +165,7 @@ def collect_naver_rss(start_date: str, end_date: str) -> pd.DataFrame:
     all_rows = []
     for cid, queries in KOREAN_QUERIES.items():
         for query in queries:
-            url = f"https://news.google.com/rss/search?q={query}+when:7d&hl=ko&gl=KR&ceid=KR:ko"
+            url = f"https://news.google.com/rss/search?q={urllib.parse.quote_plus(query)}+when:7d&hl=ko&gl=KR&ceid=KR:ko"
             log.info(f"[Google News KR] {cid}: {query}")
 
             try:

@@ -1,7 +1,9 @@
 from __future__ import annotations
 from typing import List, Tuple, Optional, Dict
+from pathlib import Path
 import pandas as pd
 import numpy as np
+import yaml
 import logging
 
 from src.common.dates import next_trading_day
@@ -20,10 +22,50 @@ def compute_returns(prices: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_market_proxy(rets: pd.DataFrame) -> pd.Series:
-    """Equal-weight 시장 수익률. 향후 cap-weight 또는 외부 인덱스로 대체 권장."""
+    """Equal-weight 시장 수익률. Fallback용 — 회사별 인덱스 사용 불가 시."""
     mkt = rets.groupby("date")["ret"].mean()
     mkt.name = "mkt_ret"
     return mkt
+
+
+def load_market_proxies(data_dir: str = "data/processed") -> Tuple[Dict[str, pd.Series], Dict[str, str]]:
+    """
+    회사별 시장 인덱스 수익률 로드.
+
+    Returns:
+        index_returns: {index_name: pd.Series(date → return)}
+        company_to_index: {company_id: index_name}
+    """
+    proxy_path = Path(data_dir) / "market_proxies.parquet"
+    mapping_path = Path(data_dir) / "market_proxy_mapping.yaml"
+
+    if not proxy_path.exists() or not mapping_path.exists():
+        log.warning("Market proxy files not found; will use equal-weight fallback")
+        return {}, {}
+
+    # Load index prices and compute returns
+    mkt_df = pd.read_parquet(proxy_path)
+    mkt_df["date"] = pd.to_datetime(mkt_df["date"], errors="coerce")
+    # Support both 'index_name' and 'index_id' column names
+    idx_col = "index_name" if "index_name" in mkt_df.columns else "index_id"
+    mkt_df = mkt_df.dropna(subset=["date"]).sort_values([idx_col, "date"])
+    mkt_df["mkt_ret"] = mkt_df.groupby(idx_col)["close"].pct_change()
+    mkt_df = mkt_df.dropna(subset=["mkt_ret"])
+
+    index_returns: Dict[str, pd.Series] = {}
+    for idx_name, g in mkt_df.groupby(idx_col):
+        s = g.set_index("date")["mkt_ret"]
+        s.name = "mkt_ret"
+        index_returns[idx_name] = s
+
+    # Load company→index mapping
+    with open(mapping_path, "r", encoding="utf-8") as f:
+        mapping = yaml.safe_load(f)
+
+    company_to_index = mapping.get("company_to_market_proxy", {})
+    log.info(f"Loaded {len(index_returns)} market indices, "
+             f"{len(company_to_index)} company mappings")
+    return index_returns, company_to_index
 
 
 # ──────────────────────── OLS + Statistical Testing ────────────────────────
@@ -122,7 +164,10 @@ def run_event_study(prices: pd.DataFrame,
         filter_confounding: True면 이벤트 윈도우 내 동일 기업 다른 이벤트 존재 시 제외
     """
     rets = compute_returns(prices)
-    mkt = build_market_proxy(rets)
+    mkt_fallback = build_market_proxy(rets)  # equal-weight fallback
+
+    # Load company-specific market proxies (regional indices)
+    index_returns, company_to_index = load_market_proxies()
 
     # choose companies per event: mentioned + topK exposure_rwr
     exp = exposure.copy()
@@ -167,10 +212,21 @@ def run_event_study(prices: pd.DataFrame,
                     event_dates[c] = set()
                 event_dates[c].add(td)
 
-    # Pre-build per-company aligned arrays
+    # Pre-build per-company aligned arrays (with company-specific market proxy)
     log.info("Pre-building per-company aligned arrays...")
+    n_regional = 0
+    n_fallback = 0
     company_data: Dict[str, dict] = {}
     for cid, g in rets.groupby("company_id"):
+        # Select market proxy: company-specific regional index > equal-weight fallback
+        idx_name = company_to_index.get(cid)
+        if idx_name and idx_name in index_returns:
+            mkt = index_returns[idx_name]
+            n_regional += 1
+        else:
+            mkt = mkt_fallback
+            n_fallback += 1
+
         df = g.set_index("date")[["ret"]].join(mkt.to_frame(), how="inner").dropna()
         if df.empty:
             continue
@@ -181,6 +237,7 @@ def run_event_study(prices: pd.DataFrame,
             "dates": dates,
             "date_to_idx": {d: i for i, d in enumerate(dates)},
         }
+    log.info(f"Market proxy: {n_regional} regional, {n_fallback} fallback (equal-weight)")
 
     log.info(f"Companies with data: {len(company_data)}")
     log.info(f"Events to process: {len(risk_events):,}")

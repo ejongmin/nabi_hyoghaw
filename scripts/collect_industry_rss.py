@@ -16,6 +16,8 @@ import time
 from pathlib import Path
 from typing import List
 
+import urllib.parse
+
 import feedparser
 import pandas as pd
 import yaml
@@ -221,7 +223,7 @@ def collect_google_news_global() -> List[dict]:
     }
 
     for cid, query in priority_companies.items():
-        url = f"https://news.google.com/rss/search?q={query}&hl=en&gl=US&ceid=US:en"
+        url = f"https://news.google.com/rss/search?q={urllib.parse.quote_plus(query)}&hl=en&gl=US&ceid=US:en"
         log.info(f"[Google News] {cid}: {query}")
 
         try:

@@ -58,6 +58,28 @@ def _normalize_schema(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     if "event_time" in df.columns:
         df["event_time"] = pd.to_datetime(df["event_time"], errors="coerce", utc=True)
 
+    # Normalize list columns to ensure consistent types
+    import numpy as np
+    for col in ("entity_ids", "entity_scores", "country_ids"):
+        if col in df.columns:
+            def _to_list(x):
+                if isinstance(x, (list, tuple, np.ndarray)):
+                    return list(x)
+                if x is None or (isinstance(x, float) and np.isnan(x)):
+                    return []
+                if isinstance(x, str) and x == "":
+                    return []
+                return [x]
+            df[col] = df[col].apply(_to_list)
+
+    # Ensure entity_scores are lists of floats (not dicts/structs)
+    if "entity_scores" in df.columns:
+        def _to_float_list(x):
+            if isinstance(x, (list, tuple)):
+                return [float(v) if not isinstance(v, dict) else 0.0 for v in x]
+            return []
+        df["entity_scores"] = df["entity_scores"].apply(_to_float_list)
+
     return df[SCHEMA_COLS]
 
 

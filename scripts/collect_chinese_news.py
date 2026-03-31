@@ -20,6 +20,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
+import urllib.parse
+
 import pandas as pd
 import requests
 
@@ -224,7 +226,7 @@ def collect_google_news_cn(output_dir: Path) -> List[dict]:
     for code, (cid, cn_name, keywords) in CHINESE_COMPANIES.items():
         for kw in keywords[:1]:  # 첫 번째 키워드만
             query = f"{kw} 电池 供应链"
-            url = f"https://news.google.com/rss/search?q={query}&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
+            url = f"https://news.google.com/rss/search?q={urllib.parse.quote_plus(query)}&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
             log.info(f"[Google CN] {cid}: {kw}")
 
             try:

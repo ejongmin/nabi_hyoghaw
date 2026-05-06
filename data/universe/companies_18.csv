@@ -1,0 +1,19 @@
+company_id,canonical_name,country,region_group,stage_bucket,value_chain_stage,listed,provider_ticker_yf,exchanges
+ALB,Albemarle,USA,Overseas,Upstream/Refining,Lithium (upstream),True,ALB,NYSE
+GLEN.L,Glencore,UK,Overseas,Upstream/Refining,Metals / Trading / Recycling exposure,True,GLEN.L,LSE
+BAS.DE,BASF,Germany,Overseas,Materials,Battery chemicals / Materials,True,BAS.DE,XETRA
+300919.SZ,CNGR Advanced Material,China,China,Materials,Precursors (cathode),True,300919.SZ,SZSE
+247540.KQ,EcoPro BM,Korea,Overseas,Materials,Cathode Materials,True,247540.KQ,KOSDAQ
+603799.SH,Huayou Cobalt,China,China,Materials,Precursors / Refining (Co/Ni) / Cathode supply,True,603799.SS,SSE
+051910.KS,LG Chem,Korea,Overseas,Materials,Battery materials / Chemicals,True,051910.KS,KRX
+3931.HK,CALB,China,China,Cell/Pack,Battery Cell / Pack,True,3931.HK,HKEX
+300750.SZ,CATL,China,China,Cell/Pack,Battery Cell / Pack,True,300750.SZ,SZSE
+300014.SZ,EVE Energy,China,China,Cell/Pack,Battery Cell / Pack,True,300014.SZ,SZSE
+002074.SZ,Gotion High-Tech,China,China,Cell/Pack,Battery Cell / Pack,True,002074.SZ,SZSE
+373220.KS,LG Energy Solution,Korea,Overseas,Cell/Pack,Battery Cell / Pack,True,373220.KS,KRX
+BMW.DE,BMW,Germany,Overseas,OEM,OEM / EV Brand,True,BMW.DE,XETRA
+1211.HK,BYD,China,China,OEM,OEM / EV Brand; Battery (vertical),True,1211.HK,HKEX;SZSE
+7267.T,Honda,Japan,Overseas,OEM,OEM / EV Brand,True,7267.T,TSE
+MBG.DE,Mercedes-Benz,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,MBG.DE,XETRA
+TSLA,Tesla,USA,Americas,OEM,OEM / Vehicle Manufacturer,True,TSLA,NASDAQ
+VOW3.DE,Volkswagen,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,VOW3.DE,XETRA

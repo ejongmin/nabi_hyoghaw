@@ -1,0 +1,250 @@
+================================================================================
+STAGE 3 AHO-CORASICK PROCESSING: FINDINGS SUMMARY
+================================================================================
+Research Date: April 2, 2026
+Analysis Scope: src/ingest/gdelt_bq.py, company_aliases.yaml, univers_final.csv
+Data Examined: 10,323,426 risk_events (953 MB parquet file - schema only, not loaded)
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+1. PYARROW PRE-FILTER BUG (CRITICAL)
+────────────────────────────────────────────────────────────────────────────
+Location: gdelt_bq.py lines 559-565, 579-580
+Issue: Type B (risk_only) articles with null v2_organizations are removed by
+       PyArrow filter BEFORE they can be identified and preserved.
+
+Impact: ~30-50% of Type B articles are permanently lost
+Root Cause: Type B preservation logic (line 580) runs AFTER PyArrow removal
+            (line 565). Once removed, they cannot be recovered.
+
+Code Flow (BROKEN):
+  Stage 0 (line 565): PyArrow removes rows with null v2_organizations
+  Stage 1: Aho-Corasick matches entities (only on surviving rows)
+  Stage 2 (line 580): Attempt to preserve Type B articles
+    ← BUT: Type B articles with null v2_organizations already removed!
+
+Intended Design:
+  Stage 0: Filter out null v2_organizations
+  Stage 2: KEEP Type B articles even with null v2_organizations
+
+Actual Behavior:
+  Stage 0: Removes ALL rows with null v2_organizations (including Type B)
+  Stage 2: Cannot recover Type B articles (they're already gone)
+
+Detectability: Low - No logging of Type B removal counts
+Severity: 🔴 CRITICAL
+Fix Effort: Medium
+
+
+2. MISSING CHINESE-LANGUAGE ALIASES (HIGH)
+────────────────────────────────────────────────────────────────────────────
+Chinese companies WITHOUT Chinese aliases: 8 out of 24 (33%)
+- 002460.SZ (Ganfeng Lithium) - Missing: 赣锋锂业
+- 002466.SZ (Tianqi Lithium) - Missing: 天齐锂业
+- 600006.SH (Dongfeng Motor) - Missing: 东风汽车
+- 600362.SH (Jiangxi Copper) - Missing: 江西铜业
+- 601238.SH (GAC Group) - Missing: 广汽集团
+- 603799.SH (Huayou Cobalt) - Missing: 华友钴业
+- 603993.SH (CMOC) - Missing: 中钼
+- 002340.SZ (GEM) - Intentional (bare "GEM" is common English word)
+
+Impact: 20-40% of Chinese-language news for these companies will be missed
+Cause: Incomplete alias configuration (YAML simply omits Chinese names)
+Detectability: Manual review only (no automated test)
+Severity: 🔴 HIGH
+Fix Effort: Low (add ~10-20 Chinese names to YAML)
+
+
+3. LOW ALIAS COVERAGE (HIGH)
+────────────────────────────────────────────────────────────────────────────
+6 companies with only 2-3 aliases:
+
+  RIVN (Rivian):
+    Current: "Rivian", "Rivian Automotive"
+    Missing: "Rivian Motors", "Rivian Group", brand variants
+    Risk: HIGH - EV startups often mentioned with creative names
+
+  002340.SZ (GEM):
+    Current: "GEM Co", "GEM Co Ltd"
+    Missing: Bare "GEM" (intentionally blocked - common English word)
+    Risk: LOW-MEDIUM
+
+  ALB (Albemarle):
+    Current: "Albemarle", "Albemarle Corp", "Albemarle Corporation"
+    Risk: MEDIUM
+
+  GLEN.L (Glencore):
+    Current: "Glencore", "Glencore PLC", "Glencore International"
+    Risk: MEDIUM
+
+  GM (General Motors):
+    Current: "General Motors", "General Motors Co", "General Motors Company"
+    Missing: Brand names (Chevrolet, GMC, Cadillac) - intentional
+    Risk: MEDIUM
+
+  LCID (Lucid):
+    Current: "Lucid", "Lucid Group", "Lucid Motors"
+    Risk: MEDIUM
+
+Impact: 5-15% of relevant news articles missed per company
+Cause: Incomplete alias lists
+Detectability: Manual review + text analysis
+Severity: 🟠 HIGH
+Fix Effort: Low (add variant names to YAML)
+
+
+4. SQM DATA INCONSISTENCY (MEDIUM)
+────────────────────────────────────────────────────────────────────────────
+Issue: SQM has aliases defined in company_aliases.yaml but is NOT in the
+       45-company universe (univers_final.csv)
+
+Consequences:
+- SQM articles will be matched (aliases are defined)
+- But SQM has no price data, CAR analysis, or other downstream features
+- Results will be malformed (no stock price correlations)
+
+Root Cause: Config mismatch - aliases defined for broader set, universe
+            later restricted to 45 companies, cleanup incomplete
+
+Detectability: Automated validation can catch this
+Severity: 🟠 MEDIUM
+Fix Effort: Very Low (remove SQM from aliases OR add to universe)
+
+
+================================================================================
+AHO-CORASICK QUALITY ASSESSMENT
+================================================================================
+
+Algorithm: ✅ WELL-IMPLEMENTED
+- Correctly converts regex to literals (lines 338-376)
+- Single-pass O(n) matching (lines 299-326)
+- Performance: "23 min → seconds" for 100k rows
+
+Configuration Coverage: ⚠️ PARTIAL
+- All 45 universe companies have aliases: ✅ 100%
+- Companies with English aliases: ✅ 45/45 (100%)
+- Companies with Chinese aliases: ⚠️ 16/24 Chinese companies (67%)
+- Companies with >5 aliases: 🟡 29/45 companies (65%)
+- Companies with ≥10 aliases: 🔴 Only 4/45 companies (9%)
+
+Data Structures: ✅ CORRECT
+- entity_ids: list<string> (correct for 1:many matching)
+- entity_scores: list<double> (1:1 with entity_ids)
+- Serialization: Parquet list encoding (preserved correctly)
+
+================================================================================
+QUANTIFIED IMPACT
+================================================================================
+
+Dataset Size:
+- Total risk_events rows: 10,323,426
+- File size: 953 MB
+- 10 row groups
+
+Estimated Data Loss:
+1. Type B articles with null v2_organizations: ~30-50% of Type B articles
+   (Cannot quantify exact count without raw GDELT data volume)
+
+2. Chinese news misses: ~20-40% for companies without Chinese aliases
+
+3. Low-alias company misses: ~5-15% per company
+
+4. SQM anomalies: Unknown (small number of articles)
+
+Combined estimated loss: 10-30% for certain company/region combinations
+
+================================================================================
+COMPANY COVERAGE BY ALIAS COUNT
+================================================================================
+
+0 aliases:   0 companies (0%)    ✅
+1-2 aliases: 2 companies (4%)    🔴 CRITICAL: RIVN, 002340.SZ
+3-4 aliases: 7 companies (16%)   🟠 HIGH: ALB, GLEN.L, GM, LCID, others
+5-9 aliases: 29 companies (65%)  🟡 ACCEPTABLE
+10+ aliases: 4 companies (9%)    🟢 EXCELLENT: POSCO, CNGR, CALB, CATL
+
+Pattern: Overseas companies and materials/upstream companies have more aliases
+         (better news coverage/documentation)
+         EV startups (RIVN, LCID) have sparse coverage
+
+================================================================================
+RECOMMENDATIONS (PRIORITY ORDER)
+================================================================================
+
+1. FIX PYARROW BUG (CRITICAL)
+   - Reorder filtering to check collection_type BEFORE removing rows
+   - Add logging: count Type B articles at each stage
+   - Test: verify Type B preservation with mock data
+   Timeline: 1-2 days
+
+2. ADD CHINESE ALIASES (HIGH)
+   - Ganfeng Lithium: 赣锋锂业, 赣锋
+   - Tianqi Lithium: 天齐锂业, 天齐
+   - Dongfeng Motor: 东风汽车, 东风
+   - Jiangxi Copper: 江西铜业, 江铜
+   - GAC Group: 广汽集团, 广汽
+   - Huayou Cobalt: 华友钴业, 华友
+   - CMOC: 中钼
+   - Validate with Chinese news sample test
+   Timeline: 1 day
+
+3. ADD VARIANT ALIASES (HIGH)
+   - RIVN: "Rivian Motors", "Rivian Group"
+   - ALB: "Albemarle Corp", "Albemarle Inc"
+   - LCID: "Lucid Inc", "Lucid Corp"
+   - GLEN.L: "Glencore Ltd", "Glencore Group"
+   Timeline: 1 day
+
+4. RECONCILE SQM (MEDIUM)
+   - Decision: Remove from aliases OR add to universe
+   - Add validation: aliases ⊆ universe companies
+   Timeline: 0.5 days
+
+================================================================================
+DATA QUALITY IMPLICATIONS
+================================================================================
+
+Current Status (from dq_report.md):
+- Entity linking success rate: 100% (36,789 events)
+- Price data completeness: 0% missing
+- KG evidence rate: 100%
+
+Issues Not Caught By Existing QA:
+- Type B article loss (no logging mechanism)
+- Missing Chinese aliases (no Chinese news in test set)
+- Sparse alias coverage (no pattern matching failure detection)
+- SQM inconsistency (no cross-validation)
+
+Recommendations for QA:
+- Add downstream validation: check if Type B articles appear in final output
+- Add Chinese news sample test
+- Add alias coverage metrics report
+- Add configuration consistency checks (aliases ⊆ universe)
+
+================================================================================
+NOTES
+================================================================================
+
+Analysis Method:
+- Code inspection of gdelt_bq.py (787 lines)
+- Config review of company_aliases.yaml (359 lines)
+- Universe data from univers_final.csv (45 companies)
+- Parquet schema inspection (no full data load due to memory limits)
+- All percentages/impacts inferred from code logic, not empirical testing
+
+Limitations:
+- Cannot load full 10.3M row parquet file (OOM on 8+ GB)
+- Type B article loss quantity is estimated, not measured
+- Chinese news impact extrapolated, not tested on actual data
+- No access to raw GDELT data volume for before/after comparison
+
+Files Analyzed:
+- /src/ingest/gdelt_bq.py (main processing code)
+- /configs/company_aliases.yaml (alias definitions)
+- /data/universe/univers_final.csv (company universe)
+- /data/processed/risk_events.parquet (output schema only)
+- /reports/dq_report.md (existing quality metrics)
+
+================================================================================

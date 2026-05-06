@@ -1,0 +1,115 @@
+src_company_id,rel_type,dst_company_id,confidence_plink,strength,evidence,source,valid_from,valid_to,risk_rationale
+603799.SH,SUPPLIES,373220.KS,1.0,0.8,Huayou Cobalt supplies cobalt/nickel precursors to LGES supply chain,Huayou_AR2022,2019-01-01,,
+603799.SH,SUPPLIES,300750.SZ,1.0,0.8,Huayou Cobalt supplies precursors to CATL; strategic collaboration confirmed,Huayou_AR2022,2019-01-01,,
+247540.KQ,SUPPLIES,373220.KS,1.0,0.9,EcoPro BM supplies high-nickel cathode materials to LGES,EcoPro_AR2022,2019-01-01,,
+ALB,SUPPLIES,373220.KS,1.0,0.8,Albemarle supplies lithium hydroxide to LGES from global operations,Albemarle_AR2022,2018-01-01,,
+GLEN.L,SUPPLIES,300750.SZ,1.0,0.9,Glencore supplies cobalt to CATL from DRC mining operations,Glencore_AR2022,2019-01-01,,
+7267.T,PARTNERS_WITH,373220.KS,1.0,0.8,Honda-LGES JV (L-H Battery Company) in Ohio announced Aug 2022; $4.4B investment,Honda_PR_2022-10-11,2022-08-01,,
+BAS.DE,PARTNERS_WITH,300750.SZ,1.0,0.6,BASF and CATL framework agreement for cathode active materials and battery recycling,BASF_PR_2021-09-16,2021-09-16,,
+300014.SZ,SUPPLIES,BMW.DE,1.0,0.7,EVE Energy supplies battery cells to BMW for PHEV/BEV models [Note: Not named in BMW AR; confirmed via BMW Press Release only],EVE_AR2022,2020-01-01,,
+300919.SZ,SUPPLIES,300750.SZ,1.0,0.9,CNGR Advanced Material supplies ternary precursors to CATL,CNGR_AR2022,2018-01-01,,
+300919.SZ,SUPPLIES,373220.KS,1.0,0.8,CNGR Advanced Material supplies ternary precursors to LGES,CNGR_AR2022,2019-01-01,,
+051910.KS,OWNS,373220.KS,1.0,1.0,LG Chem owns 81.84% of LG Energy Solution (IPO Jan 2022),LG_Chem_AR2022,2020-12-01,,
+051910.KS,SUPPLIES,373220.KS,1.0,0.9,LG Chem supplies cathode and separator materials to LGES,LG_Chem_AR2022,2020-01-01,,
+373220.KS,SUPPLIES,BMW.DE,1.0,0.8,LGES supplies cylindrical battery cells to BMW,LGES_AR2022,2019-01-01,,
+BAS.DE,SUPPLIES,BMW.DE,0.9,0.6,BASF supplies battery cathode materials to BMW supply chain,BASF_AR2022,2020-01-01,,
+300750.SZ,SUPPLIES,BMW.DE,1.0,0.9,CATL supplies battery cells to BMW; EUR 7.3B order volume announced; cylindrical cell deal for Neue Klasse [Note: Not named in BMW AR; confirmed via BMW Press Release only],BMW_PR_2022,2019-01-01,,
+ALB,SUPPLIES,300750.SZ,1.0,0.7,Albemarle supplies lithium hydroxide to CATL,Albemarle_AR2022,2019-01-01,,
+GLEN.L,SUPPLIES,373220.KS,1.0,0.8,Glencore supplies cobalt to LGES from DRC operations,Glencore_AR2022,2019-01-01,,
+247540.KQ,SUPPLIES,051910.KS,1.0,0.9,EcoPro BM supplies NCA cathode materials to LG Chem,EcoPro_AR2022,2019-01-01,,
+373220.KS,SUPPLIES,7267.T,1.0,0.8,"Honda 20-F FY2024: LG Energy Solution JV confirmed (L-H Battery Company, US$1.73B). Also supplies battery modules for Honda Prologue.",Honda_20F_FY2024,2022-01-01,,
+300750.SZ,COMPETES_WITH,373220.KS,1.0,1.0,CATL (#1) and LGES (#2) compete for global EV battery market share per SNE Research 2023,SNE_Research_2023,2020-01-01,,
+300750.SZ,COMPETES_WITH,1211.HK,1.0,0.9,CATL (#1) and BYD (#2 China) compete in Chinese and global battery markets,SNE_Research_2023,2020-01-01,,
+300750.SZ,SUPPLIES,TSLA,1.0,1.0,CATL is primary battery supplier to Tesla Shanghai/Berlin; supply agreement signed Feb 2020,Nasdaq_2020-02-03,2020-02-03,,
+373220.KS,SUPPLIES,TSLA,1.0,0.8,LG Energy Solution supplies 2170/4680 cells to Tesla Nevada and Shanghai plants,LGES_AR2022,2019-01-01,,
+300750.SZ,SUPPLIES,VOW3.DE,1.0,0.9,CATL supplies batteries to Volkswagen; strategic partnership with VW certification June 2021 [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],Electrive_2021,2018-01-01,,
+002074.SZ,SUPPLIES,VOW3.DE,1.0,0.9,"VW AR 2022 p.304: 'strategic framework for cooperation in development, manufacture and distribution of battery cells'. Electrive 2025: Gotion mass-producing VW standard cells.",VW_PR_2020-05-29,2020-05-29,,
+300750.SZ,SUPPLIES,MBG.DE,1.0,0.9,"Mercedes AR 2022 p.44: 'expanding battery cell partnership with CATL, new production site in Hungary. CATL Debrecen to supply European production sites.'",Mercedes_PR_2020-08,2019-01-01,,
+373220.KS,SUPPLIES,MBG.DE,0.9,0.7,LG Energy Solution supplies battery cells to Mercedes-Benz,LGES_AR2022,2020-01-01,,
+300014.SZ,SUPPLIES,MBG.DE,0.9,0.7,EVE Energy supplies battery packs to Mercedes-Benz for EREV models,EVE_AR2022,2021-01-01,,
+300750.SZ,BUYS_FROM,TSLA,1.0,0.8,"10-K FY2023: Currently, we rely on suppliers such as Panasonic and Contemporary Amperex Technology Co.",SEC_10K,2023-01-01,,
+BMW.DE,BUYS_FROM,ALB,1.0,0.8,"10-K FY2024: We will continue to report results across its three existing operating segments: Energy Storage, Specialties and Ketjen. • We entered into a definitive agreement with the BMW Group to deliver battery-",SEC_10K,2024-01-01,,
+ALB,PARTNERS_WITH,BMW.DE,1.0,0.8,"10-K FY2024: In addition to supplying the BMW Group with lithium hydroxide, the two companies will partner on technology for safer and more energy dense lithium-ion batteries. • In March 2024, the Company raised n",SEC_10K,2024-01-01,,
+300014.SZ,SUPPLIES,1211.HK,0.9,0.8,EVE_AR2023_前五大客户: BYD-related orders,CNINFO_AR2023_前五大客户,2023-01-01,,
+300919.SZ,SUPPLIES,3931.HK,0.9,0.7,CNGR_AR2023: CALB (中创新航) among major customers,CNGR_AR2023_前五大客户,2023-01-01,,
+300919.SZ,SUPPLIES,247540.KQ,0.9,0.7,CNGR_AR2023: ECOPRO among major customers,CNGR_AR2023_前五大客户,2023-01-01,,
+603799.SH,SUPPLIES,TSLA,1.0,0.8,Huayou signed precursor supply agreement with Tesla 2022-2025 (zhitongcaijing.com),Huayou_Tesla_Agreement_2022,2022-07-01,2025-12-31,
+603799.SH,SUPPLIES,1211.HK,0.9,0.7,Huayou supplies high-nickel precursor to BYD (21jingji.com),Industry_Analysis_21jingji,2021-01-01,,
+300750.SZ,SUPPLIES,7267.T,1.0,0.8,CATL supplies batteries to Honda in China (Honda Global 2023),Honda_Global_2023,2020-01-01,,
+BAS.DE,SUPPLIES,373220.KS,0.9,0.7,BASF and LG piloted single-crystal NMC-90 cathode,Industry_News_chargedevs,2022-01-01,,
+BAS.DE,SUPPLIES,300750.SZ,1.0,0.8,BASF AR 2021 p.30: cooperative agreement with CATL. BASF Press 2025-07-28: framework agreement for cathode active materials (CAM) supply confirmed.,BASF_PR_2025-07,2021-01-01,,
+373220.KS,SUPPLIES,VOW3.DE,0.95,0.85,VW AR 2023: External cell suppliers include LG Energy Solution. LG supplies pouch cells for VW ID. series in Europe. [Note: Not named in VW AR 2021-2024; confirmed via press releases/industry reports],VW_AR_2023,2020-01-01,2025-12-31,LG Energy Solution supplies VW ID. series battery cells
+BAS.DE,SUPPLIES,VOW3.DE,0.8,0.7,BASF Schwarzheide CAM plant 20GWh capacity. VW AR 2023: PowerCo+Umicore JV IONWAY for cathode materials from 2025.,VW_AR_2023,2023-01-01,2028-12-31,BASF Schwarzheide CAM production serves European EV cell makers
+1211.HK,SUPPLIES,MBG.DE,0.85,0.65,Mercedes AR: Farasis and CATL are main cell suppliers in China. BYD Blade Battery (LFP) used in smart brand (MB-Geely JV) vehicles.,Mercedes_AR_2023,2022-01-01,2025-12-31,BYD supplies LFP cells for MB-Geely smart brand
+603799.SH,SUPPLIES,BAS.DE,0.85,0.75,BASF AR: BASF TODA Battery Materials JV in Japan uses precursor materials (pCAM). Huayou Cobalt is major pCAM supplier.,BASF_AR_2023,2020-01-01,2028-12-31,Huayou supplies precursors to BASF battery materials operations
+GLEN.L,SUPPLIES,BAS.DE,0.9,0.8,BASF Press 2023-06: Schwarzheide battery materials+recycling center opened. Long-term Co/Ni offtake. Glencore is major mining partner.,BASF_Press_2023,2022-01-01,2028-12-31,Glencore supplies cobalt/nickel raw materials to BASF
+002074.SZ,PARTNERS_WITH,VOW3.DE,1.0,0.9,"VW AR 2021 p.96: 'Volkswagen acquired an interest in Gotion High-Tech Co., Ltd., Hefei (China)'. AR 2022 p.304: 'strategic framework for cooperation in development, manufacture and distribution of battery cells'",VW_AR_2021_p96,2020-01-01,2032-12-31,VW holds ~25% stake in Gotion; strategic battery cell partnership
+MBG.DE,PARTNERS_WITH,1211.HK,1.0,0.5,"Mercedes AR 2022 p.261: 'shareholders Daimler Greater China Ltd. and BYD Automotive Industry Co., Ltd (BYD) signed a contract on structural realignment of DENZA. Group transferred 40% shares to BYD. Mercedes holds 10%, BYD holds 90%.'",Mercedes_AR_2022_p261,2021-01-01,2025-12-31,Mercedes-BYD DENZA JV (Mercedes reduced to 10%)
+373220.KS,PARTNERS_WITH,7267.T,1.0,0.9,"Honda 20-F FY2024 (2025-06-18): 'joint venture agreement with LG Energy Solution, Ltd. on August 29, 2022, committed to invest US$1,730 million in L-H Battery Company, Inc.' Battery production in North America.",Honda_20F_FY2024_JV,2022-01-01,2030-12-31,Honda-LGES JV (L-H Battery Company) $1.73B for North American EV battery production
+051910.KS,SUPPLIES,TSLA,1.0,0.9,LG Chem supplies battery cathode materials to Tesla via multiple contracts; Model Y battery supply,News_CoMention_12x,2019-01-01,,LG Chem key cathode material supplier to Tesla
+051910.KS,COMPETES_WITH,300750.SZ,1.0,0.7,LG Chem and CATL compete as global top-2 battery material suppliers; direct market rivalry,News_CoMention_10x,2019-01-01,,LG Chem vs CATL competition in global battery materials market
+051910.KS,PARTNERS_WITH,603799.SH,1.0,0.8,LG Chem and Huayou Cobalt JV for cobalt supply chain; Ford-Huayou-LG Chem blockchain pilot,News_CoMention_8x,2019-01-01,,LG Chem-Huayou Cobalt supply chain partnership
+300014.SZ,COMPETES_WITH,300750.SZ,0.9,0.6,EVE Energy and CATL compete in Chinese battery market; both supply energy storage batteries,News_CoMention_7x,2019-01-01,,EVE Energy vs CATL competition in Chinese battery market
+002074.SZ,COMPETES_WITH,300750.SZ,0.9,0.6,Gotion and CATL compete in Chinese battery pack market; both top-10 Chinese battery makers,News_CoMention_5x,2019-01-01,,Gotion vs CATL competition in Chinese battery market
+300919.SZ,SUPPLIES,TSLA,0.95,0.8,CNGR supplies battery precursor materials to Tesla supply chain; Indonesia IPO for Tesla-related operations,News_CoMention_4x,2020-01-01,,CNGR precursor supply to Tesla (Indonesia operations)
+247540.KQ,SUPPLIES,BMW.DE,0.9,0.7,EcoPro BM building Hungary cathode plant near BMW factory; cathode supply to BMW,News_CoMention_2x,2023-01-01,,EcoPro BM cathode supply to BMW (Hungary plant)
+ALB,SUPPLIES,247540.KQ,0.8,0.7,Albemarle supplies battery-grade lithium hydroxide to EcoPro BM for cathode active material production; cited in EcoPro BM 2022 annual report as key raw material supplier,EcoPro_BM_AR2022,2020-01-01,,ALB lithium supply disruption → EcoPro BM cathode output cut → LGES/CATL capacity reduction
+ALB,SUPPLIES,300919.SZ,0.7,0.6,Albemarle (US/Chile lithium) supplies lithium carbonate/hydroxide to CNGR Advanced Material for NMC precursor manufacturing,CNGR_AR2022,2020-01-01,,ALB supply shock → CNGR precursor shortfall → downstream cell maker impacts
+GLEN.L,SUPPLIES,247540.KQ,0.7,0.7,Glencore supplies cobalt hydroxide and nickel sulfate to Korean cathode makers including EcoPro BM; cobalt sourced from DRC Mutanda/Katanga operations,Glencore_AR2022,2019-01-01,,Glencore cobalt disruption → EcoPro BM NMC cathode production cut
+GLEN.L,SUPPLIES,300919.SZ,0.7,0.6,Glencore cobalt/nickel supply to Chinese precursor manufacturers; CNGR sources Co/Ni from Glencore's trading arm,CNGR_AR2022;Glencore_Trading,2019-01-01,,Glencore supply disruption → CNGR precursor shortfall
+603799.SH,SUPPLIES,247540.KQ,0.7,0.6,Huayou Cobalt manufactures cobalt precursors (pCAM) and supplies to EcoPro BM for cathode active material; cross-supply in Korea-China battery material value chain,Huayou_AR2022;EcoPro_BM_AR2022,2020-01-01,,Huayou precursor shock → EcoPro BM CAM output → LGES cathode supply
+300919.SZ,SUPPLIES,300014.SZ,0.7,0.6,CNGR Advanced Material supplies NMC precursors to EVE Energy for battery cell manufacturing,Industry_Report_CNGR_2022,2020-01-01,,CNGR precursor disruption → EVE Energy cell output cut
+603799.SH,SUPPLIES,002074.SZ,0.7,0.5,Huayou Cobalt supplies cobalt-based precursor materials to Gotion High-Tech for LFP/NMC cell production,Huayou_AR2022,2020-01-01,,Huayou cobalt supply shock → Gotion NMC cell production impact
+GLEN.L,COMPETES_WITH,603799.SH,0.8,0.7,Glencore (DRC cobalt mining/trading) and Huayou Cobalt (DRC mining + China refining) directly compete in the global cobalt supply market,Benchmark_Minerals_2023,2015-01-01,,Both compete for DRC cobalt mining rights and downstream customer contracts
+TSLA,COMPETES_WITH,BMW.DE,0.9,0.8,Tesla and BMW compete directly in the premium battery electric vehicle segment globally; Model 3/Y vs i4/iX,IEA_EV_Outlook_2023,2019-01-01,,Same customer segment; demand shift between brands
+TSLA,COMPETES_WITH,VOW3.DE,0.8,0.7,Tesla and Volkswagen Group (ID.4/ID.3) compete in mass-market BEV segment globally,IEA_EV_Outlook_2023,2019-01-01,,Mass-market EV segment competition
+TSLA,COMPETES_WITH,MBG.DE,0.8,0.7,Tesla Model S/X compete with Mercedes EQS/EQE in luxury BEV segment,IEA_EV_Outlook_2023,2020-01-01,,Luxury BEV segment competition
+TSLA,COMPETES_WITH,1211.HK,0.9,0.9,Tesla and BYD are #1 and #2 global BEV producers; direct competition in all price segments globally especially China,BloombergNEF_2024,2020-01-01,,Direct global BEV market share competition
+BMW.DE,COMPETES_WITH,MBG.DE,0.9,0.7,BMW and Mercedes-Benz are perennial competitors in the German luxury automotive segment across all powertrains,Automotive_Industry_Report_2023,2015-01-01,,"Same customer base, dealer network, and technology investment"
+BMW.DE,COMPETES_WITH,VOW3.DE,0.8,0.6,BMW and Volkswagen Group compete across mass-premium segments; BMW competes with VW's Audi and Porsche brands,Automotive_Industry_Report_2023,2015-01-01,,Overlapping premium customer segments
+1211.HK,COMPETES_WITH,7267.T,0.7,0.6,BYD and Honda compete in the Asian EV market; BYD is the dominant Chinese EV player while Honda is investing heavily in EV transition in China,China_Auto_Market_Report_2023,2021-01-01,,Competing for Chinese and Southeast Asian EV market share
+300014.SZ,COMPETES_WITH,373220.KS,0.8,0.6,EVE Energy and LG Energy Solution compete in cylindrical and prismatic cell markets; EVE supplies BMW while LGES also supplies BMW,BloombergNEF_Battery_2024,2020-01-01,,Same cell chemistry and OEM customer base
+3931.HK,COMPETES_WITH,373220.KS,0.8,0.6,CALB and LG Energy Solution compete in the Chinese and European EV cell market post-CALB's 2022 HK IPO,CALB_IPO_Prospectus_2022,2022-01-01,,Overlapping OEM customers in European market
+002074.SZ,COMPETES_WITH,373220.KS,0.7,0.5,Gotion High-Tech and LGES compete for VW group battery supply contracts; VW invested in both companies,VW_AR2023,2020-01-01,,Both are VW battery suppliers competing for volume allocation
+373220.KS,COMPETES_WITH,300750.SZ,1.0,1.0,CATL (#1) and LGES (#2) compete for global EV battery market share per SNE Research 2023,SNE_Research_2023,2020-01-01,,
+1211.HK,COMPETES_WITH,300750.SZ,1.0,0.9,CATL (#1) and BYD (#2 China) compete in Chinese and global battery markets,SNE_Research_2023,2020-01-01,,
+300750.SZ,COMPETES_WITH,051910.KS,1.0,0.7,LG Chem and CATL compete as global top-2 battery material suppliers; direct market rivalry,News_CoMention_10x,2019-01-01,,LG Chem vs CATL competition in global battery materials market
+300750.SZ,COMPETES_WITH,300014.SZ,0.9,0.6,EVE Energy and CATL compete in Chinese battery market; both supply energy storage batteries,News_CoMention_7x,2019-01-01,,EVE Energy vs CATL competition in Chinese battery market
+300750.SZ,COMPETES_WITH,002074.SZ,0.9,0.6,Gotion and CATL compete in Chinese battery pack market; both top-10 Chinese battery makers,News_CoMention_5x,2019-01-01,,Gotion vs CATL competition in Chinese battery market
+603799.SH,COMPETES_WITH,GLEN.L,0.8,0.7,Glencore (DRC cobalt mining/trading) and Huayou Cobalt (DRC mining + China refining) directly compete in the global cobalt supply market,Benchmark_Minerals_2023,2015-01-01,,Both compete for DRC cobalt mining rights and downstream customer contracts
+BMW.DE,COMPETES_WITH,TSLA,0.9,0.8,Tesla and BMW compete directly in the premium battery electric vehicle segment globally; Model 3/Y vs i4/iX,IEA_EV_Outlook_2023,2019-01-01,,Same customer segment; demand shift between brands
+VOW3.DE,COMPETES_WITH,TSLA,0.8,0.7,Tesla and Volkswagen Group (ID.4/ID.3) compete in mass-market BEV segment globally,IEA_EV_Outlook_2023,2019-01-01,,Mass-market EV segment competition
+MBG.DE,COMPETES_WITH,TSLA,0.8,0.7,Tesla Model S/X compete with Mercedes EQS/EQE in luxury BEV segment,IEA_EV_Outlook_2023,2020-01-01,,Luxury BEV segment competition
+1211.HK,COMPETES_WITH,TSLA,0.9,0.9,Tesla and BYD are #1 and #2 global BEV producers; direct competition in all price segments globally especially China,BloombergNEF_2024,2020-01-01,,Direct global BEV market share competition
+MBG.DE,COMPETES_WITH,BMW.DE,0.9,0.7,BMW and Mercedes-Benz are perennial competitors in the German luxury automotive segment across all powertrains,Automotive_Industry_Report_2023,2015-01-01,,"Same customer base, dealer network, and technology investment"
+VOW3.DE,COMPETES_WITH,BMW.DE,0.8,0.6,BMW and Volkswagen Group compete across mass-premium segments; BMW competes with VW's Audi and Porsche brands,Automotive_Industry_Report_2023,2015-01-01,,Overlapping premium customer segments
+7267.T,COMPETES_WITH,1211.HK,0.7,0.6,BYD and Honda compete in the Asian EV market; BYD is the dominant Chinese EV player while Honda is investing heavily in EV transition in China,China_Auto_Market_Report_2023,2021-01-01,,Competing for Chinese and Southeast Asian EV market share
+373220.KS,COMPETES_WITH,300014.SZ,0.8,0.6,EVE Energy and LG Energy Solution compete in cylindrical and prismatic cell markets; EVE supplies BMW while LGES also supplies BMW,BloombergNEF_Battery_2024,2020-01-01,,Same cell chemistry and OEM customer base
+373220.KS,COMPETES_WITH,3931.HK,0.8,0.6,CALB and LG Energy Solution compete in the Chinese and European EV cell market post-CALB's 2022 HK IPO,CALB_IPO_Prospectus_2022,2022-01-01,,Overlapping OEM customers in European market
+373220.KS,COMPETES_WITH,002074.SZ,0.7,0.5,Gotion High-Tech and LGES compete for VW group battery supply contracts; VW invested in both companies,VW_AR2023,2020-01-01,,Both are VW battery suppliers competing for volume allocation
+ALB,SUPPLIES,BMW.DE,1.0,0.8,"10-K FY2024: We will continue to report results across its three existing operating segments: Energy Storage, Specialties and Ketjen. • We entered into a definitive agreement with the BMW Group to deliver battery-",SEC_10K,2024-01-01,,
+603799.SH,SUPPLIES,300014.SZ,0.95,1.0,[CoO] 公司高镍正极材料给 LG 新能源与 CATL 的供应量大幅增加，分别用于世界知名品牌汽车产业链。,华友钴业_2021年年度报告_p.19,2021-01-01,,
+300750.SZ,SUPPLIES,1211.HK,0.95,1.0,"[锂离子电池] 上海比亚迪有限责 6350000 63,505,5 100
+上海 制造 的研发、生产 0 100% 是 0 0
+上海比亚迪有限公司 任公司 0美元 42 %
+和销售 (금액:63,505,500元, 비율:42%)",比亚迪_2012年年度报告_p.132,2012-01-01,,
+300919.SZ,SUPPLIES,1211.HK,0.95,1.0,"[冰镍] 公司主要销售客户情况
+前五名客户合计销售金额（元） 17,589,789,490.30
+前五名客户合计销售金额占年度销售总额比例 57.97%
+前五名客户销售额中关联方销售额占年度销售总额比例 0.00%
+公司前5大客户资料
+序号 客户名称 销售额（元） 占年度销售总额比例
+1 客户A 5,513,001,112.09 18.17%
+2 客户B 3,510,884,769.02 11.57%
+3 客户C 3,474,634,743.37 11.45%
+4 客户D 2,733,428,582.35 9.01%
+5 客户E 2,357,840,283.47 7.77%
+合计 -- 17,589,789,490.30 57.97%",中伟股份_2022年年度报告_p.20,2022-01-01,,
+3931.HK,SUPPLIES,1211.HK,0.8,1.0,"[产品/材料] 涉及的品种类、批次较多，难以披露具体制成本，交易价格严格按照前述定价原则协商确定。 (금액:25,002, 비율:33.08%)",比亚迪_2014年年度报告_p.49,2014-01-01,,
+300919.SZ,SUPPLIES,VOW3.DE,0.8,1.0,[新能源材料] CNGR Advanced Material 与销售,中伟股份_2024年年度报告_p.247,2024-01-01,,
+300919.SZ,SUPPLIES,BMW.DE,0.8,1.0,[新能源材料] CNGR Advanced Material 与销售,中伟股份_2024年年度报告_p.247,2024-01-01,,
+300014.SZ,SUPPLIES,TSLA,0.8,1.0,[电池管理系统] 10.5米油电增程式电动客车样车的研制,亿纬锂能_2015年年度报告_p.129,2015-01-01,,
+300014.SZ,PARTNERS_WITH,1211.HK,0.8,1.0,公司产品符合经国务院批准、发布的《产业结构调整指导目录（2005年本）》中第一类：鼓励类，十六：轻工之“13.高技术绿色电池产品制造”的要求，并可享受相应的优惠政策。,亿纬锂能_2009年年度报告_p.17,2009-01-01,,
+300014.SZ,PARTNERS_WITH,300750.SZ,0.8,1.0,公司产品符合经国务院批准、发布的《产业结构调整指导目录（2005年本）》中第一类：鼓励类，十六：轻工之“13.高技术绿色电池产品制造”的要求，并可享受相应的优惠政策。,亿纬锂能_2009年年度报告_p.17,2009-01-01,,
+002074.SZ,SUPPLIES,1211.HK,0.8,1.0,"[动力蓄电池系统总成、电芯总成、极片等] 上海电气国轩新能源科技（苏州）有限公司 动力蓄电池系统总成、电芯总成、极片等 15,699,823.02 22,214,023.59 (금액:15,699,823.02元)",国轩高科_2021年年度报告_p.287,2021-01-01,,
+002074.SZ,SUPPLIES,TSLA,0.8,1.0,"[电芯] VolkswagenAG本期发生额：电芯、开发费等110,233,281.87元。 (금액:110,233,281.87元)",国轩高科_2022年年度报告_p.278,2022-01-01,,

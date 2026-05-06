@@ -1,0 +1,300 @@
+# gdelt_theme_mapping.yaml
+# ========================================================
+# GDELT GKG v2_themes → 9 risk_categories deterministic mapping
+# ========================================================
+# 설계 원칙:
+#   1) GDELT의 공식 GKG Theme 분류체계에 기반 (재현 가능)
+#   2) theme_prefix 매칭: v2_themes 문자열에서 테마코드 추출 후 prefix 매칭
+#   3) weight: 해당 테마가 리스크 카테고리에 기여하는 강도 (1~5)
+#   4) 다중 카테고리 가능: 하나의 테마가 여러 리스크에 해당할 수 있음
+#   5) 학술 논문에 methodology로 명시 가능한 투명한 규칙
+#
+# severity 계산:
+#   severity_raw = Σ(weight_i × hit_count_i) per category
+#   severity = clip(log(1 + severity_raw) / log(1 + S_MAX), 0, 1)
+#
+# 참고: GDELT GKG Themes Codebook
+#   https://blog.gdeltproject.org/gdelt-2-0-our-global-world-in-realtime/
+
+# ────────────────────────────────────────
+# A. GEOPOLITICS (지정학 리스크)
+# ────────────────────────────────────────
+geopolitics:
+  themes:
+    # 직접 무력충돌
+    - prefix: "ARMEDCONFLICT"
+      weight: 5
+    - prefix: "MILITARY"
+      weight: 5
+    - prefix: "TAX_MILITARY"
+      weight: 4
+    - prefix: "WB_2462_POLITICAL_VIOLENCE_AND_WAR"
+      weight: 5
+    - prefix: "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE"
+      weight: 4
+    - prefix: "REBELLION"
+      weight: 5
+    - prefix: "INSURGENCY"
+      weight: 5
+    - prefix: "COUP"
+      weight: 5
+
+    # 제재 / 수출통제
+    - prefix: "SANCTIONS"
+      weight: 4
+    - prefix: "EMBARGO"
+      weight: 4
+    - prefix: "BLOCKADE"
+      weight: 4
+
+    # 테러
+    - prefix: "TERROR"
+      weight: 5
+    - prefix: "TAX_TERROR"
+      weight: 4
+
+    # 정치불안 / 외교
+    - prefix: "PROTEST"
+      weight: 3
+    - prefix: "CEASEFIRE"
+      weight: 3
+    - prefix: "MARTIAL_LAW"
+      weight: 5
+    - prefix: "POLITICAL_TURMOIL"
+      weight: 4
+
+    # 안보 / 정책
+    - prefix: "EPU_CATS_NATIONAL_SECURITY"
+      weight: 3
+    - prefix: "SECURITY_SERVICES"
+      weight: 2
+    - prefix: "WB_2490_NATIONAL_PROTECTION_AND_SECURITY"
+      weight: 3
+
+    # 위기 일반 (지정학 연관)
+    - prefix: "KILL"
+      weight: 3
+    - prefix: "WOUND"
+      weight: 3
+    - prefix: "CRISISLEX_T03_DEAD"
+      weight: 3
+    - prefix: "CRISISLEX_T02_INJURED"
+      weight: 3
+
+# ────────────────────────────────────────
+# B. NATURAL (자연재해)
+# ────────────────────────────────────────
+natural:
+  themes:
+    - prefix: "NATURAL_DISASTER"
+      weight: 5
+    - prefix: "EARTHQUAKE"
+      weight: 5
+    - prefix: "TSUNAMI"
+      weight: 5
+    - prefix: "FLOOD"
+      weight: 4
+    - prefix: "FAMINE"
+      weight: 4
+    - prefix: "DROUGHT"
+      weight: 4
+    - prefix: "WILDFIRE"
+      weight: 5
+    - prefix: "CYCLONE"
+      weight: 5
+    - prefix: "HURRICANE"
+      weight: 5
+    - prefix: "TYPHOON"
+      weight: 5
+    - prefix: "VOLCANO"
+      weight: 5
+    - prefix: "LANDSLIDE"
+      weight: 4
+    - prefix: "AVALANCHE"
+      weight: 4
+    - prefix: "STORM"
+      weight: 3
+    - prefix: "HEATWAVE"
+      weight: 3
+    - prefix: "COLD_SNAP"
+      weight: 3
+    - prefix: "CRISISLEX_O01_WEATHER"
+      weight: 3
+    - prefix: "WB_2335_DISASTER_RISK_MANAGEMENT"
+      weight: 3
+    - prefix: "WATER_SECURITY"
+      weight: 2
+
+# ────────────────────────────────────────
+# C. PANDEMIC (감염병 / 보건위기)
+# ────────────────────────────────────────
+pandemic:
+  themes:
+    - prefix: "HEALTH_PANDEMIC"
+      weight: 5
+    - prefix: "PANDEMIC"
+      weight: 5
+    - prefix: "EPIDEMIC"
+      weight: 5
+    - prefix: "QUARANTINE"
+      weight: 4
+    - prefix: "LOCKDOWN"
+      weight: 4
+    - prefix: "SARS"
+      weight: 5
+    - prefix: "COVID"
+      weight: 5
+    - prefix: "WB_1406_DISEASES"
+      weight: 3
+    - prefix: "WB_1427_NON_COMMUNICABLE_DISEASE"
+      weight: 2
+    - prefix: "CRISISLEX_C03_WELLBEING_HEALTH"
+      weight: 2
+    - prefix: "GENERAL_HEALTH"
+      weight: 1
+
+# ────────────────────────────────────────
+# D. REGULATORY (규제 / 정책 변화)
+# ────────────────────────────────────────
+regulatory:
+  themes:
+    - prefix: "LEGISLATION"
+      weight: 3
+    - prefix: "EPU_CATS_REGULATION"
+      weight: 4
+    - prefix: "EPU_POLICY_LAW"
+      weight: 3
+    - prefix: "EPU_POLICY_GOVERNMENT"
+      weight: 2
+    - prefix: "EPU_CATS_TAXES"
+      weight: 3
+    - prefix: "EPU_POLICY_TAX"
+      weight: 3
+    - prefix: "ECON_TAXATION"
+      weight: 3
+    - prefix: "TRIAL"
+      weight: 2
+    - prefix: "WB_840_JUSTICE"
+      weight: 2
+    - prefix: "WB_832_ANTI_CORRUPTION"
+      weight: 3
+    - prefix: "WB_831_GOVERNANCE"
+      weight: 2
+    - prefix: "GENERAL_GOVERNMENT"
+      weight: 1
+
+# ────────────────────────────────────────
+# E. LOGISTICS (물류 / 공급망)
+# ────────────────────────────────────────
+logistics:
+  themes:
+    - prefix: "WB_135_TRANSPORT"
+      weight: 3
+    - prefix: "WB_1803_TRANSPORT_INFRASTRUCTURE"
+      weight: 3
+    - prefix: "WB_168_ROADS_AND_HIGHWAYS"
+      weight: 2
+    - prefix: "WB_1809_HIGHWAYS"
+      weight: 2
+    - prefix: "WB_1804_AIRPORTS"
+      weight: 2
+    - prefix: "PUBLIC_TRANSPORT"
+      weight: 2
+    - prefix: "MARITIME"
+      weight: 4
+    - prefix: "MARITIME_INCIDENT"
+      weight: 5
+    - prefix: "CRISISLEX_C04_LOGISTICS_TRANSPORT"
+      weight: 4
+    - prefix: "CRISISLEX_T04_INFRASTRUCTURE"
+      weight: 3
+    - prefix: "EVACUATION"
+      weight: 3
+
+# ────────────────────────────────────────
+# F. MARKET (시장 / 금융 리스크)
+# ────────────────────────────────────────
+market:
+  themes:
+    - prefix: "ECON_STOCKMARKET"
+      weight: 3
+    - prefix: "ECON_BANKRUPTCY"
+      weight: 5
+    - prefix: "ECON_DEBT"
+      weight: 3
+    - prefix: "ECON_EARNINGSREPORT"
+      weight: 2
+    - prefix: "ECON_COST_OF_LIVING"
+      weight: 2
+    - prefix: "EPU_ECONOMY"
+      weight: 2
+    - prefix: "WB_1104_MACROECONOMIC_VULNERABILITY_AND_DEBT"
+      weight: 4
+    - prefix: "WB_1920_FINANCIAL_SECTOR_DEVELOPMENT"
+      weight: 2
+    - prefix: "TAX_ECON_PRICE"
+      weight: 2
+    - prefix: "USPEC_UNCERTAINTY1"
+      weight: 2
+
+# ────────────────────────────────────────
+# G. ESG (환경 / 사회 / 거버넌스)
+# ────────────────────────────────────────
+esg:
+  themes:
+    - prefix: "ENV_"
+      weight: 3
+    - prefix: "UNGP_FORESTS_RIVERS_OCEANS"
+      weight: 3
+    - prefix: "CLIMATE"
+      weight: 3
+    - prefix: "CARBON"
+      weight: 3
+    - prefix: "WB_435_AGRICULTURE_AND_FOOD_SECURITY"
+      weight: 2
+    - prefix: "CRISISLEX_C06_WATER_SANITATION"
+      weight: 2
+    - prefix: "MANMADE_DISASTER"
+      weight: 3
+
+# ────────────────────────────────────────
+# H. TECHNOLOGY (기술 / 사이버 리스크)
+# ────────────────────────────────────────
+technology:
+  themes:
+    - prefix: "CYBER"
+      weight: 4
+    - prefix: "WB_133_INFORMATION_AND_COMMUNICATION_TECHNOLOGIES"
+      weight: 2
+    - prefix: "WB_678_DIGITAL_GOVERNMENT"
+      weight: 1
+    - prefix: "HACK"
+      weight: 5
+    - prefix: "DATA_BREACH"
+      weight: 5
+
+# ────────────────────────────────────────
+# I. LABOR (노동 리스크)
+# ────────────────────────────────────────
+labor:
+  themes:
+    - prefix: "STRIKE"
+      weight: 4
+    - prefix: "TAX_FNCACT_WORKERS"
+      weight: 2
+    - prefix: "TAX_FNCACT_EMPLOYEES"
+      weight: 1
+    - prefix: "WB_697_SOCIAL_PROTECTION_AND_LABOR"
+      weight: 2
+    - prefix: "LABOR"
+      weight: 3
+    - prefix: "UNEMPLOYMENT"
+      weight: 3
+
+# ────────────────────────────────────────
+# 분류 설정
+# ────────────────────────────────────────
+classification_config:
+  S_MAX: 30.0
+  min_weight_threshold: 2    # 카테고리별 weight 합이 이 값 미만이면 무시
+  max_categories: 4          # 한 기사에 최대 4개 카테고리

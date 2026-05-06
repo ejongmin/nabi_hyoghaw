@@ -44,4 +44,3 @@ TSLA,Tesla,USA,Americas,OEM,OEM / Vehicle Manufacturer,True,TSLA,NASDAQ,TSLA,"EV
 VOW3.DE,Volkswagen,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,VOW3.DE,XETRA,VOW3.DE,"Europe #1, Gotion 26% stake, CATL partnership",주가 영향 분석 대상 OEM,
 MBG.DE,Mercedes-Benz,Germany,Europe,OEM,OEM / Vehicle Manufacturer,True,MBG.DE,XETRA,MBG.DE,"Premium EV segment, CATL/LGES/EVE customer",주가 영향 분석 대상 OEM,
 RIVN,Rivian,USA,Americas,OEM,OEM / Vehicle Manufacturer,True,RIVN,NASDAQ,RIVN,"EV startup, LGES customer",주가 영향 분석 대상 OEM,
-SQM,Sociedad Quimica y Minera de Chile,Chile,Americas,Upstream/Refining,Lithium (upstream),True,SQM,NYSE;BCS,SQM;SQM-B.SN,"World's 2nd-largest lithium producer (Atacama brine, Chile); CATL/Tianqi sources via Albemarle/SQM",자원·정제 충격 이벤트 연결,"Added 2026-04-08 to align universe with v9 (collected via collect_google_news_zero8.py); referenced 4x in seed_edges.csv (USGS_Mineral_Commodities_2023, Tianqi_AR2022)"

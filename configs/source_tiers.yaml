@@ -1,0 +1,375 @@
+# source_tiers.yaml
+# ────────────────────
+# Publisher → Tier 매핑.  title 접미사 " - Publisher" 형식에서 추출된 publisher 문자열을
+# 정확 매칭(case-insensitive)으로 tier를 할당. 매칭 안되면 기본값 tier=3.
+#
+# 참조 방법론:
+#   - Baker, Bloom, Davis (2016, QJE) "Measuring Economic Policy Uncertainty"
+#       → 10개 주요 일간지만 사용하여 EPU 지수 구축. Tier 1 기준에 영향.
+#   - Manela & Moreira (2017, JFE) "News implied volatility and disaster concerns"
+#       → WSJ만 사용하는 단일 소스 접근
+#   - Diebold-Yilmaz (2014, JoE) "On the network topology of variance decompositions"
+#       → 네트워크 분석 시 source quality가 edge weight에 직접 영향
+#
+# Tier 분류 기준 (★ = 일부 판단 추론):
+#   Tier 1 (weight 1.0): 편집 규범을 갖춘 주요 국가/국제 금융지, 관영 통신사, 본류 경제지
+#   Tier 2 (weight 0.5): 산업 특화(자동차/배터리/광업/에너지), 틈새 금융, 지역 주요지, tech 전문지
+#   Tier 3 (weight 0.15): 집계 사이트, 기업 공식 PR, 블로그, 프로모션·광고형 매체 (default)
+#
+# 중요: JA corpus의 92.6% positive bias는 tier 3인 株式会社モーターマガジン社, EVsmartブログ 등이
+#        홍보성 신차 시승기를 대량 게재하기 때문. Tier 1만 남기면 bias 해소됨.
+
+weights:
+  1: 1.0
+  2: 0.5
+  3: 0.15
+
+# ──────────────────────────────────────────────────────────────
+# TIER 1: 주요 국가/국제 금융·종합지
+# ──────────────────────────────────────────────────────────────
+tier_1:
+  # English - international financial
+  - Reuters
+  - Bloomberg.com
+  - The New York Times
+  - WSJ
+  - CNBC
+  - Barron's
+  - Forbes
+  - Business Insider
+  - Nikkei Asia
+  - AFR                          # Australian Financial Review
+  - The Globe and Mail
+  - Financial Times
+
+  # Chinese - state media + major financial
+  - 新华网                        # Xinhua (state)
+  - 人民日报                      # People's Daily (state)
+  - 财联社                        # Cailianshe (financial wire)
+  - 财新                          # Caixin
+  - 证券时报                      # Securities Times
+  - 每日经济新闻                  # National Business Daily
+  - Yicai Global                 # 第一财经 international edition
+  - 第一财经                      # Yicai
+  - 华尔街见闻                    # Wallstreetcn
+  - 21财经                        # 21st Century Business Herald
+  - 中国经济网                    # China Economic Net (state)
+  - Caixin Global
+
+  # Korean - major dailies + economy
+  - 매일경제
+  - hankyung.com                 # 한국경제
+  - 조선일보
+  - 중앙일보
+  - 경향신문
+  - 한겨레
+  - 연합뉴스
+  - KED Global                   # Korea Economic Daily English
+  - Chosunbiz
+  - Korea JoongAng Daily
+  - The Korea Herald
+  - The Korea Times
+  - 전자신문
+  - 서울경제신문
+  - 헤럴드경제
+  - 아시아경제
+  - 연합인포맥스
+  - 이데일리
+  - The Korea Economic Daily Global Edition
+
+  # Japanese - major financial dailies
+  - 日本経済新聞                  # Nikkei
+  - 日経クロステック              # Nikkei xTech
+  - 日経ビジネス電子版            # Nikkei Business
+  - 朝日新聞
+  - ダイヤモンド・オンライン      # Diamond Online
+
+  # Chile / Latin America
+  - La Tercera
+  - Diario Financiero
+
+  # ── Ambient pool (source_domain lowercase forms) ──
+  - reuters.com
+  - bloomberg.com
+  - wsj.com
+  - ft.com
+  - nytimes.com
+  - cnbc.com
+  - nikkei.com
+  - asahi.com
+  - xinhuanet.com
+  - people.com.cn
+  - caixin.com
+  - caixinglobal.com
+  - yicai.com
+  - yicaiglobal.com
+  - chosun.com
+  - joongang.co.kr
+  - donga.com
+  - hani.co.kr
+  - hankyung.com
+  - mk.co.kr
+  - yna.co.kr
+  - handelsblatt.com
+  - faz.net
+  - sueddeutsche.de
+  - lemonde.fr
+  - latercera.com
+  - df.cl
+
+# ──────────────────────────────────────────────────────────────
+# TIER 2: 산업 특화 / 틈새 금융 / 지역 주요지
+# ──────────────────────────────────────────────────────────────
+tier_2:
+  # Auto/EV industry (English)
+  - Electrek
+  - InsideEVs
+  - Green Car Reports
+  - MotorTrend
+  - Car and Driver
+  - Autoweek
+  - autonews.com
+  - Automotive News
+  - Paul Tan's Automotive News
+  - Ford Authority
+  - The Drive
+  - Motor1.com
+  - Edmunds
+  - Detroit Free Press
+  - Crain's Detroit
+  - motorauthority.com
+  - Carscoops
+  - CarBuzz
+  - HotCars
+  - Torque News
+  - Top Gear
+  - Cars.com
+  - Autoblog
+  - WardsAuto
+  - Road & Track
+  - CarsDirect
+  - autoevolution
+  - Top Speed
+  - CBT News
+  - Kelley Blue Book
+  - Teslarati
+  - Charged EVs
+  - Motor Authority
+
+  # EV/battery/energy specialized
+  - electrive.com
+  - Electrive
+  - CnEVPost
+  - Storage.News
+  - Energy-Storage.News
+  - CleanTechnica
+  - Canary Media
+  - The Driven
+  - Batteries News
+  - Battery-News.de
+  - Recycling Today
+  - ESS News
+  - Benchmark Mineral Intelligence
+
+  # Mining/commodities
+  - Mining.com
+  - BNamericas
+  - Reporte Minero
+  - NAI500
+  - Fastmarkets
+  - Shanghai Metals Market
+  - Mysteel
+  - Metal Tech News
+
+  # Tech press
+  - TechCrunch
+  - CNET
+  - The Verge
+  - ZDNet
+  - Ars Technica
+
+  # Finance/markets niche (medium credibility)
+  - Yahoo Finance
+  - The Motley Fool
+  - Seeking Alpha
+  - Business Wire
+  - PR Newswire
+  - TradingView
+  - Moomoo
+  - MarketWatch
+  - marketscreener.com
+  - Finimize
+  - TipRanks
+
+  # Japanese auto/industry
+  - Car Watch
+  - レスポンス（Response.jp）
+  - ニュースイッチ by 日刊工業新聞社
+  - MONOist
+  - nextmobility.jp
+  - webCG
+  - WEB CARTOP
+  - AUTOCAR JAPAN
+  - bestcarweb.jp
+  - くるまのニュース
+  - Motor Magazine
+  - Nikkei xTech
+
+  # Korean industry/niche
+  - 디일렉                        # The Elec (battery/display)
+  - 지디넷코리아
+  - 시사저널e
+  - 비즈니스포스트
+  - 인더스트리뉴스
+  - 글로벌이코노믹
+  - 페로타임즈
+  - 히트뉴스
+  - 인베스트조선
+  - 딜사이트
+  - 디지털투데이
+  - CEO스코어데일리
+  - 더구루
+  - 기계신문
+  - 헬로티
+  - 바이오스펙테이터
+  - 스트레이트뉴스
+  - theguru.co.kr
+  - electimes.com
+  - Businesskorea
+  - 매일신문
+  - newsis.com
+  - news1.kr
+  - 한경매거진&북
+  - 포스코그룹 뉴스룸            # company news but editorial, keep in T2
+  - ddaily.co.kr
+  - 글로벌이코노믹
+
+  # Chinese industry/niche
+  - 汽车之家                      # Autohome
+  - 36kr.com
+  - 36 Kr
+  - 新京报
+  - 东方财富
+  - 电子工程专辑
+  - 未来汽车日报
+  - 新浪汽车
+  - 品玩
+  - 动点科技
+  - 极客公园
+  - 车东西
+  - 凤凰网汽车
+  - Jiemian.com
+  - jiemian.com
+  - 维科号
+  - 界面新闻
+  - 汽车商业评论
+  - Gasgoo
+  - 国际储能网
+  - CarNewsChina.com
+
+  # Regional/other English dailies (business-focused coverage)
+  - Crain's New York Business
+  - The Straits Times
+  - South China Morning Post
+  - AD HOC NEWS
+  - Yicai
+  - Automotive News Europe
+  - Automobilwoche
+  - Nikkei
+  - Paul Tan
+
+  # ── Ambient pool (source_domain lowercase forms) ──
+  - electrek.co
+  - insideevs.com
+  - greencarreports.com
+  - motortrend.com
+  - autoweek.com
+  - autonews.com
+  - caranddriver.com
+  - motor1.com
+  - autoblog.com
+  - autoevolution.com
+  - carscoops.com
+  - carbuzz.com
+  - hotcars.com
+  - topspeed.com
+  - paultan.org
+  - thedrive.com
+  - teslarati.com
+  - electrive.com
+  - cnevpost.com
+  - gasgoo.com
+  - cars.com
+  - carsdirect.com
+  - torquenews.com
+  - wardsauto.com
+  - motorauthority.com
+  - road-track.com
+  - topgear.com
+  - theverge.com
+  - techcrunch.com
+  - cnet.com
+  - zdnet.com
+  - arstechnica.com
+  - businessinsider.com
+  - marketwatch.com
+  - yahoo.com
+  - finance.yahoo.com
+  - seekingalpha.com
+  - fool.com
+  - barrons.com
+  - forbes.com
+  - dw.com
+  - euronews.com
+  - scmp.com
+  - straitstimes.com
+  - mining.com
+  - bnamericas.com
+  - prnewswire.com
+  - businesswire.com
+  - tradingview.com
+  - marketscreener.com
+  - finimize.com
+  - tipranks.com
+
+# ──────────────────────────────────────────────────────────────
+# TIER 3 (default): 나머지 모두
+# ──────────────────────────────────────────────────────────────
+# 명시적으로 tier 3에 두고 싶은 publishers (아래 목록은 참고용)
+# 실제 코드는 tier_1/tier_2에 매칭 안되는 모든 publisher를 tier 3로 처리.
+tier_3_examples:
+  # 집계·포털 (aggregators)
+  - 新浪财经
+  - 搜狐网
+  - 雪球
+  - QQ News
+  - finance.sina.com.cn
+  - 手机新浪网
+  - v.daum.net
+  - 腾讯新闻
+  - 凤凰网
+  - 新浪网
+  - 大紀元
+  - 美国之音
+
+  # 기업 공식 PR
+  - CATL
+  - BYD
+  - Honda Global
+  - Honda Newsroom
+  - Lucid Motors
+  - Ford
+  - BASF
+  - 比亚迪股份有限公司
+  - Lgcorp.com
+
+  # 블로그·프로모션·가격비교
+  - 株式会社モーターマガジン社   # ★ JA positive bias 주범
+  - EVsmartブログ
+  - automachi.com
+  - kakaku.com
+  - theguru.co.kr
+  - carz.com.my
+  - 维科号
+  - 爱咖号
+  - 财富号

@@ -36,10 +36,14 @@ reports/
 # Node
 node_modules/
 
-# Temp
+# Temp / Generated
 .tmp.driveupload/
 .tmp/
 .claude/
+tmp_duck/
+lid.176.bin
+data/seed/seed_edges_backup_*.csv
+scripts/phase5_v3_run.py
 
 # Allow templates and guides
 !data/universe/

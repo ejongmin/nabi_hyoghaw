@@ -154,6 +154,9 @@
 "002340.SZ":   # GEM Co (주의: bare "GEM" 사용 금지 - 일반 영단어 오매칭)
   - GEM Co
   - GEM Co Ltd
+  - 格林美
+  - 格林美股份
+  - 深圳格林美
 
 "920185.BJ":   # BTR
   - BTR
@@ -179,6 +182,9 @@
   - Ganfeng Lithium Co
   - Jiangxi Ganfeng
   - Jiangxi Ganfeng Lithium
+  - 赣锋锂业
+  - 江西赣锋
+  - 赣锋锂电
 
 "002466.SZ":   # Tianqi Lithium
   - Tianqi
@@ -186,6 +192,9 @@
   - Tianqi Lithium Corp
   - Sichuan Tianqi
   - Tianqi Lithium Industries
+  - 天齐锂业
+  - 四川天齐
+  - 天齐锂业股份
 
 "603799.SH":   # Huayou Cobalt
   - Huayou
@@ -193,6 +202,9 @@
   - Zhejiang Huayou
   - Huayou Cobalt Co
   - Zhejiang Huayou Cobalt
+  - 华友钴业
+  - 浙江华友
+  - 华友钴业股份
 
 "603993.SH":   # CMOC
   - CMOC
@@ -200,6 +212,9 @@
   - China Moly
   - China Molybdenum
   - CMOC Group Limited
+  - 洛阳钼业
+  - 中国钼业
+  - 洛阳栾川钼业
 
 "600362.SH":   # Jiangxi Copper
   - Jiangxi Copper
@@ -207,6 +222,9 @@
   - Jiangxi Copper Co
   - Jiangxi Copper Corp
   - Jiangxi Copper Group
+  - 江西铜业
+  - 江铜集团
+  - 江西铜业股份
 
 "ALB":         # Albemarle
   - Albemarle
@@ -316,6 +334,9 @@
   - Dongfeng Motor Corp
   - Dongfeng Motor Group
   - Dongfeng Auto
+  - 东风汽车
+  - 东风集团
+  - 东风汽车集团
 
 "601238.SH":   # GAC
   - GAC
@@ -324,6 +345,9 @@
   - Guangzhou Automobile
   - GAC Aion
   - Guangzhou Auto
+  - 广汽集团
+  - 广州汽车
+  - 广汽埃安
 
 "601633.SH":   # Great Wall Motor
   - Great Wall Motor

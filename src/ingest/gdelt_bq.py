@@ -558,10 +558,19 @@ def _process_single_parquet(
 
         # ── Stage 0: PyArrow 레벨 pre-filter ──
         # v2_organizations가 null이거나 빈 문자열인 행 제거 (pandas 변환 전)
+        # 단, collection_type == "risk_only"인 Type B 기사는 보존
         v2org_col = batch.column("v2_organizations")
         not_null = pc.is_valid(v2org_col)
         not_empty = pc.not_equal(pc.utf8_length(pc.if_else(not_null, v2org_col, pa.scalar(""))), 0)
-        mask = pc.and_(not_null, not_empty)
+        has_v2org = pc.and_(not_null, not_empty)
+
+        # Type B (risk_only) 보존: collection_type 컬럼이 있으면 risk_only 행 유지
+        if "collection_type" in available:
+            ct_col = batch.column("collection_type")
+            is_risk_only = pc.equal(pc.if_else(pc.is_valid(ct_col), ct_col, pa.scalar("")), pa.scalar("risk_only"))
+            mask = pc.or_(has_v2org, is_risk_only)
+        else:
+            mask = has_v2org
         batch = batch.filter(mask)
 
         if batch.num_rows == 0:
@@ -572,6 +581,12 @@ def _process_single_parquet(
 
         # ── Aho-Corasick 단일 스캔 매칭 ──
         df["entity_ids"] = _vectorized_company_match(df["v2_organizations"], ac_automaton, keyword_to_cid)
+
+        # ── Type B fallback: v2_organizations 매칭 실패 시 article_url로 재시도 ──
+        no_match_mask = df["entity_ids"].apply(len) == 0
+        if no_match_mask.any() and "article_url" in df.columns:
+            url_matches = _vectorized_company_match(df.loc[no_match_mask, "article_url"], ac_automaton, keyword_to_cid)
+            df.loc[no_match_mask, "entity_ids"] = url_matches
 
         # Filter: entity 없는 행 제거
         if filter_no_entity:

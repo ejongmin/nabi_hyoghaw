@@ -68,8 +68,9 @@ WD        = 1e-4
 EPOCHS    = 400
 PATIENCE  = 40
 SEED      = 42
-TRAIN_R   = 0.65
-VAL_R     = 0.82
+# 날짜 고정 split — 새 달 추가 시 test 시작점이 밀리지 않음
+TRAIN_END = "2023-06"   # 이 달까지 train (포함)
+VAL_END   = "2024-06"   # 이 달까지 val (포함), 이후는 test
 MIN_VALID = 3
 DYN_ALPHA = 0.3   # 동적 가중치 강도: w = base × (1 + α × tanh(stress))
 
@@ -567,8 +568,11 @@ def main():
     dyn_graphs = build_dynamic_graphs(PATH_EDGES, cids, months, supply_lookup)
 
     T = X.shape[0]
-    tr_end = int(T * TRAIN_R); va_end = int(T * VAL_R)
-    log.info("분할: train=%s~%s (%d월), val=%s~%s (%d월), test=%s~%s (%d월)",
+    months_str = [str(m) for m in months]
+    # 날짜 기반 split (비율 대신 고정 날짜 사용)
+    tr_end = next((i for i, m in enumerate(months_str) if m > TRAIN_END), T)
+    va_end = next((i for i, m in enumerate(months_str) if m > VAL_END),   T)
+    log.info("분할(날짜고정): train=%s~%s (%d월), val=%s~%s (%d월), test=%s~%s (%d월)",
              months[0], months[tr_end-1], tr_end,
              months[tr_end], months[va_end-1], va_end-tr_end,
              months[va_end], months[-1], T-va_end)

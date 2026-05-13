@@ -58,7 +58,7 @@ OUT_IC     = ROOT / "reports/phase5_final_ic.csv"
 OUT_RPT    = ROOT / "reports/phase5_final_summary.txt"
 
 # ── 하이퍼파라미터
-LOOKBACK  = 12   # 6→12: 더 긴 시계열 맥락
+LOOKBACK  = 6
 H_GRU     = 32
 H_GAT     = 16
 GAT_HEADS = 4
@@ -637,7 +637,7 @@ def main():
         f"  1. 동적 엣지 가중치: w = base × (1 + {DYN_ALPHA} × tanh(avg_supply_stress))",
         f"  2. tone_monthly_zscore_18_v3 사용 (regime_trump_tariff 포함)",
         f"  3. seed_edges_18_internal_v3 사용 ({n_edges_csv}개 엣지)",
-        f"  4. LOOKBACK = {LOOKBACK}개월 (기존 6 → {LOOKBACK})",
+        f"  4. LOOKBACK = {LOOKBACK}개월",
         f"  5. 피처 {N_FEAT}개 (z_cross_stage, regime_trump_tariff 신규)",
         "",
         "■ 성능 비교 (Test set)",

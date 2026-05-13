@@ -552,6 +552,8 @@ def _process_single_parquet(
     chunks = []
     n_processed = 0
     n_pyarrow_kept = 0
+    n_type_b_stage0 = 0  # Type B rows preserved at Stage 0
+    n_type_b_stage2 = 0  # Type B rows surviving to Stage 2 output
 
     for batch in pf.iter_batches(batch_size=BATCH_ROWS, columns=use_cols):
         n_processed += batch.num_rows
@@ -568,6 +570,8 @@ def _process_single_parquet(
         if "collection_type" in available:
             ct_col = batch.column("collection_type")
             is_risk_only = pc.equal(pc.if_else(pc.is_valid(ct_col), ct_col, pa.scalar("")), pa.scalar("risk_only"))
+            n_type_b_batch = int(pc.sum(is_risk_only.cast(pa.int32())).as_py() or 0)
+            n_type_b_stage0 += n_type_b_batch
             mask = pc.or_(has_v2org, is_risk_only)
         else:
             mask = has_v2org
@@ -592,6 +596,7 @@ def _process_single_parquet(
         if filter_no_entity:
             has_entity = df["entity_ids"].apply(len) > 0
             is_risk_only = df.get("collection_type", pd.Series(dtype=str)) == "risk_only"
+            n_type_b_stage2 += int(is_risk_only.sum())
             df = df[has_entity | is_risk_only].copy()
 
         if df.empty:
@@ -632,6 +637,8 @@ def _process_single_parquet(
     gc.collect()
     log.info(f"  PyArrow filter: {n_total:,} → {n_pyarrow_kept:,} "
              f"({100*n_pyarrow_kept/max(n_total,1):.1f}% had v2_organizations)")
+    log.info(f"  Type B (risk_only): Stage0 preserved={n_type_b_stage0:,}, "
+             f"Stage2 surviving={n_type_b_stage2:,}")
 
     if not chunks:
         log.warning(f"  No matching rows in {parquet_path.name}")

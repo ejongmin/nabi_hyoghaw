@@ -183,6 +183,7 @@
   - Jiangxi Ganfeng
   - Jiangxi Ganfeng Lithium
   - 赣锋锂业
+  - 赣锋
   - 江西赣锋
   - 赣锋锂电
 
@@ -193,6 +194,7 @@
   - Sichuan Tianqi
   - Tianqi Lithium Industries
   - 天齐锂业
+  - 天齐
   - 四川天齐
   - 天齐锂业股份
 
@@ -213,6 +215,7 @@
   - China Molybdenum
   - CMOC Group Limited
   - 洛阳钼业
+  - 中钼
   - 中国钼业
   - 洛阳栾川钼业
 
@@ -223,6 +226,7 @@
   - Jiangxi Copper Corp
   - Jiangxi Copper Group
   - 江西铜业
+  - 江铜
   - 江铜集团
   - 江西铜业股份
 
@@ -230,8 +234,10 @@
   - Albemarle
   - Albemarle Corp
   - Albemarle Corporation
+  - Albemarle Inc
 
 "SQM":         # SQM
+  # NOTE: SQM is NOT in the 18-company universe. Remove or exclude from downstream processing.
   - SQM
   - Sociedad Quimica y Minera
   - Sociedad Quimica
@@ -284,10 +290,14 @@
   - Lucid Motors
   - Lucid Group
   - Lucid
+  - Lucid Inc
+  - Lucid Corp
 
 "RIVN":        # Rivian
   - Rivian
   - Rivian Automotive
+  - Rivian Motors
+  - Rivian Group
 
 "7267.T":      # Honda
   - Honda Motor
@@ -335,6 +345,7 @@
   - Dongfeng Motor Group
   - Dongfeng Auto
   - 东风汽车
+  - 东风
   - 东风集团
   - 东风汽车集团
 
@@ -346,6 +357,7 @@
   - GAC Aion
   - Guangzhou Auto
   - 广汽集团
+  - 广汽
   - 广州汽车
   - 广汽埃安
 
